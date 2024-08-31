@@ -1,9 +1,37 @@
+import sqlite3
+from conexao import conectar
+
 class Cliente:
     def __init__(self, id_cliente, nome, telefone, data_cadastro):
-        self.id_cliente = id_cliente
+        self.id = id_cliente
         self.nome = nome
         self.telefone = telefone
         self.data_cadastro = data_cadastro
+
+    def salvar_no_banco(self):
+        # Conectando ao banco de dados SQLite
+        conexao = conectar()         
+        try:        
+            cursor = conexao.cursor()
+
+            # Inserindo os dados do cliente no banco
+            cursor.execute('''
+                INSERT INTO TB_CLIENTE (nome, telefone, data_cadastro)
+                VALUES (?, ?, ?, ?)
+            ''', (self.id, self.nome, self.telefone, self.data_cadastro))
+
+            conexao.commit()
+
+        except Exception as e:
+            print(f'Não foi possível completar a operação.Erro: {e}')
+
+        finally:
+            # Salvando (commit) as mudanças e fechando a conexão
+            if conexao:
+                cursor.close()                
+                conexao.close()
+            
+
 
 class TipoProduto:
     def __init__(self, cod, descricao):
