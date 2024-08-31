@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 
 # Função chamada quando o botão "Cadastrar" é clicado
 def submit_form():
