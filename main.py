@@ -88,21 +88,31 @@ def cadastrar_venda():
 # Criação da janela principal
 root = tk.Tk()
 root.title("GTECH IMPORTS")
-root.geometry("300x200")
+root.geometry("600x400")
 
 # Criação da label principal
 label = tk.Label(root, text="GTECH IMPORTS", font=("Arial", 16))
 label.pack(pady=10)
 
-# Criação dos botões
-btn_produto = tk.Button(root, text="CADASTRAR PRODUTO", command=cadastrar_produto)
-btn_produto.pack(pady=5)
+# Criação do menu inicial
+menu_barra = tk.Menu(root)
 
-btn_venda = tk.Button(root, text="CADASTRAR VENDA", command=cadastrar_venda)
-btn_venda.pack(pady=5)
+menu_cliente = tk.Menu(menu_barra,tearoff=0)
+menu_cliente.add_command(label="Cadastro",command=cadastrar_cliente)
+menu_barra.add_cascade(label="Cliente",menu=menu_cliente)
 
-btn_cliente = tk.Button(root, text="CADASTRAR CLIENTE", command=cadastrar_cliente)
-btn_cliente.pack(pady=5)
+menu_produto = tk.Menu(menu_barra,tearoff=0)
+menu_produto.add_command(label="Cadastro")
+menu_produto.add_command(label="Tipo de Produto")
+menu_produto.add_separator()
+menu_barra.add_cascade(label="Produto",menu=menu_produto)
+
+menu_venda = tk.Menu(menu_barra,tearoff=0)
+menu_venda.add_command(label="Cadastro")
+menu_barra.add_cascade(label="Venda", menu=menu_venda)
+
+root.config(menu=menu_barra)
+
 
 # Inicia o loop principal da interface
 root.mainloop()
