@@ -178,9 +178,23 @@ root.config(menu=menu_barra)
 
 ######################################################################
 #inserir a logo da empresa na tela inicial
-logo_empresa = PhotoImage(file="C:/Users/amilt/OneDrive/Documentos/PROJETO GTECH/PROJETO/projeto_gtech/midia/gtech_logo.png")
-label_logo = tk.Label(root,image=logo_empresa)
-label_logo.pack(pady=0)
+#logo_empresa = PhotoImage(file="C:/Users/amilt/OneDrive/Documentos/PROJETO GTECH/PROJETO/projeto_gtech/midia/gtech_logo.png")
+#label_logo = tk.Label(root,image=logo_empresa)
+#label_logo.pack(pady=0)
+
+# Obter o caminho absoluto do diretório do programa
+diretorio_programa = os.path.dirname(os.path.abspath(__file__))
+
+# Construir o caminho completo para a imagem dentro da pasta "midia"
+caminho_imagem = os.path.join(diretorio_programa, "midia", "gtech_logo.png")
+
+# Carregar a imagem da logo
+logo = PhotoImage(file=caminho_imagem)
+
+# Inserir a imagem no centro da tela
+label_logo = tk.Label(root, image=logo)
+label_logo.image = logo  # Manter referência para evitar garbage collection
+label_logo.pack(pady=20)
 
 
 
