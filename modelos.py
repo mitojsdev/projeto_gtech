@@ -16,7 +16,7 @@ class Cliente:
 
             # Inserindo os dados do cliente no banco
             cursor.execute('''
-                INSERT INTO TB_CLIENTE (nome, telefone, data_cadastro)
+                INSERT INTO TB_CLIENTE (id_cliente, nome, telefone, data_cadastro)
                 VALUES (?, ?, ?, ?)
             ''', (self.id, self.nome, self.telefone, self.data_cadastro))
 
@@ -34,9 +34,39 @@ class Cliente:
 
 
 class TipoProduto:
-    def __init__(self, cod, descricao):
-        self.cod = cod
+    def __init__(self, descricao):                
         self.descricao = descricao
+
+    def salvar_no_banco(self):
+        # Conectando ao banco de dados SQLite
+        conexao = conectar()         
+        try:        
+            cursor = conexao.cursor()
+
+            cursor.execute('''select Max(COD) + 1 from TB_TIPO_PRODUTO''')
+
+            resultado = cursor.fetchone()
+            print(resultado)
+            if resultado:                
+                prox_cod = resultado[0]
+                print(prox_cod)
+
+                # Inserindo tipo_produto no banco
+                cursor.execute('''
+                INSERT INTO TB_TIPO_PRODUTO (cod, descricao)
+                VALUES (?,?)
+                ''', (prox_cod, self.descricao))
+
+                conexao.commit()
+
+        except Exception as e:
+            print(f'Não foi possível completar a operação.Erro: {e}')
+
+        finally:
+            # Salvando (commit) as mudanças e fechando a conexão
+            if conexao:
+                cursor.close()                
+                conexao.close()
 
 class Fornecedor:
     def __init__(self, id_fornecedor, nome_empresa, tipo_empresa):
