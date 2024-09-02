@@ -5,6 +5,8 @@ from datetime import datetime
 from modelos import Cliente  # Importando a Classe Cliente
 from modelos import TipoProduto
 from conexao import conectar
+from tkinter import PhotoImage
+import os
 
 # Função para abrir a tela de cadastro de cliente
 def cadastrar_cliente():
@@ -173,6 +175,14 @@ menu_venda.add_command(label="Cadastro")
 menu_barra.add_cascade(label="Venda", menu=menu_venda)
 
 root.config(menu=menu_barra)
+
+######################################################################
+#inserir a logo da empresa na tela inicial
+logo_empresa = PhotoImage(file="C:/Users/amilt/OneDrive/Documentos/PROJETO GTECH/PROJETO/projeto_gtech/midia/gtech_logo.png")
+label_logo = tk.Label(root,image=logo_empresa)
+label_logo.pack(pady=0)
+
+
 
 
 # Inicia o loop principal da interface
