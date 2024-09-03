@@ -79,21 +79,6 @@ class TipoProduto:
 
         return descricoes
     
-    def localiza_tipo_produto(descricao):        
-        conexao = conectar()
-        cursor = conexao.cursor()
-        cursor.execute("SELECT COD FROM TB_TIPO_PRODUTO WHERE DESCRICAO = ?", (descricao))
-        
-        resultado = cursor.fetchone()
-        print(resultado[0])
-
-        conexao.close()
-        if resultado:
-            id = resultado[0]
-            return id
-
-        else:
-            print("erro ao buscar COD PRODUTO")
 
 class Fornecedor:
     def __init__(self, id_fornecedor, nome_empresa, tipo_empresa, data_cadastro):
