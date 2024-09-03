@@ -1,3 +1,4 @@
+import funcoes as fct
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
@@ -10,8 +11,10 @@ from modelos import Venda
 from conexao import conectar
 from tkinter import PhotoImage
 #from funcoes import localiza_tipo_produto, localiza_id_fornecedor, localiza_cliente_id, localiza_produto_id
-import funcoes as fct
+
 import os
+
+
 
 # Função para abrir a tela de cadastro de cliente
 def cadastrar_cliente():
@@ -358,8 +361,9 @@ def cadastrar_venda():
     tk.Label(cadastro_janela, text="Produto").grid(row=3, column=0, padx=10, pady=5, sticky="e") 
     tk.Label(cadastro_janela, text="Quantidade").grid(row=4, column=0, padx=10, pady=5, sticky="e")
     tk.Label(cadastro_janela, text="Preço Venda").grid(row=5, column=0, padx=10, pady=5, sticky="e")
-    tk.Label(cadastro_janela, text="Lucro").grid(row=6, column=0, padx=10, pady=5, sticky="e")
-    tk.Label(cadastro_janela, text="Preço sugerido: ").grid(row=5, column=2, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="Lucro").grid(row=6, column=0, padx=10, pady=5, sticky="e")     
+    global lbl_preco_sugerido
+    lbl_preco_sugerido = tk.Label(cadastro_janela, text="Preço sugerido: ").grid(row=5, column=2, padx=10, pady=5, sticky="e")
     
     txt_data_venda = tk.Entry(cadastro_janela)
     txt_data_venda.grid(row=0, column=1, padx=10, pady=5, sticky="w")
@@ -402,9 +406,11 @@ def cadastrar_venda():
         messagebox.showinfo("Cadastro", "A venda foi cadastrada.")
 
     
+
     tk.Button(cadastro_janela, text="Salvar", command=salvar_venda).grid(row=7, columnspan=2, pady=10)
 
-    
+    combo_produto.bind("<<ComboboxSelected>>", fct.calcular_preco_sugerido)
+   
     #columns = ("ID", "Nome Produto", "Preço Custo", "Tipo", "Fabricante", "Marca", "Cor", "Fornecedor", "Data de Cadastro")
     #treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
     #treeview.heading("ID", text="ID")
@@ -445,7 +451,7 @@ def cadastrar_venda():
 
 ######################################################################################
 
-
+    
 # Criação da janela principal
 root = tk.Tk()
 root.title("GTECH IMPORTS")

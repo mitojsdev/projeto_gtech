@@ -172,7 +172,7 @@ class Produto:
         # Conectando ao banco de dados e recuperando os dados
         conexao = conectar()
         cursor = conexao.cursor()
-        cursor.execute('''SELECT A.NOME || '/' || A.MARCA || '/' || B.NOME_EMPRESA FROM TB_PRODUTO_NEW A
+        cursor.execute('''SELECT A.NOME || '/' || A.MARCA || '/' || B.NOME_EMPRESA, A.ID_PRODUTO FROM TB_PRODUTO_NEW A
         JOIN TB_FORNECEDOR B ON A.ID_FORNECEDOR = B.ID_FORNECEDOR;''')
         lista_produtos = [row [0] for row in cursor.fetchall()]
         print(lista_produtos)

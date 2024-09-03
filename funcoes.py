@@ -1,4 +1,5 @@
 from conexao import conectar
+from main import lbl_preco_sugerido
 
 def localiza_tipo_produto(descricao):        
         conexao = conectar()
@@ -62,3 +63,9 @@ def localiza_produto_id(nome_produto):
 
     else:
         print("erro ao buscar ID_PRODUTO")
+
+def calcular_preco_sugerido(event):
+     
+
+     lbl_preco_sugerido.config(text='Modificado')
+          
