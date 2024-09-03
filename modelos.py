@@ -123,18 +123,18 @@ class Fornecedor:
 
 
 class Produto:
-    def __init__(self, id_produto, nome, preco_custo, id_tipo_produto, fabricante, marca, cor, id_fornecedor, data_cadastro):
+    def __init__(self, id_produto, nome, preco_custo, tipo_produto, fabricante, marca, cor, id_fornecedor, data_cadastro):
         self.id_produto = id_produto
         self.nome = nome
         self.preco_custo = preco_custo
-        self.tipo_produto = id_tipo_produto
+        self.tipo_produto = tipo_produto
         self.fabricante = fabricante
         self.marca = marca
         self.cor = cor
         self.id_fornecedor = id_fornecedor
         self.data_cadastro = data_cadastro
 
-    def salvar_no_banco(self):
+    def salvar_produto(self):
       # Conectando ao banco de dados SQLite
         conexao = conectar()         
         try:        
@@ -142,7 +142,7 @@ class Produto:
 
             # Inserindo os dados do cliente no banco
             cursor.execute('''
-                INSERT INTO TB_PRODUTO (id_produto, nome, preco_custo, id_tipo_produto, fabricante, marca, cor, id_fornecedor, data_cadastro)
+                INSERT INTO TB_PRODUTO_NEW(ID_PRODUTO, NOME, PRECO_CUSTO, TIPO_PRODUTO, FABRICANTE, MARCA, COR, ID_FORNECEDOR, DATA_CADASTRO)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (self.id_produto, self.nome, self.preco_custo, self.tipo_produto, self.fabricante, self.marca, self.cor, self.id_fornecedor, self.data_cadastro))
 
@@ -156,22 +156,6 @@ class Produto:
             if conexao:
                 cursor.close()                
                 conexao.close()  
-    
-
-    def localiza_id_fornecedor(nome):
-        conexao = conectar()
-        cursor = conexao.cursor()
-        cursor.execute("SELECT ID_FORNECEDOR FROM TB_FORNECEDOR WHERE NOME_EMPRESA = ?", nome)
-        
-        resultado = cursor.fetchone()
-        
-        conexao.close()
-        if resultado:
-            id = resultado[0]
-            return id
-
-        else:
-            print("erro ao buscar ID_FORNECEDOR")
         
 
 class Venda:

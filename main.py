@@ -8,6 +8,7 @@ from modelos import Fornecedor
 from modelos import Produto
 from conexao import conectar
 from tkinter import PhotoImage
+from funcoes import localiza_tipo_produto, localiza_id_fornecedor
 import os
 
 # Função para abrir a tela de cadastro de cliente
@@ -276,21 +277,26 @@ def cadastrar_produto():
         print(nome)
         preco_custo = float(txt_preco_custo.get())
         print(preco_custo)
-        tipo_produto = combo_tipo_produto.get()
-        print(tipo_produto)
-        tipo_produto_id = TipoProduto.localiza_tipo_produto(tipo_produto)
-        print(tipo_produto)
+        tipo_produto = combo_tipo_produto.get()        
+        tipo_produto_id = localiza_tipo_produto(tipo_produto)
+        print(tipo_produto_id)
+        print(type(tipo_produto_id))
         fabricante = txt_fabricante.get()
+        print(fabricante)
         marca = txt_marca.get()
+        print(marca)
         cor = txt_cor.get()
-        fornecedor = Produto.localiza_id_fornecedor(combo_fornecedor.get())
+        print(cor)
+        fornecedor = localiza_id_fornecedor(combo_fornecedor.get())
+        print(fornecedor)
         data_cadastro = txt_data_cadastro.get()
+        print(data_cadastro)
 
         
         produto = Produto(id, nome, preco_custo, tipo_produto_id, fabricante, marca, cor, fornecedor, data_cadastro)
-        produto.salvar_no_banco()        
+        produto.salvar_produto()        
 
-        messagebox.showinfo("Cadastro", "Fornecedor inserido com sucesso.")
+        messagebox.showinfo("Cadastro", "Produto inserido com sucesso.")
 
     
     tk.Button(cadastro_janela, text="Salvar", command=salvar_produto).grid(row=10, columnspan=2, pady=10)
@@ -314,25 +320,25 @@ def cadastrar_produto():
     treeview.column("Cor",width=30)
     treeview.column("Marca",width=50)
 
-    #def carregar_produtos():
+    def carregar_produtos():
         # Limpa a Treeview antes de carregar os dados
-        #for item in treeview.get_children():
-           # treeview.delete(item)
+        for item in treeview.get_children():
+            treeview.delete(item)
 
         # Conectando ao banco de dados e recuperando os dados
-       # conexao = conectar()
-        #cursor = conexao.cursor()
-        #cursor.execute("SELECT * FROM TB_PRODUTO")
-        #produtos = cursor.fetchall()
+        conexao = conectar()
+        cursor = conexao.cursor()
+        cursor.execute("SELECT * FROM TB_PRODUTO_NEW")
+        produtos = cursor.fetchall()
 
         # Adicionando os dados na Treeview
-        #for produto in produtos:
-           # treeview.insert("", "end", values=produto)
+        for produto in produtos:
+            treeview.insert("", "end", values=produto)
         
-        #conexao.close()
+        conexao.close()
     
     # Carregar clientes ao abrir a janela
-    #carregar_produtos()
+    carregar_produtos()
 
 ######################################################################################
 
