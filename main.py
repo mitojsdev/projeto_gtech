@@ -4,6 +4,8 @@ from tkinter import messagebox
 from datetime import datetime
 from modelos import Cliente  # Importando a Classe Cliente
 from modelos import TipoProduto
+from modelos import Fornecedor
+from modelos import Produto
 from conexao import conectar
 from tkinter import PhotoImage
 import os
@@ -140,10 +142,207 @@ def cadastrar_tipo_produto():
     carregar_tipo_produto()
 ######################################################################################
 
+######################################################################################
+#função para cadastrar fornecedor
+def cadastrar_fornecedor():
+    
+    cadastro_janela = tk.Toplevel(root)
+    cadastro_janela.title("Cadastro de Fornecedor")
+    cadastro_janela.geometry("850x450")
+
+    
+    tk.Label(cadastro_janela, text="ID").grid(row=0, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="Nome Empresa").grid(row=1, column=0, padx=10, pady=5, sticky="e")    
+    tk.Label(cadastro_janela, text="Tipo Empresa").grid(row=2, column=0, padx=10, pady=5, sticky="e") 
+    tk.Label(cadastro_janela, text="Data Cadastro").grid(row=3, column=0, padx=10, pady=5, sticky="e") 
+
+    txt_id = tk.Entry(cadastro_janela)
+    txt_id.grid(row=0, column=1, padx=9, pady=0, sticky="w")
+
+    txt_nome_empresa = tk.Entry(cadastro_janela)
+    txt_nome_empresa.grid(row=1, column=1, padx=10, pady=5, sticky="w")
+
+    tipos_empresa = ['Física', 'Virtual', 'Outro']    
+    combo_tipo_empresa = ttk.Combobox(cadastro_janela, values=tipos_empresa)
+    combo_tipo_empresa.current(0)
+    combo_tipo_empresa.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+
+    txt_data_cadastro = tk.Entry(cadastro_janela)
+    txt_data_cadastro.grid(row=3, column=1, padx=10, pady=5, sticky="w")
+    txt_data_cadastro.insert(0, datetime.now().strftime("%d/%m/%Y"))
+
+    
+    def salvar_fornecedor():
+        id = int(txt_id.get())
+        nome = txt_nome_empresa.get()
+        tipo_empresa = combo_tipo_empresa.get()
+        data_cadastro = txt_data_cadastro.get()
+
+        
+        fornecedor = Fornecedor(id, nome, tipo_empresa, data_cadastro)
+        fornecedor.salvar_no_banco()        
+
+        messagebox.showinfo("Cadastro", "Fornecedor inserido com sucesso.")
+
+    
+    tk.Button(cadastro_janela, text="Salvar", command=salvar_fornecedor).grid(row=4, columnspan=2, pady=10)
+
+    
+    columns = ("ID", "Nome Empresa", "Tipo Empresa", "Data de Cadastro")
+    treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
+    treeview.heading("ID", text="ID")
+    treeview.heading("Nome Empresa", text="Nome Empresa")
+    treeview.heading("Tipo Empresa", text="Tipo Empresa")
+    treeview.heading("Data de Cadastro", text="Data de Cadastro")
+    treeview.grid(row=5, column=0, columnspan=2, padx=10, pady=10)
+
+    def carregar_fornecedores():
+        # Limpa a Treeview antes de carregar os dados
+        for item in treeview.get_children():
+            treeview.delete(item)
+
+        # Conectando ao banco de dados e recuperando os dados
+        conexao = conectar()
+        cursor = conexao.cursor()
+        cursor.execute("SELECT * FROM TB_FORNECEDOR")
+        fornecedores = cursor.fetchall()
+
+        # Adicionando os dados na Treeview
+        for fornecedor in fornecedores:
+            treeview.insert("", "end", values=fornecedor)
+        
+        conexao.close()
+
+    # Carregar clientes ao abrir a janela
+    carregar_fornecedores()
+
+######################################################################################
+
+######################################################################################
+#função para cadastrar Produtos
+def cadastrar_produto():
+    
+    cadastro_janela = tk.Toplevel(root)
+    cadastro_janela.title("Cadastro de Produto")
+    cadastro_janela.geometry("1200x650")
+
+    
+    tk.Label(cadastro_janela, text="ID").grid(row=0, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="Nome").grid(row=1, column=0, padx=10, pady=5, sticky="e")    
+    tk.Label(cadastro_janela, text="Preço Custo").grid(row=2, column=0, padx=10, pady=5, sticky="e") 
+    tk.Label(cadastro_janela, text="Tipo Produto").grid(row=3, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="Fabricante").grid(row=4, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="Marca").grid(row=5, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="Cor").grid(row=6, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="Fornecedor").grid(row=7, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="Data Cadastro").grid(row=8, column=0, padx=10, pady=5, sticky="e")
+
+    txt_id = tk.Entry(cadastro_janela)
+    txt_id.grid(row=0, column=1, padx=9, pady=0, sticky="w")
+
+    txt_nome = tk.Entry(cadastro_janela)
+    txt_nome.grid(row=1, column=1, padx=10, pady=5, sticky="w")
+
+    txt_preco_custo = tk.Entry(cadastro_janela)
+    txt_preco_custo.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+
+    tipos_produto = TipoProduto.carregar_tipos_produto()    
+    combo_tipo_produto = ttk.Combobox(cadastro_janela, values=tipos_produto)
+    combo_tipo_produto.current(0)
+    combo_tipo_produto.grid(row=3, column=1, padx=10, pady=5, sticky="w")
+
+    txt_fabricante = tk.Entry(cadastro_janela)
+    txt_fabricante.grid(row=4, column=1, padx=10, pady=5, sticky="w")
+    
+    txt_marca = tk.Entry(cadastro_janela)
+    txt_marca.grid(row=5, column=1, padx=10, pady=5, sticky="w")
+
+    txt_cor = tk.Entry(cadastro_janela)
+    txt_cor.grid(row=6, column=1, padx=10, pady=5, sticky="w")
+
+    lista_fornecedores = Fornecedor.carregar_fornecedores_combo()
+    combo_fornecedor = ttk.Combobox(cadastro_janela, values=lista_fornecedores)
+    combo_fornecedor.current(0)
+    combo_fornecedor.grid(row=7, column=1, padx=10, pady=5, sticky="w")
+
+    txt_data_cadastro = tk.Entry(cadastro_janela)
+    txt_data_cadastro.grid(row=8, column=1, padx=10, pady=5, sticky="w")
+    txt_data_cadastro.insert(0, datetime.now().strftime("%d/%m/%Y"))
+    
+    def salvar_produto():
+        id = int(txt_id.get())
+        print(id)
+        nome = txt_nome.get()
+        print(nome)
+        preco_custo = float(txt_preco_custo.get())
+        print(preco_custo)
+        tipo_produto = combo_tipo_produto.get()
+        print(tipo_produto)
+        tipo_produto_id = TipoProduto.localiza_tipo_produto(tipo_produto)
+        print(tipo_produto)
+        fabricante = txt_fabricante.get()
+        marca = txt_marca.get()
+        cor = txt_cor.get()
+        fornecedor = Produto.localiza_id_fornecedor(combo_fornecedor.get())
+        data_cadastro = txt_data_cadastro.get()
+
+        
+        produto = Produto(id, nome, preco_custo, tipo_produto_id, fabricante, marca, cor, fornecedor, data_cadastro)
+        produto.salvar_no_banco()        
+
+        messagebox.showinfo("Cadastro", "Fornecedor inserido com sucesso.")
+
+    
+    tk.Button(cadastro_janela, text="Salvar", command=salvar_produto).grid(row=10, columnspan=2, pady=10)
+
+    
+    columns = ("ID", "Nome Produto", "Preço Custo", "Tipo", "Fabricante", "Marca", "Cor", "Fornecedor", "Data de Cadastro")
+    treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
+    treeview.heading("ID", text="ID")
+    treeview.heading("Nome Produto", text="Nome Produto")
+    treeview.heading("Preço Custo", text="Preço Custo")
+    treeview.heading("Tipo", text="Tipo")
+    treeview.heading("Fabricante", text="Fabricante")
+    treeview.heading("Marca", text="Marca")
+    treeview.heading("Cor", text="Cor")
+    treeview.heading("Fornecedor", text="Fornecedor")
+    treeview.heading("Data de Cadastro", text="Data de Cadastro")
+    treeview.grid(row=9, column=0,columnspan=2, padx=10, pady=10)
+
+    treeview.column("ID",width=30)
+    treeview.column("Preço Custo",width=30)
+    treeview.column("Cor",width=30)
+    treeview.column("Marca",width=50)
+
+    #def carregar_produtos():
+        # Limpa a Treeview antes de carregar os dados
+        #for item in treeview.get_children():
+           # treeview.delete(item)
+
+        # Conectando ao banco de dados e recuperando os dados
+       # conexao = conectar()
+        #cursor = conexao.cursor()
+        #cursor.execute("SELECT * FROM TB_PRODUTO")
+        #produtos = cursor.fetchall()
+
+        # Adicionando os dados na Treeview
+        #for produto in produtos:
+           # treeview.insert("", "end", values=produto)
+        
+        #conexao.close()
+    
+    # Carregar clientes ao abrir a janela
+    #carregar_produtos()
+
+######################################################################################
+
+
+
 
 # Funções dos botões da tela principal
-def cadastrar_produto():
-    print("Cadastrar Produto")
+#def cadastrar_produto():
+    #print("Cadastrar Produto")
+
 
 def cadastrar_venda():
     print("Cadastrar Venda")
@@ -164,8 +363,13 @@ menu_cliente = tk.Menu(menu_barra,tearoff=0)
 menu_cliente.add_command(label="Cadastro",command=cadastrar_cliente)
 menu_barra.add_cascade(label="Cliente",menu=menu_cliente)
 
+menu_fornecedor = tk.Menu(menu_barra,tearoff=0)
+menu_fornecedor.add_command(label="Cadastro",command=cadastrar_fornecedor)
+menu_barra.add_cascade(label="Fornecedor",menu=menu_fornecedor)
+
+
 menu_produto = tk.Menu(menu_barra,tearoff=0)
-menu_produto.add_command(label="Cadastro")
+menu_produto.add_command(label="Cadastro", command=cadastrar_produto)
 menu_produto.add_command(label="Tipo de Produto", command=cadastrar_tipo_produto)
 menu_produto.add_separator()
 menu_barra.add_cascade(label="Produto",menu=menu_produto)
