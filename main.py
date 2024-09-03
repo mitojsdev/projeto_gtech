@@ -359,7 +359,7 @@ def cadastrar_venda():
     tk.Label(cadastro_janela, text="Quantidade").grid(row=4, column=0, padx=10, pady=5, sticky="e")
     tk.Label(cadastro_janela, text="Preço Venda").grid(row=5, column=0, padx=10, pady=5, sticky="e")
     tk.Label(cadastro_janela, text="Lucro").grid(row=6, column=0, padx=10, pady=5, sticky="e")
-    
+    tk.Label(cadastro_janela, text="Preço sugerido: ").grid(row=5, column=2, padx=10, pady=5, sticky="e")
     
     txt_data_venda = tk.Entry(cadastro_janela)
     txt_data_venda.grid(row=0, column=1, padx=10, pady=5, sticky="w")
