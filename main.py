@@ -6,9 +6,11 @@ from modelos import Cliente  # Importando a Classe Cliente
 from modelos import TipoProduto
 from modelos import Fornecedor
 from modelos import Produto
+from modelos import Venda
 from conexao import conectar
 from tkinter import PhotoImage
-from funcoes import localiza_tipo_produto, localiza_id_fornecedor
+#from funcoes import localiza_tipo_produto, localiza_id_fornecedor, localiza_cliente_id, localiza_produto_id
+import funcoes as fct
 import os
 
 # Função para abrir a tela de cadastro de cliente
@@ -278,7 +280,7 @@ def cadastrar_produto():
         preco_custo = float(txt_preco_custo.get())
         print(preco_custo)
         tipo_produto = combo_tipo_produto.get()        
-        tipo_produto_id = localiza_tipo_produto(tipo_produto)
+        tipo_produto_id = fct.localiza_produto_idlocaliza_tipo_produto(tipo_produto)
         print(tipo_produto_id)
         print(type(tipo_produto_id))
         fabricante = txt_fabricante.get()
@@ -287,7 +289,7 @@ def cadastrar_produto():
         print(marca)
         cor = txt_cor.get()
         print(cor)
-        fornecedor = localiza_id_fornecedor(combo_fornecedor.get())
+        fornecedor = fct.localiza_id_fornecedor(combo_fornecedor.get())
         print(fornecedor)
         data_cadastro = txt_data_cadastro.get()
         print(data_cadastro)
@@ -342,16 +344,107 @@ def cadastrar_produto():
 
 ######################################################################################
 
-
-
-
-# Funções dos botões da tela principal
-#def cadastrar_produto():
-    #print("Cadastrar Produto")
-
-
+######################################################################################
+#função para cadastrar vendas
 def cadastrar_venda():
-    print("Cadastrar Venda")
+    
+    cadastro_janela = tk.Toplevel(root)
+    cadastro_janela.title("Cadastro de Venda")
+    cadastro_janela.geometry("1200x650")
+
+    tk.Label(cadastro_janela, text="Data Venda").grid(row=0, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="ID").grid(row=1, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="Cliente").grid(row=2, column=0, padx=10, pady=5, sticky="e")    
+    tk.Label(cadastro_janela, text="Produto").grid(row=3, column=0, padx=10, pady=5, sticky="e") 
+    tk.Label(cadastro_janela, text="Quantidade").grid(row=4, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="Preço Venda").grid(row=5, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="Lucro").grid(row=6, column=0, padx=10, pady=5, sticky="e")
+    
+    
+    txt_data_venda = tk.Entry(cadastro_janela)
+    txt_data_venda.grid(row=0, column=1, padx=10, pady=5, sticky="w")
+    txt_data_venda.insert(0, datetime.now().strftime("%d/%m/%Y"))
+
+    txt_id = tk.Entry(cadastro_janela)
+    txt_id.grid(row=1, column=1, padx=9, pady=0, sticky="w")
+
+    lista_clientes = Cliente.carregar_clientes_combo()
+    combo_cliente = ttk.Combobox(cadastro_janela, values=lista_clientes)
+    combo_cliente.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+
+    lista_produtos = Produto.carregar_produtos_combo()
+    combo_produto = ttk.Combobox(cadastro_janela, values=lista_produtos)
+    combo_produto.grid(row=3, column=1, padx=10, pady=5, sticky="w")
+
+    lista_quantidade = ['1','2','3','4','5','6','7','8','9','10']
+    txt_quantidade = ttk.Combobox(cadastro_janela, values=lista_quantidade)    
+    txt_quantidade.grid(row=4, column=1, padx=10, pady=5, sticky="w")
+
+    txt_preco_venda = tk.Entry(cadastro_janela)
+    txt_preco_venda.grid(row=5, column=1, padx=10, pady=5, sticky="w")
+    
+    txt_lucro = tk.Entry(cadastro_janela)
+    txt_lucro.grid(row=6, column=1, padx=10, pady=5, sticky="w")
+    
+    
+    def salvar_venda():
+        id = int(txt_id.get())
+        cliente_id = fct.localiza_cliente_id(combo_cliente.get())
+        produto_id = fct.localiza_produto_id(combo_produto.get())        
+        quantidade = int(txt_quantidade.get())
+        preco_venda= float(txt_preco_venda.get())
+        lucro = float(txt_lucro.get())
+        data_venda = txt_data_venda.get()        
+        
+        venda = Venda(id, data_venda, cliente_id, produto_id, quantidade, preco_venda, lucro)
+        venda.salvar_venda()        
+
+        messagebox.showinfo("Cadastro", "A venda foi cadastrada.")
+
+    
+    tk.Button(cadastro_janela, text="Salvar", command=salvar_venda).grid(row=7, columnspan=2, pady=10)
+
+    
+    #columns = ("ID", "Nome Produto", "Preço Custo", "Tipo", "Fabricante", "Marca", "Cor", "Fornecedor", "Data de Cadastro")
+    #treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
+    #treeview.heading("ID", text="ID")
+    #treeview.heading("Nome Produto", text="Nome Produto")
+    #treeview.heading("Preço Custo", text="Preço Custo")
+    #treeview.heading("Tipo", text="Tipo")
+    #treeview.heading("Fabricante", text="Fabricante")
+    #treeview.heading("Marca", text="Marca")
+    #treeview.heading("Cor", text="Cor")
+    #treeview.heading("Fornecedor", text="Fornecedor")
+    #treeview.heading("Data de Cadastro", text="Data de Cadastro")
+    #treeview.grid(row=9, column=0,columnspan=2, padx=10, pady=10)
+
+    #treeview.column("ID",width=30)
+    #treeview.column("Preço Custo",width=30)
+    #treeview.column("Cor",width=30)
+    #treeview.column("Marca",width=50)
+
+    #def carregar_produtos():
+        # Limpa a Treeview antes de carregar os dados
+        #for item in treeview.get_children():
+         #   treeview.delete(item)
+
+        # Conectando ao banco de dados e recuperando os dados
+        #conexao = conectar()
+        #cursor = conexao.cursor()
+        #cursor.execute("SELECT * FROM TB_PRODUTO_NEW")
+        #produtos = cursor.fetchall()
+
+        # Adicionando os dados na Treeview
+        #for produto in produtos:
+         #   treeview.insert("", "end", values=produto)
+        
+        #conexao.close()
+    
+    # Carregar clientes ao abrir a janela
+    #carregar_produtos()
+
+######################################################################################
+
 
 # Criação da janela principal
 root = tk.Tk()
@@ -381,7 +474,7 @@ menu_produto.add_separator()
 menu_barra.add_cascade(label="Produto",menu=menu_produto)
 
 menu_venda = tk.Menu(menu_barra,tearoff=0)
-menu_venda.add_command(label="Cadastro")
+menu_venda.add_command(label="Cadastro", command=cadastrar_venda)
 menu_barra.add_cascade(label="Venda", menu=menu_venda)
 
 root.config(menu=menu_barra)

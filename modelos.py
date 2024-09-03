@@ -30,7 +30,17 @@ class Cliente:
             if conexao:
                 cursor.close()                
                 conexao.close()
-            
+
+    def carregar_clientes_combo():
+        # Conectando ao banco de dados e recuperando os dados
+        conexao = conectar()
+        cursor = conexao.cursor()
+        cursor.execute("SELECT NOME FROM TB_CLIENTE")
+        lista_cli = [row [0] for row in cursor.fetchall()]
+        print(lista_cli)
+        conexao.close()
+
+        return lista_cli        
 
 
 class TipoProduto:
@@ -158,6 +168,18 @@ class Produto:
                 conexao.close()  
         
 
+    def carregar_produtos_combo():
+        # Conectando ao banco de dados e recuperando os dados
+        conexao = conectar()
+        cursor = conexao.cursor()
+        cursor.execute("SELECT NOME FROM TB_PRODUTO_NEW")
+        lista_produtos = [row [0] for row in cursor.fetchall()]
+        print(lista_produtos)
+        conexao.close()
+
+        return lista_produtos
+
+
 class Venda:
     def __init__(self, id_venda, data_venda, id_cliente, id_produto, quantidade, preco_venda, lucro):
         self.id_venda = id_venda
@@ -167,3 +189,27 @@ class Venda:
         self.quantidade = quantidade
         self.preco_venda = preco_venda
         self.lucro = lucro
+
+    def salvar_venda(self):
+      # Conectando ao banco de dados SQLite
+        conexao = conectar()         
+        try:        
+            cursor = conexao.cursor()
+
+            # Inserindo os dados do cliente no banco
+            cursor.execute('''
+                INSERT INTO TB_VENDA(ID, DATA, ID_CLIENTE, ID_PRODUTO, QUANTIDADE, PRECO_VENDA, LUCRO)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (self.id_venda, self.data_venda, self.id_cliente, self.id_produto, self.quantidade, self.preco_venda, self.lucro))
+
+            conexao.commit()
+
+        except Exception as e:
+            print(f'Não foi possível completar a operação.Erro: {e}')
+
+        finally:
+            # Salvando (commit) as mudanças e fechando a conexão
+            if conexao:
+                cursor.close()                
+                conexao.close()  
+    
