@@ -89,6 +89,6 @@ def calcular_preco_sugerido(nome_produto, nome_fornecedor):
     else:
         print("erro ao buscar ID_PRODUTO")
 
-    return texto
+    
 
           
