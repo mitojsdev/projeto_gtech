@@ -395,13 +395,24 @@ def cadastrar_venda():
     def salvar_venda():
         id = int(txt_id.get())
         cliente_id = fct.localiza_cliente_id(combo_cliente.get())
-        produto_id = fct.localiza_produto_id(combo_produto.get())        
+        produto_selecionado = combo_produto.get()
+        partes = produto_selecionado.split('/')
+        nome_produto = partes[0]
+        nome_fornecedor = partes[-1]
+        produto_id = fct.localiza_produto_id(nome_produto,nome_fornecedor)        
         quantidade = int(txt_quantidade.get())
-        preco_venda= float(txt_preco_venda.get())
-        #lucro = float(txt_lucro.get())        
-        data_venda = txt_data_venda.get()        
+        preco_venda= txt_preco_venda.get()        
+        data_venda = txt_data_venda.get()
+        lucro = txt_lucro.get()        
         
         venda = Venda(id, data_venda, cliente_id, produto_id, quantidade, preco_venda, lucro)
+        print(id)
+        print(data_venda)
+        print(cliente_id)
+        print(produto_id)
+        print(quantidade)
+        print(preco_venda)
+        print(lucro)
         venda.salvar_venda()        
 
         messagebox.showinfo("Cadastro", "A venda foi cadastrada.")

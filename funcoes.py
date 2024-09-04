@@ -49,7 +49,7 @@ def localiza_cliente_id(nome):
 
 
 
-def localiza_produto_id(nome_produto, nome_fornecedor, contexto):    
+def localiza_produto_id(nome_produto, nome_fornecedor):    
     conexao = conectar()
     cursor = conexao.cursor()
 
