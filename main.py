@@ -11,6 +11,7 @@ from modelos import Venda
 from conexao import conectar
 from tkinter import PhotoImage
 #from funcoes import localiza_tipo_produto, localiza_id_fornecedor, localiza_cliente_id, localiza_produto_id
+valor_sugerido = 0
 
 import os
 
@@ -361,10 +362,9 @@ def cadastrar_venda():
     tk.Label(cadastro_janela, text="Produto").grid(row=3, column=0, padx=10, pady=5, sticky="e") 
     tk.Label(cadastro_janela, text="Quantidade").grid(row=4, column=0, padx=10, pady=5, sticky="e")
     tk.Label(cadastro_janela, text="Preço Venda").grid(row=5, column=0, padx=10, pady=5, sticky="e")
-    tk.Label(cadastro_janela, text="Lucro").grid(row=6, column=0, padx=10, pady=5, sticky="e")     
-    global lbl_preco_sugerido
-    lbl_preco_sugerido = tk.Label(cadastro_janela, text="Preço sugerido: ").grid(row=5, column=2, padx=10, pady=5, sticky="e")
-    
+    tk.Label(cadastro_janela, text="Lucro").grid(row=6, column=0, padx=10, pady=5, sticky="e")         
+    lbl_preco_sugerido = tk.Label(cadastro_janela, text="Preço sugerido: ")
+    lbl_preco_sugerido.grid(row=5, column=2, padx=10, pady=5, sticky="e")
     txt_data_venda = tk.Entry(cadastro_janela)
     txt_data_venda.grid(row=0, column=1, padx=10, pady=5, sticky="w")
     txt_data_venda.insert(0, datetime.now().strftime("%d/%m/%Y"))
@@ -391,13 +391,14 @@ def cadastrar_venda():
     txt_lucro.grid(row=6, column=1, padx=10, pady=5, sticky="w")
     
     
+    
     def salvar_venda():
         id = int(txt_id.get())
         cliente_id = fct.localiza_cliente_id(combo_cliente.get())
         produto_id = fct.localiza_produto_id(combo_produto.get())        
         quantidade = int(txt_quantidade.get())
         preco_venda= float(txt_preco_venda.get())
-        lucro = float(txt_lucro.get())
+        #lucro = float(txt_lucro.get())        
         data_venda = txt_data_venda.get()        
         
         venda = Venda(id, data_venda, cliente_id, produto_id, quantidade, preco_venda, lucro)
@@ -409,7 +410,28 @@ def cadastrar_venda():
 
     tk.Button(cadastro_janela, text="Salvar", command=salvar_venda).grid(row=7, columnspan=2, pady=10)
 
-    combo_produto.bind("<<ComboboxSelected>>", fct.calcular_preco_sugerido)
+    def ao_selecionar_combo_produto(event):
+        produto_selecionado = combo_produto.get()
+        partes = produto_selecionado.split('/')
+        nome_produto = partes[0]
+        nome_fornecedor = partes[-1]
+        valor_sugerido = fct.calcular_preco_sugerido(nome_produto,nome_fornecedor)
+        lbl_preco_sugerido.config(text=f'Preço sugerido: {valor_sugerido}')
+
+    def ao_sair_preco_venda(event):
+        preco_venda = float(txt_preco_venda.get())
+        str_preco_sugerido = lbl_preco_sugerido.cget('text')
+        partes = str_preco_sugerido.split(':')
+        valor_sugerido = float(partes[-1])
+        if preco_venda > 0 and valor_sugerido > 0:
+            lucro = preco_venda - (valor_sugerido - 100)
+            txt_lucro.delete(0, tk.END)
+            txt_lucro.insert(0,round(lucro,2))
+        else:
+            txt_lucro.insert(0,'falhou')
+
+    combo_produto.bind("<<ComboboxSelected>>", ao_selecionar_combo_produto)
+    txt_preco_venda.bind("<FocusOut>", ao_sair_preco_venda)
    
     #columns = ("ID", "Nome Produto", "Preço Custo", "Tipo", "Fabricante", "Marca", "Cor", "Fornecedor", "Data de Cadastro")
     #treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")

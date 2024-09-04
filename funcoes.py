@@ -1,5 +1,5 @@
 from conexao import conectar
-from main import lbl_preco_sugerido
+
 
 def localiza_tipo_produto(descricao):        
         conexao = conectar()
@@ -49,14 +49,18 @@ def localiza_cliente_id(nome):
 
 
 
-def localiza_produto_id(nome_produto):
+def localiza_produto_id(nome_produto, nome_fornecedor, contexto):    
     conexao = conectar()
     cursor = conexao.cursor()
-    cursor.execute("SELECT ID_PRODUTO FROM TB_PRODUTO_NEW WHERE NOME = ?", (nome_produto,))
+
+    cursor.execute('''select a.id_produto from TB_PRODUTO_NEW a
+            join TB_FORNECEDOR b on a.ID_FORNECEDOR = b.ID_FORNECEDOR
+            where a.NOME = ? and b.NOME_EMPRESA = ?''', (nome_produto, nome_fornecedor,))
         
     resultado = cursor.fetchone()
-        
+    
     conexao.close()
+
     if resultado:
         id = resultado[0]
         return id
@@ -64,8 +68,27 @@ def localiza_produto_id(nome_produto):
     else:
         print("erro ao buscar ID_PRODUTO")
 
-def calcular_preco_sugerido(event):
-     
 
-     lbl_preco_sugerido.config(text='Modificado')
+
+def calcular_preco_sugerido(nome_produto, nome_fornecedor):     
+    conexao = conectar()
+    cursor = conexao.cursor()
+
+    cursor.execute('''select a.preco_custo +100 from TB_PRODUTO_NEW a
+            join TB_FORNECEDOR b on a.ID_FORNECEDOR = b.ID_FORNECEDOR
+            where a.NOME = ? and b.NOME_EMPRESA = ?''', (nome_produto, nome_fornecedor,))
+        
+    resultado = cursor.fetchone()
+    
+    conexao.close()
+
+    if resultado:
+        valor = resultado[0]
+        return valor
+
+    else:
+        print("erro ao buscar ID_PRODUTO")
+
+    return texto
+
           
