@@ -364,11 +364,11 @@ def cadastrar_venda():
     tk.Label(cadastro_janela, text="Preço Venda").grid(row=5, column=0, padx=10, pady=5, sticky="e")
     tk.Label(cadastro_janela, text="Lucro").grid(row=6, column=0, padx=10, pady=5, sticky="e")         
     lbl_preco_sugerido = tk.Label(cadastro_janela, text="Preço sugerido: ")
-    lbl_preco_sugerido.grid(row=5, column=2, padx=10, pady=5, sticky="e")
+    lbl_preco_sugerido.grid(row=5, column=1, padx=0, pady=5, sticky="e")
+
     txt_data_venda = tk.Entry(cadastro_janela)
     txt_data_venda.grid(row=0, column=1, padx=10, pady=5, sticky="w")
     txt_data_venda.insert(0, datetime.now().strftime("%d/%m/%Y"))
-
     txt_id = tk.Entry(cadastro_janela)
     txt_id.grid(row=1, column=1, padx=9, pady=0, sticky="w")
 
@@ -406,13 +406,7 @@ def cadastrar_venda():
         lucro = txt_lucro.get()        
         
         venda = Venda(id, data_venda, cliente_id, produto_id, quantidade, preco_venda, lucro)
-        print(id)
-        print(data_venda)
-        print(cliente_id)
-        print(produto_id)
-        print(quantidade)
-        print(preco_venda)
-        print(lucro)
+        
         venda.salvar_venda()        
 
         messagebox.showinfo("Cadastro", "A venda foi cadastrada.")
@@ -431,11 +425,12 @@ def cadastrar_venda():
 
     def ao_sair_preco_venda(event):
         preco_venda = float(txt_preco_venda.get())
+        quantidade = txt_quantidade.get()
         str_preco_sugerido = lbl_preco_sugerido.cget('text')
         partes = str_preco_sugerido.split(':')
         valor_sugerido = float(partes[-1])
         if preco_venda > 0 and valor_sugerido > 0:
-            lucro = preco_venda - (valor_sugerido - 100)
+            lucro = (preco_venda - (valor_sugerido - 100)) * quantidade
             txt_lucro.delete(0, tk.END)
             txt_lucro.insert(0,round(lucro,2))
         else:
@@ -443,44 +438,49 @@ def cadastrar_venda():
 
     combo_produto.bind("<<ComboboxSelected>>", ao_selecionar_combo_produto)
     txt_preco_venda.bind("<FocusOut>", ao_sair_preco_venda)
-   
-    #columns = ("ID", "Nome Produto", "Preço Custo", "Tipo", "Fabricante", "Marca", "Cor", "Fornecedor", "Data de Cadastro")
-    #treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
-    #treeview.heading("ID", text="ID")
-    #treeview.heading("Nome Produto", text="Nome Produto")
-    #treeview.heading("Preço Custo", text="Preço Custo")
-    #treeview.heading("Tipo", text="Tipo")
-    #treeview.heading("Fabricante", text="Fabricante")
-    #treeview.heading("Marca", text="Marca")
-    #treeview.heading("Cor", text="Cor")
-    #treeview.heading("Fornecedor", text="Fornecedor")
-    #treeview.heading("Data de Cadastro", text="Data de Cadastro")
-    #treeview.grid(row=9, column=0,columnspan=2, padx=10, pady=10)
+    
+    columns = ("ID", "Data", "Cliente", "Produto", "Fornecedor", "Quantidade", "Preço Venda", "Lucro")
+    treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
+    treeview.heading("ID", text="ID")
+    treeview.heading("Data", text="Data")
+    treeview.heading("Cliente", text="Cliente")
+    treeview.heading("Produto", text="Produto")
+    treeview.heading("Fornecedor", text="Fornecedor")
+    treeview.heading("Quantidade", text="Quantidade")
+    treeview.heading("Preço Venda", text="Preço Venda")
+    treeview.heading("Lucro", text="Lucro")    
+    treeview.grid(row=7, column=0,columnspan=3, padx=10, pady=10)
 
-    #treeview.column("ID",width=30)
-    #treeview.column("Preço Custo",width=30)
+    treeview.column("ID",width=30)
+    treeview.column("Preço Venda",width=80)
+    treeview.column("Lucro",width=80)
+    treeview.column("Quantidade",width=30)
     #treeview.column("Cor",width=30)
     #treeview.column("Marca",width=50)
 
-    #def carregar_produtos():
+    def carregar_vendas():
         # Limpa a Treeview antes de carregar os dados
-        #for item in treeview.get_children():
-         #   treeview.delete(item)
+        for item in treeview.get_children():
+            treeview.delete(item)
 
         # Conectando ao banco de dados e recuperando os dados
-        #conexao = conectar()
-        #cursor = conexao.cursor()
-        #cursor.execute("SELECT * FROM TB_PRODUTO_NEW")
-        #produtos = cursor.fetchall()
+        conexao = conectar()
+        cursor = conexao.cursor()
+        cursor.execute('''select a.id, a.DATA, b.NOME, c.NOME, d.NOME_EMPRESA, a.QUANTIDADE, a.PRECO_VENDA, a.LUCRO
+                        from TB_VENDA a
+                        join TB_CLIENTE b on a.ID_CLIENTE = b.ID_CLIENTE
+                        join TB_PRODUTO_NEW c on a.ID_PRODUTO = c.ID_PRODUTO
+                        join TB_FORNECEDOR d on c.ID_FORNECEDOR = d.ID_FORNECEDOR;''')
+        vendas = cursor.fetchall()
 
         # Adicionando os dados na Treeview
-        #for produto in produtos:
-         #   treeview.insert("", "end", values=produto)
+        for venda in vendas:
+            treeview.insert("", "end", values=venda)
         
-        #conexao.close()
+        conexao.close()
     
     # Carregar clientes ao abrir a janela
-    #carregar_produtos()
+    carregar_vendas()
 
 ######################################################################################
 
