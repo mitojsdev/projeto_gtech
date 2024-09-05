@@ -362,7 +362,9 @@ def cadastrar_venda():
     tk.Label(cadastro_janela, text="Produto").grid(row=3, column=0, padx=10, pady=5, sticky="e") 
     tk.Label(cadastro_janela, text="Quantidade").grid(row=4, column=0, padx=10, pady=5, sticky="e")
     tk.Label(cadastro_janela, text="Preço Venda").grid(row=5, column=0, padx=10, pady=5, sticky="e")
-    tk.Label(cadastro_janela, text="Lucro").grid(row=6, column=0, padx=10, pady=5, sticky="e")         
+    tk.Label(cadastro_janela, text="Lucro").grid(row=6, column=0, padx=10, pady=5, sticky="e")
+    lbl_filtrar =tk.Label(cadastro_janela, text="Filtrar")
+    lbl_filtrar.grid(row=7, column=2, padx=0, pady=5, sticky="e")                  
     lbl_preco_sugerido = tk.Label(cadastro_janela, text="Preço sugerido: ")
     lbl_preco_sugerido.grid(row=5, column=1, padx=0, pady=5, sticky="e")
 
@@ -390,6 +392,8 @@ def cadastrar_venda():
     txt_lucro = tk.Entry(cadastro_janela)
     txt_lucro.grid(row=6, column=1, padx=10, pady=5, sticky="w")
     
+    txt_pesquisa = tk.Entry(cadastro_janela, width=30)
+    txt_pesquisa.grid(row=7, column=3, padx=10, pady=5, sticky="w")
     
     
     def salvar_venda(operacao):
