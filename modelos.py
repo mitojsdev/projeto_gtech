@@ -214,3 +214,25 @@ class Venda:
                 cursor.close()                
                 conexao.close()  
     
+    def excluir_venda(self):
+      # Conectando ao banco de dados SQLite
+        conexao = conectar()         
+        try:        
+            cursor = conexao.cursor()
+
+            # Excluindo os dados do cliente no banco
+            cursor.execute('''
+                DELETE FROM TB_VENDA 
+                WHERE ID = ?
+            ''', (self.id_venda,))
+
+            conexao.commit()
+
+        except Exception as e:
+            print(f'Não foi possível completar a operação.Erro: {e}')
+
+        finally:
+            # Salvando (commit) as mudanças e fechando a conexão
+            if conexao:
+                cursor.close()                
+                conexao.close()  

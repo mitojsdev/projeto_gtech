@@ -354,7 +354,7 @@ def cadastrar_venda():
     
     cadastro_janela = tk.Toplevel(root)
     cadastro_janela.title("Cadastro de Venda")
-    cadastro_janela.geometry("1200x650")
+    cadastro_janela.geometry("900x650")
 
     tk.Label(cadastro_janela, text="Data Venda").grid(row=0, column=0, padx=10, pady=5, sticky="e")
     tk.Label(cadastro_janela, text="ID").grid(row=1, column=0, padx=10, pady=5, sticky="e")
@@ -392,7 +392,7 @@ def cadastrar_venda():
     
     
     
-    def salvar_venda():
+    def salvar_venda(operacao):
         id = int(txt_id.get())
         cliente_id = fct.localiza_cliente_id(combo_cliente.get())
         produto_selecionado = combo_produto.get()
@@ -407,13 +407,22 @@ def cadastrar_venda():
         
         venda = Venda(id, data_venda, cliente_id, produto_id, quantidade, preco_venda, lucro)
         
-        venda.salvar_venda()        
+        if operacao == 'I':
+            venda.salvar_venda()        
 
-        messagebox.showinfo("Cadastro", "A venda foi cadastrada.")
-
+            messagebox.showinfo("Cadastro", "A venda foi cadastrada.")
+        else:
+            if operacao == 'E':
+                if id > 0:
+                    venda.excluir_venda()                    
+                    messagebox.showinfo("Cadastro", "A venda foi cadastrada.")
+                else:
+                    messagebox.showwarning("Cadastro", "Você deve informar um ID válido.")
     
 
-    tk.Button(cadastro_janela, text="Salvar", command=salvar_venda).grid(row=7, columnspan=2, pady=10)
+    tk.Button(cadastro_janela, text="Incluir", command=lambda:salvar_venda('I')).grid(row=7, columnspan=2, pady=10)
+    tk.Button(cadastro_janela, text="Alterar", command=lambda:salvar_venda('I')).grid(row=7, columnspan=3, pady=10)
+    tk.Button(cadastro_janela, text="Excluir", command=lambda:salvar_venda('E')).grid(row=7, columnspan=4, pady=10)
 
     def ao_selecionar_combo_produto(event):
         produto_selecionado = combo_produto.get()
@@ -430,7 +439,7 @@ def cadastrar_venda():
         partes = str_preco_sugerido.split(':')
         valor_sugerido = float(partes[-1])
         if preco_venda > 0 and valor_sugerido > 0:
-            lucro = (preco_venda - (valor_sugerido - 100)) * quantidade
+            lucro = (preco_venda - (valor_sugerido - 100)) * float(quantidade)
             txt_lucro.delete(0, tk.END)
             txt_lucro.insert(0,round(lucro,2))
         else:
@@ -439,17 +448,17 @@ def cadastrar_venda():
     combo_produto.bind("<<ComboboxSelected>>", ao_selecionar_combo_produto)
     txt_preco_venda.bind("<FocusOut>", ao_sair_preco_venda)
     
-    columns = ("ID", "Data", "Cliente", "Produto", "Fornecedor", "Quantidade", "Preço Venda", "Lucro")
+    
+    columns = ("ID", "Data", "Cliente", "Produto", "Quantidade", "Preço Venda", "Lucro")
     treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
     treeview.heading("ID", text="ID")
     treeview.heading("Data", text="Data")
     treeview.heading("Cliente", text="Cliente")
-    treeview.heading("Produto", text="Produto")
-    treeview.heading("Fornecedor", text="Fornecedor")
+    treeview.heading("Produto", text="Produto")   
     treeview.heading("Quantidade", text="Quantidade")
     treeview.heading("Preço Venda", text="Preço Venda")
     treeview.heading("Lucro", text="Lucro")    
-    treeview.grid(row=7, column=0,columnspan=3, padx=10, pady=10)
+    treeview.grid(row=8, column=0,columnspan=4, padx=10, pady=10)
 
     treeview.column("ID",width=30)
     treeview.column("Preço Venda",width=80)
@@ -457,6 +466,7 @@ def cadastrar_venda():
     treeview.column("Quantidade",width=30)
     #treeview.column("Cor",width=30)
     #treeview.column("Marca",width=50)
+    
 
     def carregar_vendas():
         # Limpa a Treeview antes de carregar os dados
@@ -466,7 +476,7 @@ def cadastrar_venda():
         # Conectando ao banco de dados e recuperando os dados
         conexao = conectar()
         cursor = conexao.cursor()
-        cursor.execute('''select a.id, a.DATA, b.NOME, c.NOME, d.NOME_EMPRESA, a.QUANTIDADE, a.PRECO_VENDA, a.LUCRO
+        cursor.execute('''select a.id, a.DATA, b.NOME, c.NOME || '/' || c.MARCA || '/'|| d.NOME_EMPRESA as Produto, a.QUANTIDADE, a.PRECO_VENDA, a.LUCRO
                         from TB_VENDA a
                         join TB_CLIENTE b on a.ID_CLIENTE = b.ID_CLIENTE
                         join TB_PRODUTO_NEW c on a.ID_PRODUTO = c.ID_PRODUTO
@@ -484,7 +494,37 @@ def cadastrar_venda():
 
 ######################################################################################
 
-    
+######################################################################################
+#lidar com prenchimento caixas após clique na treeview
+    def ao_clicar_treeview(event):
+        item_selecionado = treeview.selection()
+
+        if item_selecionado:
+            item = treeview.item(item_selecionado, 'values')
+            print(item)
+            txt_id.delete(0,tk.END)
+            txt_id.insert(0,item[0])
+
+            txt_data_venda.delete(0,tk.END)
+            txt_data_venda.insert(0,item[1])
+
+            combo_cliente.set(item[2])
+
+            combo_produto.set(item[3])
+
+            txt_quantidade.set(item[4])
+
+            txt_preco_venda.delete(0,tk.END)
+            txt_preco_venda.insert(0,item[5])
+
+            txt_lucro.delete(0,tk.END)
+            txt_lucro.insert(0,item[6])
+            
+            ao_selecionar_combo_produto(event="<<ComboboxSelected>>")
+
+######################################################################################    
+    treeview.bind("<ButtonRelease-1>", ao_clicar_treeview)
+
 # Criação da janela principal
 root = tk.Tk()
 root.title("GTECH IMPORTS")
