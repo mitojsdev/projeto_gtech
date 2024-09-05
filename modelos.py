@@ -235,4 +235,31 @@ class Venda:
             # Salvando (commit) as mudanças e fechando a conexão
             if conexao:
                 cursor.close()                
-                conexao.close()  
+                conexao.close()
+    
+    def alterar_venda(self):
+        conexao = conectar()         
+        try:        
+            cursor = conexao.cursor()
+
+            # Excluindo os dados do cliente no banco
+            cursor.execute('''
+                UPDATE TB_VENDA 
+                SET ID_CLIENTE = ?,
+                    ID_PRODUTO = ?,
+                    QUANTIDADE = ?,
+                    PRECO_VENDA = ?,
+                    LUCRO = ?
+                    WHERE ID = ?
+            ''', (self.id_cliente,self.id_produto, self.quantidade, self.preco_venda, self.lucro, self.id_venda))
+
+            conexao.commit()
+
+        except Exception as e:
+            print(f'Não foi possível completar a operação.Erro: {e}')
+
+        finally:
+            # Salvando (commit) as mudanças e fechando a conexão
+            if conexao:
+                cursor.close()                
+                conexao.close()

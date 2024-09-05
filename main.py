@@ -415,17 +415,15 @@ def cadastrar_venda():
             venda.salvar_venda()        
 
             messagebox.showinfo("Cadastro", "A venda foi cadastrada.")
+        elif operacao == 'E':            
+            venda.excluir_venda()                    
+            messagebox.showinfo("Cadastro", "A venda foi cadastrada.")
         else:
-            if operacao == 'E':
-                if id > 0:
-                    venda.excluir_venda()                    
-                    messagebox.showinfo("Cadastro", "A venda foi cadastrada.")
-                else:
-                    messagebox.showwarning("Cadastro", "Você deve informar um ID válido.")
+            venda.alterar_venda()
     
 
     tk.Button(cadastro_janela, text="Incluir", command=lambda:salvar_venda('I')).grid(row=7, columnspan=2, pady=10)
-    tk.Button(cadastro_janela, text="Alterar", command=lambda:salvar_venda('I')).grid(row=7, columnspan=3, pady=10)
+    tk.Button(cadastro_janela, text="Alterar", command=lambda:salvar_venda('A')).grid(row=7, columnspan=3, pady=10)
     tk.Button(cadastro_janela, text="Excluir", command=lambda:salvar_venda('E')).grid(row=7, columnspan=4, pady=10)
 
     def ao_selecionar_combo_produto(event):
