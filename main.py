@@ -364,7 +364,9 @@ def cadastrar_venda():
     tk.Label(cadastro_janela, text="Preço Venda").grid(row=5, column=0, padx=10, pady=5, sticky="e")
     tk.Label(cadastro_janela, text="Lucro").grid(row=6, column=0, padx=10, pady=5, sticky="e")
     lbl_filtrar =tk.Label(cadastro_janela, text="Filtrar")
-    lbl_filtrar.grid(row=7, column=2, padx=0, pady=5, sticky="e")                  
+    lbl_filtrar.grid(row=7, column=2, padx=0, pady=5, sticky="e")
+    lbl_campo =tk.Label(cadastro_janela, text="Selecione:")
+    lbl_campo.grid(row=6, column=2, padx=0, pady=5, sticky="e")                                    
     lbl_preco_sugerido = tk.Label(cadastro_janela, text="Preço sugerido: ")
     lbl_preco_sugerido.grid(row=5, column=1, padx=0, pady=5, sticky="e")
 
@@ -394,6 +396,10 @@ def cadastrar_venda():
     
     txt_pesquisa = tk.Entry(cadastro_janela, width=30)
     txt_pesquisa.grid(row=7, column=3, padx=10, pady=5, sticky="w")
+
+    lista_campos = ['Id', 'Cliente', 'Produto', 'Fornecedor']
+    combo_pesquisa = ttk.Combobox(cadastro_janela,values=lista_campos)
+    combo_pesquisa.grid(row=6, column=3, padx=10, pady=5, sticky="w")
     
     
     def salvar_venda(operacao):
@@ -420,6 +426,9 @@ def cadastrar_venda():
             messagebox.showinfo("Cadastro", "A venda foi cadastrada.")
         else:
             venda.alterar_venda()
+
+        carregar_vendas()
+    
     
 
     tk.Button(cadastro_janela, text="Incluir", command=lambda:salvar_venda('I')).grid(row=7, columnspan=2, pady=10)
@@ -447,8 +456,47 @@ def cadastrar_venda():
         else:
             txt_lucro.insert(0,'falhou')
 
+
+    def ao_digitar_pesquisa(event):
+        campo = combo_pesquisa.get()
+        filtro = txt_pesquisa.get()
+
+        for item in treeview.get_children():
+            treeview.delete(item)
+        
+        conexao = conectar()
+        cursor = conexao.cursor()
+        if campo == 'Id':
+            condicao = '''A.ID = ?'''             
+        elif campo == 'Cliente':
+            condicao = '''B.NOME LIKE ?'''
+        elif campo == 'Fornecedor':
+            condicao = '''D.NOME_EMPRESA LIKE ?'''
+        else:
+            condicao = '''C.NOME LIKE ?'''
+
+        comando = '''SELECT A.ID, A.DATA, B.NOME, C.NOME || '/' || C.MARCA || '/' || D.NOME_EMPRESA as Produto, a.QUANTIDADE, a.PRECO_VENDA, a.LUCRO
+                        from TB_VENDA a
+                        join TB_CLIENTE b on a.ID_CLIENTE = b.ID_CLIENTE
+                        join TB_PRODUTO_NEW c on a.ID_PRODUTO = c.ID_PRODUTO
+                        join TB_FORNECEDOR d on c.ID_FORNECEDOR = d.ID_FORNECEDOR
+                        WHERE'''
+
+        comando_final = comando + " " + condicao
+        print(f'comando final: {comando_final}')
+        print(f'filtro: {filtro}')
+        cursor.execute(comando_final, ('%' + filtro + '%',))
+
+        resultados = cursor.fetchall()
+        
+        for resultado in resultados:
+            treeview.insert("", "end", values=resultado)
+
+        conexao.close()
+
     combo_produto.bind("<<ComboboxSelected>>", ao_selecionar_combo_produto)
     txt_preco_venda.bind("<FocusOut>", ao_sair_preco_venda)
+    txt_pesquisa.bind("<KeyRelease>", ao_digitar_pesquisa)
     
     
     columns = ("ID", "Data", "Cliente", "Produto", "Quantidade", "Preço Venda", "Lucro")

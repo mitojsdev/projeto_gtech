@@ -88,7 +88,7 @@ def calcular_preco_sugerido(nome_produto, nome_fornecedor):
 
     else:
         print("erro ao buscar ID_PRODUTO")
-
     
-
+def pesquisar_no_banco(tabela, campo):
+     pass
           
