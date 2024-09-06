@@ -8,7 +8,7 @@ class Cliente:
         self.telefone = telefone
         self.data_cadastro = data_cadastro
 
-    def salvar_no_banco(self):
+    def salvar_cliente(self):
         # Conectando ao banco de dados SQLite
         conexao = conectar()         
         try:        
@@ -19,6 +19,31 @@ class Cliente:
                 INSERT INTO TB_CLIENTE (id_cliente, nome, telefone, data_cadastro)
                 VALUES (?, ?, ?, ?)
             ''', (self.id, self.nome, self.telefone, self.data_cadastro))
+
+            conexao.commit()
+
+        except Exception as e:
+            print(f'Não foi possível completar a operação.Erro: {e}')
+
+        finally:
+            # Salvando (commit) as mudanças e fechando a conexão
+            if conexao:
+                cursor.close()                
+                conexao.close()
+
+
+    def alterar_cliente(self):
+        conexao = conectar()         
+        try:        
+            cursor = conexao.cursor()
+
+            # Altearando os dados do cliente no banco
+            cursor.execute('''
+                UPDATE TB_CLIENTE 
+                SET NOME = ?,
+                    TELEFONE = ?                   
+                    WHERE ID_CLIENTE = ?
+            ''', (self.nome,self.telefone, self.id))
 
             conexao.commit()
 
