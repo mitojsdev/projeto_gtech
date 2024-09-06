@@ -203,7 +203,7 @@ class Produto:
                 cursor.close()                
                 conexao.close()
     
-    def alterar_venda(self):
+    def alterar_produto(self):
         conexao = conectar()         
         try:        
             cursor = conexao.cursor()
@@ -218,7 +218,7 @@ class Produto:
                     MARCA = ?,
                     COR = ?,
                     ID_FORNECEDOR = ?
-                    WHERE ID = ?
+                    WHERE ID_PRODUTO = ?
             ''', (self.nome,self.preco_custo, self.tipo_produto, self.fabricante, self.marca, self.cor, self.id_fornecedor, self.id_produto))
 
             conexao.commit()
