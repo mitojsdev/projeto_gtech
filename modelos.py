@@ -97,7 +97,7 @@ class Fornecedor:
         self.tipo_empresa = tipo_empresa
         self.data_cadastro = data_cadastro
 
-    def salvar_no_banco(self):
+    def salvar_fornecedor(self):
         # Conectando ao banco de dados SQLite
         conexao = conectar()         
         try:        
@@ -119,6 +119,31 @@ class Fornecedor:
             if conexao:
                 cursor.close()                
                 conexao.close()
+    
+    def alterar_fornecedor(self):
+        conexao = conectar()         
+        try:        
+            cursor = conexao.cursor()
+
+            # Altearando os dados do cliente no banco
+            cursor.execute('''
+                UPDATE TB_FORNECEDOR 
+                SET NOME_EMPRESA = ?,
+                    TIPO_EMPRESA = ?                   
+                    WHERE ID_FORNECEDOR = ?
+            ''', (self.nome_empresa,self.tipo_empresa, self.id_fornecedor))
+
+            conexao.commit()
+
+        except Exception as e:
+            print(f'Não foi possível completar a operação.Erro: {e}')
+
+        finally:
+            # Salvando (commit) as mudanças e fechando a conexão
+            if conexao:
+                cursor.close()                
+                conexao.close()
+
 
     def carregar_fornecedores_combo():
         # Conectando ao banco de dados e recuperando os dados
@@ -130,6 +155,8 @@ class Fornecedor:
         conexao.close()
 
         return lista_fornec
+    
+
 
 
 class Produto:
