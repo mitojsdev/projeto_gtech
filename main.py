@@ -284,7 +284,7 @@ def cadastrar_produto():
         preco_custo = float(txt_preco_custo.get())
         print(preco_custo)
         tipo_produto = combo_tipo_produto.get()        
-        tipo_produto_id = fct.localiza_produto_idlocaliza_tipo_produto(tipo_produto)
+        tipo_produto_id = fct.localiza_tipo_produto(tipo_produto)
         print(tipo_produto_id)
         print(type(tipo_produto_id))
         fabricante = txt_fabricante.get()

@@ -35,7 +35,7 @@ class Cliente:
         # Conectando ao banco de dados e recuperando os dados
         conexao = conectar()
         cursor = conexao.cursor()
-        cursor.execute("SELECT NOME FROM TB_CLIENTE")
+        cursor.execute("SELECT NOME FROM TB_CLIENTE ORDER BY NOME ASC")
         lista_cli = [row [0] for row in cursor.fetchall()]
         print(lista_cli)
         conexao.close()
@@ -82,7 +82,7 @@ class TipoProduto:
         # Conectando ao banco de dados e recuperando os dados
         conexao = conectar()
         cursor = conexao.cursor()
-        cursor.execute('''SELECT DESCRICAO FROM TB_TIPO_PRODUTO''')
+        cursor.execute('''SELECT DESCRICAO FROM TB_TIPO_PRODUTO ORDER BY DESCRICAO ASC''')
         descricoes = [row[0] for row in cursor.fetchall()]
         print(descricoes)
         conexao.close()
@@ -124,7 +124,7 @@ class Fornecedor:
         # Conectando ao banco de dados e recuperando os dados
         conexao = conectar()
         cursor = conexao.cursor()
-        cursor.execute("SELECT NOME_EMPRESA FROM TB_FORNECEDOR")
+        cursor.execute("SELECT NOME_EMPRESA FROM TB_FORNECEDOR ORDER BY NOME_EMPRESA ASC")
         lista_fornec = [row [0] for row in cursor.fetchall()]
         print(lista_fornec)
         conexao.close()
@@ -173,7 +173,7 @@ class Produto:
         conexao = conectar()
         cursor = conexao.cursor()
         cursor.execute('''SELECT A.NOME || '/' || A.MARCA || '/' || B.NOME_EMPRESA, A.ID_PRODUTO FROM TB_PRODUTO_NEW A
-        JOIN TB_FORNECEDOR B ON A.ID_FORNECEDOR = B.ID_FORNECEDOR;''')
+        JOIN TB_FORNECEDOR B ON A.ID_FORNECEDOR = B.ID_FORNECEDOR ORDER BY A.NOME ASC;''')
         lista_produtos = [row [0] for row in cursor.fetchall()]
         print(lista_produtos)
         conexao.close()
