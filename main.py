@@ -397,7 +397,7 @@ def cadastrar_venda():
     txt_pesquisa = tk.Entry(cadastro_janela, width=30)
     txt_pesquisa.grid(row=7, column=3, padx=10, pady=5, sticky="w")
 
-    lista_campos = ['Id', 'Cliente', 'Produto', 'Fornecedor']
+    lista_campos = ['Cliente', 'Produto', 'Fornecedor']
     combo_pesquisa = ttk.Combobox(cadastro_janela,values=lista_campos)
     combo_pesquisa.grid(row=6, column=3, padx=10, pady=5, sticky="w")
     
@@ -465,10 +465,8 @@ def cadastrar_venda():
             treeview.delete(item)
         
         conexao = conectar()
-        cursor = conexao.cursor()
-        if campo == 'Id':
-            condicao = '''A.ID = ?'''             
-        elif campo == 'Cliente':
+        cursor = conexao.cursor()                             
+        if campo == 'Cliente':
             condicao = '''B.NOME LIKE ?'''
         elif campo == 'Fornecedor':
             condicao = '''D.NOME_EMPRESA LIKE ?'''
@@ -483,8 +481,9 @@ def cadastrar_venda():
                         WHERE'''
 
         comando_final = comando + " " + condicao
-        print(f'comando final: {comando_final}')
-        print(f'filtro: {filtro}')
+        #print(f'comando final: {comando_final}')
+        #print(f'filtro: {filtro}')
+        
         cursor.execute(comando_final, ('%' + filtro + '%',))
 
         resultados = cursor.fetchall()
