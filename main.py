@@ -276,7 +276,7 @@ def cadastrar_produto():
     txt_data_cadastro.grid(row=8, column=1, padx=10, pady=5, sticky="w")
     txt_data_cadastro.insert(0, datetime.now().strftime("%d/%m/%Y"))
     
-    def salvar_produto():
+    def salvar_produto(operacao):
         id = int(txt_id.get())
         print(id)
         nome = txt_nome.get()
@@ -299,14 +299,28 @@ def cadastrar_produto():
         print(data_cadastro)
 
         
+        
         produto = Produto(id, nome, preco_custo, tipo_produto_id, fabricante, marca, cor, fornecedor, data_cadastro)
-        produto.salvar_produto()        
+        #produto.salvar_produto()
+        if operacao == 'I':
+            produto.salvar_produto()
 
-        messagebox.showinfo("Cadastro", "Produto inserido com sucesso.")
+            messagebox.showinfo("Cadastro", "Produto Cadastrado.")
+        elif operacao == 'E':            
+            produto.excluir_produto()                    
+            messagebox.showinfo("Cadastro", "Produto excluído.")
+        else:
+            produto.alterar_produto()
+            messagebox.showinfo("Cadastro", "Produto alterado.")
+        carregar_produtos()        
+
+        #messagebox.showinfo("Cadastro", "Produto inserido com sucesso.")
 
     
-    tk.Button(cadastro_janela, text="Salvar", command=salvar_produto).grid(row=10, columnspan=2, pady=10)
-
+    #tk.Button(cadastro_janela, text="Salvar", command=salvar_produto).grid(row=9, columnspan=2, pady=10)
+    tk.Button(cadastro_janela, text="Incluir", command=lambda:salvar_produto('I')).grid(row=9, columnspan=2, pady=10)
+    tk.Button(cadastro_janela, text="Alterar", command=lambda:salvar_produto('A')).grid(row=9, columnspan=3, pady=10)
+    tk.Button(cadastro_janela, text="Excluir", command=lambda:salvar_produto('E')).grid(row=9, columnspan=4, pady=10)
     
     columns = ("ID", "Nome Produto", "Preço Custo", "Tipo", "Fabricante", "Marca", "Cor", "Fornecedor", "Data de Cadastro")
     treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
@@ -319,7 +333,7 @@ def cadastrar_produto():
     treeview.heading("Cor", text="Cor")
     treeview.heading("Fornecedor", text="Fornecedor")
     treeview.heading("Data de Cadastro", text="Data de Cadastro")
-    treeview.grid(row=9, column=0,columnspan=2, padx=10, pady=10)
+    treeview.grid(row=10, column=0,columnspan=4, padx=10, pady=10)
 
     treeview.column("ID",width=30)
     treeview.column("Preço Custo",width=30)
@@ -346,10 +360,42 @@ def cadastrar_produto():
     # Carregar clientes ao abrir a janela
     carregar_produtos()
 
+    #continuar aqui em 06/09/2024
+    def ao_clicar_treeview(event):
+        item_selecionado = treeview.selection()
+
+        if item_selecionado:
+            item = treeview.item(item_selecionado, 'values')
+            print(item)
+            txt_id.delete(0,tk.END)
+            txt_id.insert(0,item[0])
+
+            txt_data_venda.delete(0,tk.END)
+            txt_data_venda.insert(0,item[1])
+
+            combo_cliente.set(item[2])
+
+            combo_produto.set(item[3])
+
+            txt_quantidade.set(item[4])
+
+            txt_preco_venda.delete(0,tk.END)
+            txt_preco_venda.insert(0,item[5])
+
+            txt_lucro.delete(0,tk.END)
+            txt_lucro.insert(0,item[6])
+            
+            ao_selecionar_combo_produto(event="<<ComboboxSelected>>")
+
+######################################################################################    
+    treeview.bind("<ButtonRelease-1>", ao_clicar_treeview)
+
+
+# fim tela cadastro produtos
 ######################################################################################
 
 ######################################################################################
-#função para cadastrar vendas
+#função para cadastro vendas
 def cadastrar_venda():
     
     cadastro_janela = tk.Toplevel(root)

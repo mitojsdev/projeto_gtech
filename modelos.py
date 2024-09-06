@@ -179,6 +179,58 @@ class Produto:
         conexao.close()
 
         return lista_produtos
+    
+    def excluir_produto(self):
+      # Conectando ao banco de dados SQLite
+        conexao = conectar()         
+        try:        
+            cursor = conexao.cursor()
+
+            # Excluindo os dados do cliente no banco
+            cursor.execute('''
+                DELETE FROM TB_PRODUTO_NEW 
+                WHERE ID_PRODUTO = ?
+            ''', (self.id_produto,))
+
+            conexao.commit()
+
+        except Exception as e:
+            print(f'Não foi possível completar a operação.Erro: {e}')
+
+        finally:
+            # Salvando (commit) as mudanças e fechando a conexão
+            if conexao:
+                cursor.close()                
+                conexao.close()
+    
+    def alterar_venda(self):
+        conexao = conectar()         
+        try:        
+            cursor = conexao.cursor()
+
+            # Excluindo os dados do cliente no banco
+            cursor.execute('''
+                UPDATE TB_PRODUTO_NEW 
+                SET NOME = ?,
+                    PRECO_CUSTO = ?,
+                    TIPO_PRODUTO = ?,
+                    FABRICANTE = ?,
+                    MARCA = ?,
+                    COR = ?,
+                    ID_FORNECEDOR = ?
+                    WHERE ID = ?
+            ''', (self.nome,self.preco_custo, self.tipo_produto, self.fabricante, self.marca, self.cor, self.id_fornecedor, self.id_produto))
+
+            conexao.commit()
+
+        except Exception as e:
+            print(f'Não foi possível completar a operação.Erro: {e}')
+
+        finally:
+            # Salvando (commit) as mudanças e fechando a conexão
+            if conexao:
+                cursor.close()                
+                conexao.close()
 
 
 class Venda:
