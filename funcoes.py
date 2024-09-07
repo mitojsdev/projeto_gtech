@@ -73,6 +73,8 @@ def localiza_produto_id(nome_produto, nome_fornecedor):
 def calcular_preco_sugerido(nome_produto, nome_fornecedor):     
     conexao = conectar()
     cursor = conexao.cursor()
+    #implementar aqui a lógica do lucro dependendo do tipo_produto
+    #
 
     cursor.execute('''select a.preco_custo +100 from TB_PRODUTO_NEW a
             join TB_FORNECEDOR b on a.ID_FORNECEDOR = b.ID_FORNECEDOR

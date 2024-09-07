@@ -128,7 +128,7 @@ def cadastrar_cliente():
             txt_nome.insert(0,item[1])
 
             txt_telefone.delete(0,tk.END)
-            txt_telefone.insert(0,item[1])
+            txt_telefone.insert(0,item[2])
             
             txt_data_cadastro.delete(0,tk.END)
             txt_data_cadastro.insert(0,item[3])
