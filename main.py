@@ -614,7 +614,7 @@ def cadastrar_venda():
     lbl_campo =tk.Label(cadastro_janela, text="Selecione:")
     lbl_campo.grid(row=6, column=2, padx=0, pady=5, sticky="e")                                    
     lbl_preco_sugerido = tk.Label(cadastro_janela, text="Preço sugerido: ")
-    lbl_preco_sugerido.grid(row=5, column=1, padx=0, pady=5, sticky="e")
+    lbl_preco_sugerido.grid(row=5, column=2, padx=0, pady=5, sticky="w")
 
     txt_data_venda = tk.Entry(cadastro_janela)
     txt_data_venda.grid(row=0, column=1, padx=10, pady=5, sticky="w")
