@@ -650,7 +650,9 @@ def cadastrar_venda():
     
     def salvar_venda(operacao):
         id = int(txt_id.get())
-        cliente_id = fct.localiza_cliente_id(combo_cliente.get())
+        #cliente_id = fct.localiza_cliente_id(combo_cliente.get())
+        #chamando pelo método da classe cliente
+        cliente_id = Cliente.localiza_id_cliente(combo_cliente.get())
         produto_selecionado = combo_produto.get()
         partes = produto_selecionado.split('/')
         nome_produto = partes[0]
@@ -686,7 +688,10 @@ def cadastrar_venda():
         partes = produto_selecionado.split('/')
         nome_produto = partes[0]
         nome_fornecedor = partes[-1]
-        valor_sugerido = fct.calcular_preco_sugerido(nome_produto,nome_fornecedor)
+        #valor_sugerido = fct.calcular_preco_sugerido(nome_produto,nome_fornecedor)
+        #chamar o preco sugerido através do método estático da classe venda
+        valor_sugerido = Venda.calcular_preco_sugerido(nome_produto,nome_fornecedor)
+        
         lbl_preco_sugerido.config(text=f'Preço sugerido: {valor_sugerido}')
 
     def ao_sair_preco_venda(event):

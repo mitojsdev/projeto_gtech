@@ -8,6 +8,8 @@ class Cliente:
         self.telefone = telefone
         self.data_cadastro = data_cadastro
 
+    
+
     def salvar_cliente(self):
         # Conectando ao banco de dados SQLite
         conexao = conectar()         
@@ -65,7 +67,23 @@ class Cliente:
         print(lista_cli)
         conexao.close()
 
-        return lista_cli        
+        return lista_cli
+
+    @staticmethod
+    def localiza_id_cliente(nome):
+        conexao = conectar()
+        cursor = conexao.cursor()
+        cursor.execute("SELECT ID_CLIENTE FROM TB_CLIENTE WHERE NOME = ?", (nome,))
+        
+        resultado = cursor.fetchone()
+        
+        conexao.close()
+        if resultado:
+            id = resultado[0]
+            return id
+
+        else:
+            print("erro ao buscar ID_CLIENTE")
 
 
 class TipoProduto:
@@ -367,3 +385,25 @@ class Venda:
             if conexao:
                 cursor.close()                
                 conexao.close()
+
+    @staticmethod
+    def calcular_preco_sugerido(nome_produto, nome_fornecedor):     
+        conexao = conectar()
+        cursor = conexao.cursor()
+    #implementar aqui a lógica do lucro dependendo do tipo_produto
+    #
+
+        cursor.execute('''select a.preco_custo +100 from TB_PRODUTO_NEW a
+                join TB_FORNECEDOR b on a.ID_FORNECEDOR = b.ID_FORNECEDOR
+                where a.NOME = ? and b.NOME_EMPRESA = ?''', (nome_produto, nome_fornecedor,))
+            
+        resultado = cursor.fetchone()
+        
+        conexao.close()
+
+        if resultado:
+            valor = resultado[0]
+            return valor
+
+        else:
+            print("erro ao buscar ID_PRODUTO")
