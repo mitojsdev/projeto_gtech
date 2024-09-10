@@ -1,5 +1,7 @@
 import sqlite3
 from conexao import conectar
+from tkinter import messagebox
+
 
 class Cliente:
     def __init__(self, id_cliente, nome, telefone, data_cadastro):
@@ -18,11 +20,13 @@ class Cliente:
 
             # Inserindo os dados do cliente no banco
             cursor.execute('''
-                INSERT INTO TB_CLIENTE (id_cliente, nome, telefone, data_cadastro)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO "TB_CLIENTE" ("ID_CLIENTE", "NOME", "TELEFONE", "DATA_CADASTRO")
+                VALUES (%s, %s, %s, %s)
             ''', (self.id, self.nome, self.telefone, self.data_cadastro))
 
             conexao.commit()
+
+            messagebox.showinfo("Cadastro", "Cliente Cadastrado com sucesso!")        
 
         except Exception as e:
             print(f'Não foi possível completar a operação.Erro: {e}')
@@ -41,15 +45,17 @@ class Cliente:
 
             # Altearando os dados do cliente no banco
             cursor.execute('''
-                UPDATE TB_CLIENTE 
-                SET NOME = ?,
-                    TELEFONE = ?                   
-                    WHERE ID_CLIENTE = ?
+                UPDATE "TB_CLIENTE" 
+                SET "NOME" = %s,
+                    "TELEFONE" = %s                   
+                    WHERE "ID_CLIENTE" = %s
             ''', (self.nome,self.telefone, self.id))
 
             conexao.commit()
+            messagebox.showinfo("Cadastro", "Cliente alterado.")
 
         except Exception as e:
+            messagebox.showerror("Cadastro", f"Não foi possível completar a operação. Erro: {e}")
             print(f'Não foi possível completar a operação.Erro: {e}')
 
         finally:
@@ -62,7 +68,7 @@ class Cliente:
         # Conectando ao banco de dados e recuperando os dados
         conexao = conectar()
         cursor = conexao.cursor()
-        cursor.execute("SELECT NOME FROM TB_CLIENTE ORDER BY NOME ASC")
+        cursor.execute('''SELECT "NOME" FROM "TB_CLIENTE" ORDER BY "NOME" ASC''')
         lista_cli = [row [0] for row in cursor.fetchall()]
         print(lista_cli)
         conexao.close()
@@ -73,7 +79,7 @@ class Cliente:
     def localiza_id_cliente(nome):
         conexao = conectar()
         cursor = conexao.cursor()
-        cursor.execute("SELECT ID_CLIENTE FROM TB_CLIENTE WHERE NOME = ?", (nome,))
+        cursor.execute('''SELECT "ID_CLIENTE" FROM "TB_CLIENTE" WHERE "NOME" = ?''', (nome,))
         
         resultado = cursor.fetchone()
         
@@ -84,6 +90,39 @@ class Cliente:
 
         else:
             print("erro ao buscar ID_CLIENTE")
+
+    @staticmethod
+    def carregar_clientes_treeview():
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+        cursor.execute('''SELECT * FROM "TB_CLIENTE"''')
+
+        clientes = cursor.fetchall()
+
+        return clientes
+    
+    @staticmethod
+    def pesquisa_clientes(campo, filtro):
+        try:
+            conexao = conectar()
+            cursor = conexao.cursor()                             
+            if campo == 'Nome':
+                condicao = '''"NOME" LIKE %s'''
+            
+            comando = '''SELECT * FROM "TB_CLIENTE" WHERE '''
+
+            comando_final = comando + " " + condicao
+            print(f'comando final: {comando_final}')
+            print(f'filtro: {filtro}')
+            
+            cursor.execute(comando_final, ('%' + filtro + '%',))
+
+            resultados = cursor.fetchall()
+
+            return resultados
+        except Exception as e:
+            messagebox.showerror("Cadastro", f"Atenção! Não foi possível pesquisar. Erro: {e}")
 
 
 class TipoProduto:
@@ -131,6 +170,24 @@ class TipoProduto:
         conexao.close()
 
         return descricoes
+    
+    @staticmethod
+    def localiza_tipo_produto(descricao):        
+        conexao = conectar()
+        cursor = conexao.cursor()
+        cursor.execute("SELECT COD FROM TB_TIPO_PRODUTO WHERE DESCRICAO = ?", (descricao,))
+        
+        resultado = cursor.fetchone()
+        
+
+        conexao.close()
+        if resultado:
+            id = resultado[0]
+            return id
+
+        else:
+            print("erro ao buscar COD PRODUTO")
+
     
 
 class Fornecedor:
@@ -198,6 +255,22 @@ class Fornecedor:
         conexao.close()
 
         return lista_fornec
+    
+    @staticmethod
+    def localiza_id_fornecedor(nome):
+        conexao = conectar()
+        cursor = conexao.cursor()
+        cursor.execute("SELECT ID_FORNECEDOR FROM TB_FORNECEDOR WHERE NOME_EMPRESA = ?", (nome,))
+        
+        resultado = cursor.fetchone()
+        
+        conexao.close()
+        if resultado:
+            id = resultado[0]
+            return id
+
+        else:
+            print("erro ao buscar ID_FORNECEDOR")
     
 
 
@@ -301,6 +374,26 @@ class Produto:
             if conexao:
                 cursor.close()                
                 conexao.close()
+
+    @staticmethod
+    def localiza_produto_id(nome_produto, nome_fornecedor):    
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+        cursor.execute('''select a.id_produto from TB_PRODUTO_NEW a
+                join TB_FORNECEDOR b on a.ID_FORNECEDOR = b.ID_FORNECEDOR
+                where a.NOME = ? and b.NOME_EMPRESA = ?''', (nome_produto, nome_fornecedor,))
+            
+        resultado = cursor.fetchone()
+        
+        conexao.close()
+
+        if resultado:
+            id = resultado[0]
+            return id
+
+        else:
+            print("erro ao buscar ID_PRODUTO")
 
 
 class Venda:

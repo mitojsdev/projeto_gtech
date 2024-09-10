@@ -1,7 +1,7 @@
 from conexao import conectar
 
 
-def localiza_tipo_produto(descricao):        
+def localiza_tipo_produto(descricao):    #implementado    
         conexao = conectar()
         cursor = conexao.cursor()
         cursor.execute("SELECT COD FROM TB_TIPO_PRODUTO WHERE DESCRICAO = ?", (descricao,))
@@ -17,7 +17,7 @@ def localiza_tipo_produto(descricao):
         else:
             print("erro ao buscar COD PRODUTO")
 
-def localiza_id_fornecedor(nome):
+def localiza_id_fornecedor(nome): #implementado
         conexao = conectar()
         cursor = conexao.cursor()
         cursor.execute("SELECT ID_FORNECEDOR FROM TB_FORNECEDOR WHERE NOME_EMPRESA = ?", (nome,))
@@ -32,7 +32,7 @@ def localiza_id_fornecedor(nome):
         else:
             print("erro ao buscar ID_FORNECEDOR")
 
-def localiza_cliente_id(nome):
+def localiza_cliente_id(nome): #implementado
     conexao = conectar()
     cursor = conexao.cursor()
     cursor.execute("SELECT ID_CLIENTE FROM TB_CLIENTE WHERE NOME = ?", (nome,))
@@ -70,7 +70,7 @@ def localiza_produto_id(nome_produto, nome_fornecedor):
 
 
 
-def calcular_preco_sugerido(nome_produto, nome_fornecedor):     
+def calcular_preco_sugerido(nome_produto, nome_fornecedor):      #implementado
     conexao = conectar()
     cursor = conexao.cursor()
     #implementar aqui a lógica do lucro dependendo do tipo_produto

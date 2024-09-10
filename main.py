@@ -1,4 +1,4 @@
-import funcoes as fct
+#import funcoes as fct
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
@@ -65,19 +65,16 @@ def cadastrar_cliente():
         cliente = Cliente(id_cliente, nome, telefone, data_cadastro)
         
         if operacao == 'I':
-            cliente.salvar_cliente()
-
-            messagebox.showinfo("Cadastro", "Cliente Cadastrado.")        
+            cliente.salvar_cliente()            
         else:
-            cliente.alterar_cliente()
-            messagebox.showinfo("Cadastro", "Cliente alterado.")
+            cliente.alterar_cliente()            
         
 
         carregar_clientes()
         # Adicionando o cliente à treeview
         #treeview.insert("", "end", values=(id_cliente, nome, telefone, data_cadastro))
 
-        messagebox.showinfo("Cadastro", "Cliente inserido com sucesso.")
+        #messagebox.showinfo("Cadastro", "Cliente inserido com sucesso.")
 
     # Botão para salvar o cliente
     #tk.Button(cadastro_janela, text="Salvar Cliente", command=salvar_cliente).grid(row=4, columnspan=2, pady=10)
@@ -101,16 +98,16 @@ def cadastrar_cliente():
             treeview.delete(item)
 
         # Conectando ao banco de dados e recuperando os dados
-        conexao = conectar()
-        cursor = conexao.cursor()
-        cursor.execute("SELECT * FROM TB_CLIENTE")
-        clientes = cursor.fetchall()
+        #conexao = conectar()
+        #cursor = conexao.cursor()
+        #cursor.execute("SELECT * FROM TB_CLIENTE")
+        clientes = Cliente.carregar_clientes_treeview()
 
         # Adicionando os dados na Treeview
         for cliente in clientes:
             treeview.insert("", "end", values=cliente)
         
-        conexao.close()
+        #conexao.close()
 
     # Carregar clientes ao abrir a janela
     carregar_clientes()
@@ -140,25 +137,27 @@ def cadastrar_cliente():
         for item in treeview.get_children():
             treeview.delete(item)
         
-        conexao = conectar()
-        cursor = conexao.cursor()                             
-        if campo == 'Nome':
-            condicao = '''NOME LIKE ?'''
+        #conexao = conectar()
+        #cursor = conexao.cursor()                             
+        #if campo == 'Nome':
+            #condicao = '''NOME LIKE ?'''
         
-        comando = '''SELECT * FROM TB_CLIENTE WHERE '''
+        #comando = '''SELECT * FROM TB_CLIENTE WHERE '''
 
-        comando_final = comando + " " + condicao
-        print(f'comando final: {comando_final}')
-        print(f'filtro: {filtro}')
+        #comando_final = comando + " " + condicao
+        #print(f'comando final: {comando_final}')
+        #print(f'filtro: {filtro}')
         
-        cursor.execute(comando_final, ('%' + filtro + '%',))
+        #cursor.execute(comando_final, ('%' + filtro + '%',))
 
-        resultados = cursor.fetchall()
+        #resultados = cursor.fetchall()
+
+        resultados = Cliente.pesquisa_clientes(campo, filtro)
         
         for resultado in resultados:
             treeview.insert("", "end", values=resultado)
 
-        conexao.close()
+        #conexao.close()
 ######################################################################################    
     treeview.bind("<ButtonRelease-1>", ao_clicar_treeview)
     txt_pesquisa.bind("<KeyRelease>", ao_digitar_pesquisa)
@@ -437,7 +436,7 @@ def cadastrar_produto():
         print(preco_custo)
         tipo_produto = combo_tipo_produto.get()
         print(tipo_produto)        
-        tipo_produto_id = fct.localiza_tipo_produto(tipo_produto)
+        tipo_produto_id = TipoProduto.localiza_tipo_produto(tipo_produto)
         print(tipo_produto_id)
         print(type(tipo_produto_id))
         fabricante = txt_fabricante.get()
@@ -446,7 +445,7 @@ def cadastrar_produto():
         print(marca)
         cor = txt_cor.get()
         print(cor)
-        fornecedor = fct.localiza_id_fornecedor(combo_fornecedor.get())
+        fornecedor = Fornecedor.localiza_id_fornecedor(combo_fornecedor.get())
         print(fornecedor)
         data_cadastro = txt_data_cadastro.get()
         print(data_cadastro)
@@ -544,7 +543,7 @@ def cadastrar_produto():
             txt_cor.insert(0,item[6])
 
             txt_data_cadastro.delete(0,tk.END)
-            txt_data_cadastro.insert(0,item[7])
+            txt_data_cadastro.insert(0,item[8])
             
             #ao_selecionar_combo_produto(event="<<ComboboxSelected>>")
     def ao_digitar_pesquisa(event):
@@ -657,7 +656,7 @@ def cadastrar_venda():
         partes = produto_selecionado.split('/')
         nome_produto = partes[0]
         nome_fornecedor = partes[-1]
-        produto_id = fct.localiza_produto_id(nome_produto,nome_fornecedor)        
+        produto_id = Produto.localiza_produto_id(nome_produto,nome_fornecedor)        
         quantidade = int(txt_quantidade.get())
         preco_venda= txt_preco_venda.get()        
         data_venda = txt_data_venda.get()

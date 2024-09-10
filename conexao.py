@@ -7,9 +7,15 @@ def conectar():
     try:
 
     #conectando ao banco de dados
-        conexao = sqlite3.connect('./Banco/BancoGtech.db')
+        #conexao = sqlite3.connect('./Banco/BancoGtech.db')
         #conexao = sqlite3.connect('C:/Users/amilt/Documents/GTECH_NEW/Banco/BancoGtech.db')
-        conexao.execute("PRAGMA foreign_keys = on") 
+        conexao = psycopg2.connect(
+            host="localhost",
+            database="postgres",
+            user="postgres",
+            password="root",)
+
+        #conexao.execute("PRAGMA foreign_keys = on") 
         
 
 
