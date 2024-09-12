@@ -4,7 +4,7 @@ from tkinter import messagebox
 
 
 class Cliente:
-    def __init__(self, id_cliente, nome, telefone, data_cadastro):
+    def __init__(self, nome, telefone, data_cadastro, id_cliente=None):
         self.id = id_cliente
         self.nome = nome
         self.telefone = telefone
@@ -17,16 +17,34 @@ class Cliente:
         conexao = conectar()         
         try:        
             cursor = conexao.cursor()
+            
+            #etapa 1 verificar se o cliente já existe (analisar os campos nome e telefone)
+            #cursor postgree
+            #cursor.execute('''SELECT * FROM "TB_CLIENTE" WHERE "NOME" = %s AND "TELEFONE" = %s''', 
+             #              (self.nome,self.telefone,))
+            #cursor sqlite
+            cursor.execute('''SELECT * FROM "TB_CLIENTE" WHERE "NOME" = ? AND "TELEFONE" = ?''', 
+                           (self.nome,self.telefone,))
+            resultado = cursor.fetchall()
+            tamanho = len(resultado)            
+            if tamanho != 0:
+                messagebox.showwarning('Atenção!', 'Já existe um cliente cadastrado com os dados informados.')
+            else:
+                #etapa 2, se nao for repetido, inserir dados            
+                # Inserindo os dados do cliente no banco
+                #cursor postgre
+                #cursor.execute('''
+                    #INSERT INTO "TB_CLIENTE" ("NOME", "TELEFONE", "DATA_CADASTRO")
+                   #VALUES (%s, %s, %s)
+                #''', (self.nome, self.telefone, self.data_cadastro))
+                #cursor sqlite
+                cursor.execute('''
+                    INSERT INTO "TB_CLIENTE" ("NOME", "TELEFONE", "DATA_CADASTRO")
+                    VALUES (?, ?, ?)
+                ''', (self.nome, self.telefone, self.data_cadastro))
+                conexao.commit()
 
-            # Inserindo os dados do cliente no banco
-            cursor.execute('''
-                INSERT INTO "TB_CLIENTE" ("ID_CLIENTE", "NOME", "TELEFONE", "DATA_CADASTRO")
-                VALUES (%s, %s, %s, %s)
-            ''', (self.id, self.nome, self.telefone, self.data_cadastro))
-
-            conexao.commit()
-
-            messagebox.showinfo("Cadastro", "Cliente Cadastrado com sucesso!")        
+                messagebox.showinfo("Cadastro", "Cliente Cadastrado com sucesso!")        
 
         except Exception as e:
             print(f'Não foi possível completar a operação.Erro: {e}')
@@ -42,15 +60,19 @@ class Cliente:
         conexao = conectar()         
         try:        
             cursor = conexao.cursor()
-
-            # Altearando os dados do cliente no banco
-            cursor.execute('''
+            comando = '''
                 UPDATE "TB_CLIENTE" 
-                SET "NOME" = %s,
-                    "TELEFONE" = %s                   
-                    WHERE "ID_CLIENTE" = %s
-            ''', (self.nome,self.telefone, self.id))
-
+                SET "NOME" = ?,
+                    "TELEFONE" = ?,
+                    "DATA_CADASTRO" = ?
+                    WHERE "ID_CLIENTE" = ?
+            '''
+            # Altearando os dados do cliente no banco
+            cursor.execute(comando, (self.nome,self.telefone,self.data_cadastro,self.id))
+            
+            print(self.nome)
+            print(self.telefone)
+            print(self.id)
             conexao.commit()
             messagebox.showinfo("Cadastro", "Cliente alterado.")
 
@@ -108,7 +130,7 @@ class Cliente:
             conexao = conectar()
             cursor = conexao.cursor()                             
             if campo == 'Nome':
-                condicao = '''"NOME" LIKE %s'''
+                condicao = '''"NOME" LIKE ?'''
             
             comando = '''SELECT * FROM "TB_CLIENTE" WHERE '''
 
@@ -135,21 +157,21 @@ class TipoProduto:
         try:        
             cursor = conexao.cursor()
 
-            cursor.execute('''select Max(COD) + 1 from TB_TIPO_PRODUTO''')
+            #cursor.execute('''select Max(COD) + 1 from TB_TIPO_PRODUTO''')
 
-            resultado = cursor.fetchone()
-            print(resultado)
-            if resultado:                
-                prox_cod = resultado[0]
-                print(prox_cod)
+           # resultado = cursor.fetchone()
+            #print(resultado)
+            #if resultado:                
+                #prox_cod = resultado[0]
+               # print(prox_cod)
 
                 # Inserindo tipo_produto no banco
-                cursor.execute('''
-                INSERT INTO TB_TIPO_PRODUTO (cod, descricao)
-                VALUES (?,?)
-                ''', (prox_cod, self.descricao))
+            cursor.execute('''
+                INSERT INTO TB_TIPO_PRODUTO (descricao)
+                VALUES (?)
+                ''', (self.descricao,))
 
-                conexao.commit()
+            conexao.commit()
 
         except Exception as e:
             print(f'Não foi possível completar a operação.Erro: {e}')

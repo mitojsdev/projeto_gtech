@@ -2,11 +2,14 @@ import tkinter as tk
 from tkinter import ttk
 from datetime import datetime
 from modelos import Cliente
+from funcoes import valida_campo
 
 
 def cadastrar_cliente(root):
     # Nova janela para cadastro de cliente
     cadastro_janela = tk.Toplevel(root)
+    cadastro_janela.grab_set()
+    #odal_window.grab_set()
     cadastro_janela.title("Cadastro de Cliente")
     cadastro_janela.geometry("850x450")
 
@@ -20,7 +23,11 @@ def cadastrar_cliente(root):
     lbl_campo =tk.Label(cadastro_janela, text="Selecione:")
     lbl_campo.grid(row=3, column=1, padx=0, pady=5, sticky="e")
 
-    txt_id = tk.Entry(cadastro_janela)
+
+    # Criando um Entry
+    #entry = tk.Entry(root, state='disabled', disabledbackground='lightgrey', disabledforeground='darkgrey')
+    #entry.pack()
+    txt_id = tk.Entry(cadastro_janela,state='disabled', disabledbackground='lightgrey',disabledforeground='darkgrey')    
     txt_id.grid(row=0, column=1, padx=9, pady=0, sticky="w")
 
     txt_nome = tk.Entry(cadastro_janela)
@@ -40,21 +47,45 @@ def cadastrar_cliente(root):
     combo_pesquisa = ttk.Combobox(cadastro_janela,values=lista_campos)
     combo_pesquisa.grid(row=3, column=2, padx=10, pady=5, sticky="w")
 
-    # Função para salvar o cliente
-    def salvar_cliente(operacao):
-        id_cliente = int(txt_id.get())
-        nome = txt_nome.get()
-        telefone = txt_telefone.get()
-        data_cadastro = txt_data_cadastro.get()
+    lista_entradas = [txt_id,txt_nome,txt_telefone]
 
-        # Instanciando a classe Cliente
-        cliente = Cliente(id_cliente, nome, telefone, data_cadastro)
-        
-        if operacao == 'I':
-            cliente.salvar_cliente()            
+    def limpar_campos():
+    # Limpar todas as caixas de entrada
+        for entry in lista_entradas:
+            if entry == txt_id: 
+                entry.config(state='normal')
+                entry.delete(0, tk.END)  
+                entry.config(state='disabled')
+            else:
+                entry.delete(0, tk.END)
+        txt_nome.focus()
+
+    # Função para salvar o cliente
+    def salvar_cliente(operacao):               
+        if not valida_campo('nome', txt_nome.get()):
+            form = False
+        elif not valida_campo('telefone', txt_telefone.get()):
+            form = False
+        elif not valida_campo('data', txt_data_cadastro.get()):
+            form = False
         else:
-            cliente.alterar_cliente()            
-                
+            form = True
+  
+        if form:            
+            nome = txt_nome.get()
+            telefone = txt_telefone.get()
+            data_cadastro = txt_data_cadastro.get()
+            if operacao == 'I':                        
+                # Instanciando a classe Cliente
+                cliente = Cliente(nome, telefone, data_cadastro)
+                cliente.salvar_cliente()
+                limpar_campos()             
+            else:
+                if valida_campo('id',txt_id.get()):
+                    id_cliente = int(txt_id.get())
+                    cliente = Cliente(nome, telefone, data_cadastro, id_cliente)
+                    cliente.alterar_cliente()
+                    limpar_campos()
         carregar_clientes()
         
 
@@ -90,8 +121,10 @@ def cadastrar_cliente(root):
         if item_selecionado:
             item = treeview.item(item_selecionado, 'values')
             print(item)
-            txt_id.delete(0,tk.END)
+            txt_id.config(state='normal')
+            txt_id.delete(0,tk.END)                        
             txt_id.insert(0,item[0])
+            txt_id.config(state='disabled')
 
             txt_nome.delete(0,tk.END)
             txt_nome.insert(0,item[1])
