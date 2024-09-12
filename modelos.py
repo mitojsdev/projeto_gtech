@@ -213,7 +213,7 @@ class TipoProduto:
     
 
 class Fornecedor:
-    def __init__(self, id_fornecedor, nome_empresa, tipo_empresa, data_cadastro):
+    def __init__(self, nome_empresa, tipo_empresa, data_cadastro, id_fornecedor=None):
         self.id_fornecedor = id_fornecedor
         self.nome_empresa = nome_empresa
         self.tipo_empresa = tipo_empresa
@@ -225,13 +225,23 @@ class Fornecedor:
         try:        
             cursor = conexao.cursor()
 
-            # Inserindo os dados do cliente no banco
-            cursor.execute('''
-                INSERT INTO TB_FORNECEDOR (id_fornecedor, nome_empresa, tipo_empresa, data_cadastro)
-                VALUES (?, ?, ?, ?)
-            ''', (self.id_fornecedor, self.nome_empresa, self.tipo_empresa, self.data_cadastro))
+            cursor.execute('''SELECT * FROM "TB_FORNECEDOR" WHERE "NOME_EMPRESA" = ? AND "TIPO_EMPRESA" = ?''', 
+                           (self.nome_empresa,self.tipo_empresa,))
+            resultado = cursor.fetchall()
+            tamanho = len(resultado)            
+            if tamanho != 0:
+                messagebox.showwarning('Atenção!', 'Já existe um fornecedor cadastrado com os dados informados.')
+            else:
 
-            conexao.commit()
+            # Inserindo os dados do cliente no banco
+                cursor.execute('''
+                    INSERT INTO TB_FORNECEDOR (nome_empresa, tipo_empresa, data_cadastro)
+                    VALUES (?, ?, ?)
+                ''', (self.nome_empresa, self.tipo_empresa, self.data_cadastro))
+
+                conexao.commit()
+
+                messagebox.showinfo('Cadastro', 'Fornecedor cadastrado com sucesso!')
 
         except Exception as e:
             print(f'Não foi possível completar a operação.Erro: {e}')
@@ -251,12 +261,13 @@ class Fornecedor:
             cursor.execute('''
                 UPDATE TB_FORNECEDOR 
                 SET NOME_EMPRESA = ?,
-                    TIPO_EMPRESA = ?                   
+                    TIPO_EMPRESA = ?,
+                           DATA_CADASTRO = ?                   
                     WHERE ID_FORNECEDOR = ?
-            ''', (self.nome_empresa,self.tipo_empresa, self.id_fornecedor))
+            ''', (self.nome_empresa,self.tipo_empresa, self.data_cadastro,self.id_fornecedor))
 
             conexao.commit()
-
+            messagebox.showinfo('Cadastro', 'O fornecedor foi alterado.')
         except Exception as e:
             print(f'Não foi possível completar a operação.Erro: {e}')
 
@@ -266,6 +277,36 @@ class Fornecedor:
                 cursor.close()                
                 conexao.close()
 
+    @staticmethod
+    def carregar_fornecedores_treeview():
+        conexao = conectar()
+        cursor = conexao.cursor()
+        cursor.execute("SELECT * FROM TB_FORNECEDOR")
+
+        fornecedores = cursor.fetchall()
+
+        return fornecedores
+
+    @staticmethod
+    def pesquisa_fornecedor(campo, filtro):
+        conexao = conectar()
+        cursor = conexao.cursor()                             
+        if campo == 'Nome':
+            condicao = '''NOME_EMPRESA LIKE ?'''
+        else:
+            condicao = '''TIPO_EMPRESA LIKE ?'''
+        
+        comando = '''SELECT * FROM TB_FORNECEDOR WHERE '''
+
+        comando_final = comando + " " + condicao
+        print(f'comando final: {comando_final}')
+        print(f'filtro: {filtro}')
+        
+        cursor.execute(comando_final, ('%' + filtro + '%',))
+
+        resultados = cursor.fetchall()
+
+        return resultados
 
     def carregar_fornecedores_combo():
         # Conectando ao banco de dados e recuperando os dados

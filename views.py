@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from datetime import datetime
-from modelos import Cliente
+from modelos import Cliente, Fornecedor
 from funcoes import valida_campo
 
 
@@ -60,7 +60,7 @@ def cadastrar_cliente(root):
                 entry.delete(0, tk.END)
         txt_nome.focus()
 
-    # Função para salvar o cliente
+    # Função para salvar/alterar o cliente
     def salvar_cliente(operacao):               
         if not valida_campo('nome', txt_nome.get()):
             form = False
@@ -151,3 +151,156 @@ def cadastrar_cliente(root):
     carregar_clientes()
     treeview.bind("<ButtonRelease-1>", ao_clicar_treeview)
     txt_pesquisa.bind("<KeyRelease>", ao_digitar_pesquisa)
+
+
+
+    ##############################################################################
+
+    ######################################################################################
+#função para cadastrar fornecedor
+def cadastrar_fornecedor(root):
+    
+    cadastro_janela = tk.Toplevel(root)
+    cadastro_janela.grab_set()
+    cadastro_janela.title("Cadastro de Fornecedor")
+    cadastro_janela.geometry("850x450")
+
+    
+    tk.Label(cadastro_janela, text="ID").grid(row=0, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="Nome Empresa").grid(row=1, column=0, padx=10, pady=5, sticky="e")    
+    tk.Label(cadastro_janela, text="Tipo Empresa").grid(row=2, column=0, padx=10, pady=5, sticky="e") 
+    tk.Label(cadastro_janela, text="Data Cadastro").grid(row=3, column=0, padx=10, pady=5, sticky="e") 
+    lbl_filtrar =tk.Label(cadastro_janela, text="Filtrar")
+    lbl_filtrar.grid(row=4, column=1, padx=0, pady=5, sticky="e")
+    lbl_campo =tk.Label(cadastro_janela, text="Selecione:")
+    lbl_campo.grid(row=3, column=1, padx=0, pady=5, sticky="e")
+
+    txt_id = tk.Entry(cadastro_janela,state='disabled', disabledbackground='lightgrey',disabledforeground='darkgrey')
+    txt_id.grid(row=0, column=1, padx=9, pady=0, sticky="w")
+
+    txt_nome_empresa = tk.Entry(cadastro_janela)
+    txt_nome_empresa.grid(row=1, column=1, padx=10, pady=5, sticky="w")
+
+    tipos_empresa = ['Física', 'Virtual', 'Outro']    
+    combo_tipo_empresa = ttk.Combobox(cadastro_janela, values=tipos_empresa)
+    combo_tipo_empresa.current(0)
+    combo_tipo_empresa.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+
+    txt_data_cadastro = tk.Entry(cadastro_janela)
+    txt_data_cadastro.grid(row=3, column=1, padx=10, pady=5, sticky="w")
+    txt_data_cadastro.insert(0, datetime.now().strftime("%d/%m/%Y"))
+
+    txt_pesquisa = tk.Entry(cadastro_janela, width=30)
+    txt_pesquisa.grid(row=4, column=2, padx=10, pady=5, sticky="w")
+
+    lista_campos = ['Nome', 'Tipo Empresa']
+    combo_pesquisa = ttk.Combobox(cadastro_janela,values=lista_campos)
+    combo_pesquisa.grid(row=3, column=2, padx=10, pady=5, sticky="w")
+    
+    lista_entradas = [txt_id,txt_nome_empresa]    
+
+    def limpar_campos():
+        # Limpar todas as caixas de entrada
+        for entry in lista_entradas:
+            if entry == txt_id: 
+                entry.config(state='normal')
+                entry.delete(0, tk.END)  
+                entry.config(state='disabled')
+            else:
+                entry.delete(0, tk.END)
+
+        combo_tipo_empresa.set('')
+
+        txt_nome_empresa.focus()
+
+
+    def salvar_fornecedor(operacao):
+        if not valida_campo('nome', txt_nome_empresa.get()):
+            form = False
+        elif not valida_campo('tipo_empresa', combo_tipo_empresa.get()):
+            form = False
+        elif not valida_campo('data', txt_data_cadastro.get()):
+            form = False
+        else:
+            form = True
+
+        if form:            
+            nome = txt_nome_empresa.get()
+            tipo_empresa = combo_tipo_empresa.get()
+            data_cadastro = txt_data_cadastro.get()
+            if operacao == 'I':                        
+                # Instanciando a classe Fornecedor
+                fornecedor = Fornecedor(nome, tipo_empresa, data_cadastro)
+                fornecedor.salvar_fornecedor()
+                limpar_campos()             
+            else:
+                if valida_campo('id',txt_id.get()):
+                    id_fornecedor = int(txt_id.get())
+                    fornecedor = Fornecedor(nome, tipo_empresa, data_cadastro, id_fornecedor)
+                    fornecedor.alterar_fornecedor()
+                    limpar_campos()
+
+        carregar_fornecedores()
+    
+    #tk.Button(cadastro_janela, text="Salvar", command=salvar_fornecedor).grid(row=4, columnspan=2, pady=10)
+    tk.Button(cadastro_janela, text="Incluir", command=lambda:salvar_fornecedor('I')).grid(row=4, columnspan=2, pady=10)
+    tk.Button(cadastro_janela, text="Alterar", command=lambda:salvar_fornecedor('A')).grid(row=4, columnspan=3, pady=10)
+    
+    columns = ("ID", "Nome Empresa", "Tipo Empresa", "Data de Cadastro")
+    treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
+    treeview.heading("ID", text="ID")
+    treeview.heading("Nome Empresa", text="Nome Empresa")
+    treeview.heading("Tipo Empresa", text="Tipo Empresa")
+    treeview.heading("Data de Cadastro", text="Data de Cadastro")
+    treeview.grid(row=5, column=0, columnspan=3, padx=10, pady=10)
+
+    def carregar_fornecedores():
+        # Limpa a Treeview antes de carregar os dados
+        for item in treeview.get_children():
+            treeview.delete(item)
+        
+        fornecedores = Fornecedor.carregar_fornecedores_treeview()
+
+        # Adicionando os dados na Treeview
+        for fornecedor in fornecedores:
+            treeview.insert("", "end", values=fornecedor)
+                
+    
+    carregar_fornecedores()
+    
+    def ao_clicar_treeview(event):
+        item_selecionado = treeview.selection()
+
+        if item_selecionado:
+            item = treeview.item(item_selecionado, 'values')
+            print(item)
+            txt_id.config(state='normal')
+            txt_id.delete(0,tk.END)
+            txt_id.insert(0,item[0])
+            txt_id.config(state='disabled')
+
+            txt_nome_empresa.delete(0,tk.END)
+            txt_nome_empresa.insert(0,item[1])
+
+            combo_tipo_empresa.set(item[2])
+
+            txt_data_cadastro.delete(0,tk.END)
+            txt_data_cadastro.insert(0,item[3])
+                        
+    def ao_digitar_pesquisa(event):
+        campo = combo_pesquisa.get()
+        filtro = txt_pesquisa.get()
+        
+        for item in treeview.get_children():
+            treeview.delete(item)
+        
+        resultados = Fornecedor.pesquisa_fornecedor(campo, filtro)
+        
+        for resultado in resultados:
+            treeview.insert("", "end", values=resultado)
+        
+######################################################################################    
+    treeview.bind("<ButtonRelease-1>", ao_clicar_treeview)
+    txt_pesquisa.bind("<KeyRelease>", ao_digitar_pesquisa)
+
+######################################################################################

@@ -18,7 +18,7 @@ def valida_campo(tipo_campo, valor):
         except ValueError:
             messagebox.showwarning('Data inválida', 'Informe a data no formato dd/mm/aaaa.')
             resultado = False
-    elif tipo_campo == 'nome' or tipo_campo == 'telefone':
+    elif tipo_campo == 'nome' or tipo_campo == 'telefone' or tipo_campo == 'tipo_empresa':
         if valor == '':
             messagebox.showwarning('Campos obrigatórios', f'O seguinte campo não pode ser vazio: {tipo_campo}.')
             resultado = False
