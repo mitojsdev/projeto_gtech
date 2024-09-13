@@ -148,8 +148,10 @@ class Cliente:
 
 
 class TipoProduto:
-    def __init__(self, descricao):                
+    def __init__(self, descricao, margem, id_tipo_produto=None):                
         self.descricao = descricao
+        self.margem = margem
+        self.id_tipo_produto = id_tipo_produto
 
     def salvar_no_banco(self):
         # Conectando ao banco de dados SQLite
@@ -157,21 +159,40 @@ class TipoProduto:
         try:        
             cursor = conexao.cursor()
 
-            #cursor.execute('''select Max(COD) + 1 from TB_TIPO_PRODUTO''')
-
-           # resultado = cursor.fetchone()
-            #print(resultado)
-            #if resultado:                
-                #prox_cod = resultado[0]
-               # print(prox_cod)
-
-                # Inserindo tipo_produto no banco
             cursor.execute('''
-                INSERT INTO TB_TIPO_PRODUTO (descricao)
-                VALUES (?)
-                ''', (self.descricao,))
+                INSERT INTO TB_TIPO_PRODUTO (DESCRICAO, MARGEM)
+                VALUES (?, ?)
+                ''', (self.descricao,self.margem))
 
             conexao.commit()
+            messagebox.showinfo('Cadastro', 'Tipo de Produto inserido com sucesso.')
+        except Exception as e:
+            if 'UNIQUE constraint failed' in str(e):
+                messagebox.showwarning('Atenção!', 'Este Tipo de produto já existe.')
+            else:
+                messagebox.showwarning('Cadastro', f'Não foi possível completar a operação.Erro: {e}')
+
+        finally:
+            # Salvando (commit) as mudanças e fechando a conexão
+            if conexao:
+                cursor.close()                
+                conexao.close()
+    
+    def alterar_no_banco(self):
+        # Conectando ao banco de dados SQLite
+        conexao = conectar()         
+        try:        
+            cursor = conexao.cursor()
+            
+            cursor.execute('''
+                UPDATE TB_TIPO_PRODUTO
+                SET DESCRICAO = ?,
+                    MARGEM = ?
+                    WHERE COD = ?       
+                ''', (self.descricao,self.margem, self.id_tipo_produto))
+
+            conexao.commit()
+            messagebox.showinfo('Cadastro', 'Tipo de Produto alterado com sucesso.')
 
         except Exception as e:
             print(f'Não foi possível completar a operação.Erro: {e}')
@@ -209,7 +230,16 @@ class TipoProduto:
 
         else:
             print("erro ao buscar COD PRODUTO")
+    @staticmethod
+    def carregar_tipos_produto_treeview():
+         # Conectando ao banco de dados e recuperando os dados
+        conexao = conectar()
+        cursor = conexao.cursor()
+        cursor.execute("SELECT * FROM TB_TIPO_PRODUTO")
+        tipos = cursor.fetchall()
 
+        conexao.close()
+        return tipos
     
 
 class Fornecedor:
@@ -564,7 +594,8 @@ class Venda:
             messagebox.showinfo('Cadastro', 'A venda foi excluída com sucesso')
 
         except Exception as e:
-            print(f'Não foi possível completar a operação.Erro: {e}')
+            messagebox.showinfo('Cadastro', f'Não foi possível completar a operação.Erro: {e}')
+           
 
         finally:
             # Salvando (commit) as mudanças e fechando a conexão
@@ -604,18 +635,23 @@ class Venda:
         conexao = conectar()
         cursor = conexao.cursor()
     #implementar aqui a lógica do lucro dependendo do tipo_produto
-    #
-
-        cursor.execute('''select a.preco_custo +100 from TB_PRODUTO a
+    #   
+        
+        cursor.execute('''select a.preco_custo, c.margem from TB_PRODUTO a
                 join TB_FORNECEDOR b on a.ID_FORNECEDOR = b.ID_FORNECEDOR
+                join TB_TIPO_PRODUTO C on a.TIPO_PRODUTO = c.COD
                 where a.NOME = ? and b.NOME_EMPRESA = ?''', (nome_produto, nome_fornecedor,))
             
         resultado = cursor.fetchone()
         
+        preco_custo = float(resultado[0])
+        margem = float(resultado[1])
+        print(resultado)
+        valor_total = preco_custo + margem
         conexao.close()
 
         if resultado:            
-            valor = str(resultado[0])
+            valor = str(valor_total)
             valor_formatado = valor.replace('.', ',')
             
             return valor_formatado

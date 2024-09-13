@@ -760,3 +760,110 @@ def cadastrar_venda(root):
 
 ######################################################################################    
     treeview.bind("<ButtonRelease-1>", ao_clicar_treeview)
+
+
+######################################################################################
+# Função para abrir a tela de cadastro de Tipo Produto
+def cadastrar_tipo_produto(root):
+    # Nova janela para cadastro de cliente
+    cadastro_janela = tk.Toplevel(root)
+    cadastro_janela.grab_set()
+    cadastro_janela.title("Cadastro de Tipos de Produto")
+    cadastro_janela.geometry("450x450")
+
+    # Campos de entrada    
+    tk.Label(cadastro_janela, text="ID").grid(row=0, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="Descrição").grid(row=1, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="Margem").grid(row=2, column=0, padx=10, pady=5, sticky="e")
+    
+    txt_id = tk.Entry(cadastro_janela,state='disabled',disabledbackground='lightgrey',disabledforeground='darkgrey')
+    txt_id.grid(row=0, column=1, padx=9, pady=0, sticky="w")
+    
+    txt_descricao = tk.Entry(cadastro_janela)
+    txt_descricao.grid(row=1, column=1, padx=9, pady=0, sticky="w")
+
+    txt_margem = tk.Entry(cadastro_janela)
+    txt_margem.grid(row=2, column=1, padx=9, pady=0, sticky="w")
+
+    # Função para salvar o cliente
+    def salvar_tipo_produto(operacao):
+        if not valida_campo('Descrição', txt_descricao.get()):
+            form = False
+        elif not valida_campo('Margem', txt_margem.get()):
+            form = False
+        else:
+            form = True
+
+        if form:
+            tipo_produto = txt_descricao.get()
+            margem = float(txt_margem.get())
+
+            if operacao == 'I':
+                tipoDeProduto = TipoProduto(tipo_produto,margem)
+                tipoDeProduto.salvar_no_banco()
+                limpar_campos()
+            else:
+                if valida_campo('id', txt_id.get()):
+                    id = int(txt_id.get())
+                    tipoDeProduto = TipoProduto(tipo_produto,margem,id)
+                    tipoDeProduto.alterar_no_banco()
+                    limpar_campos()
+            carregar_tipo_produto()
+
+
+    # Botão para salvar o cliente
+    tk.Button(cadastro_janela, text="Incluir", command=lambda:salvar_tipo_produto('I')).grid(row=3, columnspan=2, pady=10)
+    tk.Button(cadastro_janela, text="Alterar", command=lambda:salvar_tipo_produto('A')).grid(row=3, columnspan=4, pady=10)
+
+    # Criando a Treeview para exibir os clientes cadastrados
+    columns = ("Cod", "Descricao", "Margem")
+    treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
+    treeview.heading("Cod", text="Cod", anchor='w')
+    treeview.heading("Descricao", text="Descricao", anchor='w')
+    treeview.heading("Margem", text="Margem", anchor='w')    
+    treeview.grid(row=4, column=0, columnspan=4, padx=10, pady=10)
+
+    treeview.column("Cod",width=30)
+
+    def carregar_tipo_produto():
+        # Limpa a Treeview antes de carregar os dados
+        for item in treeview.get_children():
+            treeview.delete(item)
+
+        tipos_produtos = TipoProduto.carregar_tipos_produto_treeview()
+
+        # Adicionando os dados na Treeview
+        for tipo in tipos_produtos:
+            treeview.insert("", "end", values=tipo)
+        
+    def ao_clicar_treeview(event):
+        item_selecionado = treeview.selection()
+        #id, nome, telefone, data_cad
+        if item_selecionado:
+            item = treeview.item(item_selecionado, 'values')
+            print(item)
+            txt_id.config(state='normal')
+            txt_id.delete(0,tk.END)                        
+            txt_id.insert(0,item[0])
+            txt_id.config(state='disabled')
+
+            txt_descricao.delete(0,tk.END)
+            txt_descricao.insert(0,item[1])
+
+            txt_margem.delete(0,tk.END)
+            txt_margem.insert(0,item[2])
+
+    lista_entradas = [txt_id, txt_descricao, txt_margem]                  
+    def limpar_campos():
+        for entry in lista_entradas:
+            if entry == txt_id: 
+                entry.config(state='normal')
+                entry.delete(0, tk.END)  
+                entry.config(state='disabled')
+            else:
+                entry.delete(0, tk.END)
+            txt_descricao.focus()
+    # Carregar clientes ao abrir a janela
+    carregar_tipo_produto()
+    treeview.bind("<ButtonRelease-1>", ao_clicar_treeview)
+######################################################################################

@@ -5,67 +5,11 @@ from tkinter import messagebox
 from modelos import TipoProduto
 from conexao import conectar
 from tkinter import PhotoImage
-from views import cadastrar_cliente, cadastrar_produto
+from views import cadastrar_cliente, cadastrar_produto, cadastrar_tipo_produto
 from views import cadastrar_fornecedor, cadastrar_venda
 import os
 
-######################################################################################
-# Função para abrir a tela de cadastro de Tipo Produto
-def cadastrar_tipo_produto():
-    # Nova janela para cadastro de cliente
-    cadastro_janela = tk.Toplevel(root)
-    cadastro_janela.title("Cadastro de Tipos de Produto")
-    cadastro_janela.geometry("450x450")
 
-    # Campos de entrada    
-    tk.Label(cadastro_janela, text="Descrição").grid(row=0, column=0, padx=10, pady=5, sticky="e")
-    
-    txt_descricao = tk.Entry(cadastro_janela)
-    txt_descricao.grid(row=0, column=1, padx=9, pady=0, sticky="w")
-
-
-    # Função para salvar o cliente
-    def salvar_tipo_produto():        
-        tipo_produto = txt_descricao.get()        
-
-        # Instanciando a classe Cliente
-        tipoDeProduto = TipoProduto(tipo_produto)        
-        tipoDeProduto.salvar_no_banco()
-        # Adicionando o cliente à treeview
-        #treeview.insert("", "end", values=(id_cliente, nome, telefone, data_cadastro))
-
-        messagebox.showinfo("Cadastro", "Tipo de Produto inserido com sucesso.")
-
-    # Botão para salvar o cliente
-    tk.Button(cadastro_janela, text="Salvar", command=salvar_tipo_produto).grid(row=2, columnspan=2, pady=10)
-
-    # Criando a Treeview para exibir os clientes cadastrados
-    columns = ("Cod", "Descricao")
-    treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
-    treeview.heading("Cod", text="Cod")
-    treeview.heading("Descricao", text="Descricao")    
-    treeview.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
-
-    def carregar_tipo_produto():
-        # Limpa a Treeview antes de carregar os dados
-        for item in treeview.get_children():
-            treeview.delete(item)
-
-        # Conectando ao banco de dados e recuperando os dados
-        conexao = conectar()
-        cursor = conexao.cursor()
-        cursor.execute("SELECT * FROM TB_TIPO_PRODUTO")
-        tipos = cursor.fetchall()
-
-        # Adicionando os dados na Treeview
-        for tipo in tipos:
-            treeview.insert("", "end", values=tipo)
-        
-        conexao.close()
-
-    # Carregar clientes ao abrir a janela
-    carregar_tipo_produto()
-######################################################################################
 
 
 # Criação da janela principal
@@ -91,7 +35,7 @@ menu_barra.add_cascade(label="Fornecedor",menu=menu_fornecedor)
 
 menu_produto = tk.Menu(menu_barra,tearoff=0)
 menu_produto.add_command(label="Cadastro", command=lambda:cadastrar_produto(root))
-menu_produto.add_command(label="Tipo de Produto", command=cadastrar_tipo_produto)
+menu_produto.add_command(label="Tipo de Produto", command=lambda:cadastrar_tipo_produto(root))
 menu_produto.add_separator()
 menu_barra.add_cascade(label="Produto",menu=menu_produto)
 
