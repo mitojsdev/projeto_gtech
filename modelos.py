@@ -285,6 +285,7 @@ class Fornecedor:
 
         fornecedores = cursor.fetchall()
 
+        conexao.close()
         return fornecedores
 
     @staticmethod
@@ -305,7 +306,7 @@ class Fornecedor:
         cursor.execute(comando_final, ('%' + filtro + '%',))
 
         resultados = cursor.fetchall()
-
+        conexao.close()
         return resultados
 
     def carregar_fornecedores_combo():
@@ -339,7 +340,7 @@ class Fornecedor:
 
 
 class Produto:
-    def __init__(self, id_produto, nome, preco_custo, tipo_produto, fabricante, marca, cor, id_fornecedor, data_cadastro):
+    def __init__(self, nome, preco_custo, tipo_produto, fabricante, marca, cor, id_fornecedor, data_cadastro, id_produto=None):
         self.id_produto = id_produto
         self.nome = nome
         self.preco_custo = preco_custo
@@ -357,15 +358,21 @@ class Produto:
             cursor = conexao.cursor()
 
             # Inserindo os dados do cliente no banco
+
             cursor.execute('''
-                INSERT INTO TB_PRODUTO_NEW(ID_PRODUTO, NOME, PRECO_CUSTO, TIPO_PRODUTO, FABRICANTE, MARCA, COR, ID_FORNECEDOR, DATA_CADASTRO)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (self.id_produto, self.nome, self.preco_custo, self.tipo_produto, self.fabricante, self.marca, self.cor, self.id_fornecedor, self.data_cadastro))
+                INSERT INTO TB_PRODUTO (NOME, PRECO_CUSTO, TIPO_PRODUTO, FABRICANTE, MARCA, COR, ID_FORNECEDOR, DATA_CADASTRO)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (self.nome, self.preco_custo, self.tipo_produto, self.fabricante, self.marca, self.cor, self.id_fornecedor, self.data_cadastro))
 
             conexao.commit()
+            messagebox.showinfo('Cadastro', 'Produto inserido com sucesso!')
 
         except Exception as e:
-            print(f'Não foi possível completar a operação.Erro: {e}')
+            if 'UNIQUE constraint failed' in str(e):
+                messagebox.showwarning('Cadastro', 'Este produto já existe para esse fornecedor.')
+            else:
+                messagebox.showwarning('Cadastro', f'Não foi possível completar a operação.Erro: {e}')
+            
 
         finally:
             # Salvando (commit) as mudanças e fechando a conexão
@@ -378,7 +385,7 @@ class Produto:
         # Conectando ao banco de dados e recuperando os dados
         conexao = conectar()
         cursor = conexao.cursor()
-        cursor.execute('''SELECT A.NOME || '/' || A.MARCA || '/' || B.NOME_EMPRESA, A.ID_PRODUTO FROM TB_PRODUTO_NEW A
+        cursor.execute('''SELECT A.NOME || '/' || A.MARCA || '/' || B.NOME_EMPRESA, A.ID_PRODUTO FROM TB_PRODUTO A
         JOIN TB_FORNECEDOR B ON A.ID_FORNECEDOR = B.ID_FORNECEDOR ORDER BY A.NOME ASC;''')
         lista_produtos = [row [0] for row in cursor.fetchall()]
         print(lista_produtos)
@@ -416,7 +423,7 @@ class Produto:
 
             # Excluindo os dados do cliente no banco
             cursor.execute('''
-                UPDATE TB_PRODUTO_NEW 
+                UPDATE TB_PRODUTO
                 SET NOME = ?,
                     PRECO_CUSTO = ?,
                     TIPO_PRODUTO = ?,
@@ -428,7 +435,7 @@ class Produto:
             ''', (self.nome,self.preco_custo, self.tipo_produto, self.fabricante, self.marca, self.cor, self.id_fornecedor, self.id_produto))
 
             conexao.commit()
-
+            messagebox.showinfo('Cadastro', 'O produto foi alterado.')
         except Exception as e:
             print(f'Não foi possível completar a operação.Erro: {e}')
 
@@ -439,11 +446,25 @@ class Produto:
                 conexao.close()
 
     @staticmethod
+    def carregar_produtos_treeview():
+        conexao = conectar()
+        cursor = conexao.cursor()
+        cursor.execute('''SELECT A.ID_PRODUTO, A.NOME, A.PRECO_CUSTO, B.DESCRICAO, A.FABRICANTE,
+                        A.MARCA, A.COR, C.NOME_EMPRESA, A.DATA_CADASTRO FROM TB_PRODUTO A
+                        JOIN TB_TIPO_PRODUTO B ON B.COD = A.TIPO_PRODUTO
+                        JOIN TB_FORNECEDOR C ON C.ID_FORNECEDOR = A.ID_FORNECEDOR;''')
+        
+        resultado = cursor.fetchall()
+        conexao.close()
+        return resultado
+
+
+    @staticmethod
     def localiza_produto_id(nome_produto, nome_fornecedor):    
         conexao = conectar()
         cursor = conexao.cursor()
 
-        cursor.execute('''select a.id_produto from TB_PRODUTO_NEW a
+        cursor.execute('''select a.id_produto from TB_PRODUTO a
                 join TB_FORNECEDOR b on a.ID_FORNECEDOR = b.ID_FORNECEDOR
                 where a.NOME = ? and b.NOME_EMPRESA = ?''', (nome_produto, nome_fornecedor,))
             
@@ -458,6 +479,40 @@ class Produto:
         else:
             print("erro ao buscar ID_PRODUTO")
 
+    
+    def pesquisar_produtos(campo, filtro):
+        conexao = conectar()
+        cursor = conexao.cursor()                             
+        if campo == 'Nome':
+            condicao = '''A.NOME LIKE ?'''
+        elif campo == 'Marca':
+            condicao = '''A.MARCA LIKE ?'''
+        elif campo == 'Tipo Produto':
+            condicao = '''B.DESCRICAO LIKE ?'''
+        elif campo == 'Fabricante':
+            condicao = '''A.FABRICANTE LIKE ?'''
+        elif campo == 'Cor':
+            condicao = '''A.COR LIKE ?'''
+        else:
+            condicao = '''C.NOME_EMPRESA LIKE ?'''
+
+        comando = '''SELECT A.ID_PRODUTO, A.NOME, A.PRECO_CUSTO, B.DESCRICAO, A.FABRICANTE,
+                        A.MARCA, A.COR, C.NOME_EMPRESA, A.DATA_CADASTRO FROM TB_PRODUTO A
+                        JOIN TB_TIPO_PRODUTO B ON B.COD = A.TIPO_PRODUTO
+                        JOIN TB_FORNECEDOR C ON C.ID_FORNECEDOR = A.ID_FORNECEDOR
+                        WHERE '''
+
+        comando_final = comando + " " + condicao
+        print(f'comando final: {comando_final}')
+        print(f'filtro: {filtro}')
+        
+        cursor.execute(comando_final, ('%' + filtro + '%',))
+
+        resultados = cursor.fetchall()
+        conexao.close()
+        return resultados
+
+        
 
 class Venda:
     def __init__(self, id_venda, data_venda, id_cliente, id_produto, quantidade, preco_venda, lucro):
