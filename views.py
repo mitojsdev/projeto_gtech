@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 from datetime import datetime
-from modelos import Cliente, Fornecedor, TipoProduto, Produto
+from modelos import Cliente, Fornecedor, TipoProduto, Produto, Venda
 from funcoes import valida_campo
 
 
@@ -515,3 +516,247 @@ def cadastrar_produto(root):
 
 # fim tela cadastro produtos
 ######################################################################################
+
+
+######################################################################################
+#função para cadastro vendas
+def cadastrar_venda(root):
+    
+    cadastro_janela = tk.Toplevel(root)
+    cadastro_janela.grab_set()
+    cadastro_janela.title("Cadastro de Venda")
+    cadastro_janela.geometry("900x650")
+
+    tk.Label(cadastro_janela, text="Data Venda").grid(row=0, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="ID").grid(row=1, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="Cliente").grid(row=2, column=0, padx=10, pady=5, sticky="e")    
+    tk.Label(cadastro_janela, text="Produto").grid(row=3, column=0, padx=10, pady=5, sticky="e") 
+    tk.Label(cadastro_janela, text="Quantidade").grid(row=4, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="Preço Venda").grid(row=5, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="Lucro").grid(row=6, column=0, padx=10, pady=5, sticky="e")
+    lbl_filtrar =tk.Label(cadastro_janela, text="Filtrar")
+    lbl_filtrar.grid(row=7, column=2, padx=0, pady=5, sticky="e")
+    lbl_campo =tk.Label(cadastro_janela, text="Selecione:")
+    lbl_campo.grid(row=6, column=2, padx=0, pady=5, sticky="e")                                    
+    lbl_preco_sugerido = tk.Label(cadastro_janela, text="Preço sugerido: ")
+    lbl_preco_sugerido.grid(row=5, column=1, padx=90, pady=5, sticky="e")
+
+    txt_data_venda = tk.Entry(cadastro_janela)
+    txt_data_venda.grid(row=0, column=1, padx=10, pady=5, sticky="w")
+    txt_data_venda.insert(0, datetime.now().strftime("%d/%m/%Y"))
+    txt_id = tk.Entry(cadastro_janela, state='disabled',disabledbackground='lightgrey',disabledforeground='darkgrey')
+    txt_id.grid(row=1, column=1, padx=9, pady=0, sticky="w")
+
+    lista_clientes = Cliente.carregar_clientes_combo()
+    combo_cliente = ttk.Combobox(cadastro_janela, values=lista_clientes, width=50)
+    combo_cliente.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+
+    lista_produtos = Produto.carregar_produtos_combo()
+    combo_produto = ttk.Combobox(cadastro_janela, values=lista_produtos, width=45)
+    combo_produto.grid(row=3, column=1, padx=10, pady=5, sticky="w")
+
+    lista_quantidade = ['1','2','3','4','5','6','7','8','9','10']
+    txt_quantidade = ttk.Combobox(cadastro_janela, values=lista_quantidade, width=15)    
+    txt_quantidade.grid(row=4, column=1, padx=10, pady=5, sticky="w")
+
+    txt_preco_venda = tk.Entry(cadastro_janela)
+    txt_preco_venda.grid(row=5, column=1, padx=10, pady=5, sticky="w")
+    
+    txt_lucro = tk.Entry(cadastro_janela, state='disabled')    
+    txt_lucro.grid(row=6, column=1, padx=10, pady=5, sticky="w")
+    
+    txt_pesquisa = tk.Entry(cadastro_janela, width=30)
+    txt_pesquisa.grid(row=7, column=3, padx=10, pady=5, sticky="w")
+
+    lista_campos = ['Cliente', 'Produto', 'Fornecedor']
+    combo_pesquisa = ttk.Combobox(cadastro_janela,values=lista_campos)
+    combo_pesquisa.grid(row=6, column=3, padx=10, pady=5, sticky="w")
+    
+    
+    def salvar_venda(operacao):
+        if not valida_campo('Produto', combo_produto.get()):
+            form = False
+        elif not valida_campo('Cliente', combo_cliente.get()):
+            form = False
+        elif not valida_campo('Quantidade', txt_quantidade.get()):
+            form = False
+        elif not valida_campo('moeda', txt_preco_venda.get()):
+            form = False
+        elif not valida_campo('data', txt_data_venda.get()):
+            form = False
+        else:
+            form = True
+
+        if form:                    
+            cliente_id = Cliente.localiza_id_cliente(combo_cliente.get())
+            produto_selecionado = combo_produto.get()
+            partes = produto_selecionado.split('/')
+            nome_produto = partes[0]
+            nome_fornecedor = partes[-1]
+            produto_id = Produto.localiza_produto_id(nome_produto,nome_fornecedor)        
+            quantidade = int(txt_quantidade.get())
+            preco_venda= txt_preco_venda.get()        
+            data_venda = txt_data_venda.get()
+            lucro = txt_lucro.get()        
+
+            if operacao == 'I':                        
+                venda = Venda(data_venda, cliente_id, produto_id, quantidade, preco_venda, lucro)
+                venda.salvar_venda()
+                limpar_campos()                               
+            elif operacao == 'E':
+                resposta  = messagebox.askquestion('Cadastro', 'Deseja realmente excluir a venda?', icon='warning')
+                if resposta == 'yes':
+                    if valida_campo('id', txt_id.get()):
+                        id_venda = txt_id.get()
+                        venda = Venda(data_venda, cliente_id, produto_id, quantidade, preco_venda, lucro, id_venda)            
+                        venda.excluir_venda()
+                        limpar_campos()                                    
+            else:
+                if valida_campo('id', txt_id.get()):
+                    id_venda = txt_id.get()
+                    venda = Venda(data_venda, cliente_id, produto_id, quantidade, preco_venda, lucro, id_venda)            
+                    venda.alterar_venda()
+                    limpar_campos()                                    
+            
+        carregar_vendas()
+    
+    
+
+    tk.Button(cadastro_janela, text="Incluir", command=lambda:salvar_venda('I')).grid(row=7, columnspan=2, pady=10)
+    tk.Button(cadastro_janela, text="Alterar", command=lambda:salvar_venda('A')).grid(row=7, columnspan=3, pady=10)
+    tk.Button(cadastro_janela, text="Excluir", command=lambda:salvar_venda('E')).grid(row=7, columnspan=4, pady=10)
+
+    def ao_selecionar_combo_produto(event):
+        produto_selecionado = combo_produto.get()
+        partes = produto_selecionado.split('/')
+        nome_produto = partes[0]
+        nome_fornecedor = partes[-1]        
+        valor_sugerido = Venda.calcular_preco_sugerido(nome_produto,nome_fornecedor)        
+        lbl_preco_sugerido.config(text=f'Preço sugerido: {valor_sugerido}')
+
+    def ao_sair_preco_venda(event):
+        preco_venda = txt_preco_venda.get().replace(',','.')
+        preco_venda_formatado = float(preco_venda)        
+        quantidade = txt_quantidade.get()
+        str_preco_sugerido = lbl_preco_sugerido.cget('text')
+        partes = str_preco_sugerido.split(':')
+        valor_sugerido = partes[-1]
+        valor_sugerido_formatado = float(valor_sugerido.replace(',','.'))
+        print(valor_sugerido_formatado)        
+        if preco_venda_formatado > 0 and valor_sugerido_formatado > 0:
+            lucro = (preco_venda_formatado - (valor_sugerido_formatado - 100)) * float(quantidade)
+            lucro_formatado = str(round(lucro,2)).replace('.',',')            
+            txt_lucro.config(state='normal')
+            txt_lucro.delete(0, tk.END)
+            txt_lucro.insert(0,lucro_formatado)
+            txt_lucro.config(state='disabled')
+        else:
+            txt_lucro.insert(0,'falhou')
+
+
+    def ao_digitar_pesquisa(event):
+        campo = combo_pesquisa.get()
+        filtro = txt_pesquisa.get()
+
+        for item in treeview.get_children():
+            treeview.delete(item)
+        
+        
+        resultados = Venda.pesquisar_venda(campo,filtro)
+        
+        for resultado in resultados:
+            treeview.insert("", "end", values=resultado)
+
+        
+
+    combo_produto.bind("<<ComboboxSelected>>", ao_selecionar_combo_produto)
+    txt_preco_venda.bind("<FocusOut>", ao_sair_preco_venda)
+    txt_pesquisa.bind("<KeyRelease>", ao_digitar_pesquisa)
+    
+    
+    columns = ("ID", "Data", "Cliente", "Produto", "Quantidade", "Preço Venda", "Lucro")
+    treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
+    treeview.heading("ID", text="ID")
+    treeview.heading("Data", text="Data")
+    treeview.heading("Cliente", text="Cliente")
+    treeview.heading("Produto", text="Produto")   
+    treeview.heading("Quantidade", text="Quantidade")
+    treeview.heading("Preço Venda", text="Preço Venda")
+    treeview.heading("Lucro", text="Lucro")    
+    treeview.grid(row=8, column=0,columnspan=4, padx=10, pady=10)
+
+    treeview.column("ID",width=30)
+    treeview.column("Preço Venda",width=80)
+    treeview.column("Lucro",width=80)
+    treeview.column("Quantidade",width=30)
+    #treeview.column("Cor",width=30)
+    #treeview.column("Marca",width=50)
+    
+
+    def carregar_vendas():
+        # Limpa a Treeview antes de carregar os dados
+        for item in treeview.get_children():
+            treeview.delete(item)
+
+        # Conectando ao banco de dados e recuperando os dados        
+        vendas = Venda.carregar_vendas_treeview()
+
+        # Adicionando os dados na Treeview
+        for venda in vendas:
+            treeview.insert("", "end", values=venda)                
+    
+    # Carregar clientes ao abrir a janela
+    carregar_vendas()
+
+######################################################################################
+
+######################################################################################
+#lidar com prenchimento caixas após clique na treeview
+    def ao_clicar_treeview(event):
+        item_selecionado = treeview.selection()
+
+        if item_selecionado:
+            item = treeview.item(item_selecionado, 'values')
+            print(item)
+            txt_id.config(state='normal')
+            txt_id.delete(0,tk.END)
+            txt_id.insert(0,item[0])
+            txt_id.config(state='disabled')
+
+            txt_data_venda.delete(0,tk.END)
+            txt_data_venda.insert(0,item[1])
+
+            combo_cliente.set(item[2])
+
+            combo_produto.set(item[3])
+
+            txt_quantidade.set(item[4])
+
+            txt_preco_venda.delete(0,tk.END)
+            txt_preco_venda.insert(0,item[5].replace('.',','))
+
+            txt_lucro.config(state='normal')
+            txt_lucro.delete(0,tk.END)
+            txt_lucro.insert(0,item[6].replace('.',','))
+            txt_lucro.config(state='disabled')
+            
+            ao_selecionar_combo_produto(event="<<ComboboxSelected>>")
+    
+    lista_entradas = [txt_id, txt_lucro, txt_preco_venda]
+    def limpar_campos():
+        for entry in lista_entradas:
+            for entry in (lista_entradas):
+                if entry == txt_id or entry == txt_lucro: 
+                    entry.config(state='normal')
+                    entry.delete(0, tk.END)  
+                    entry.config(state='disabled')
+                else:
+                    entry.delete(0, tk.END)
+
+                combo_cliente.set('')
+                combo_produto.set('')
+                txt_quantidade.set('')
+                lbl_preco_sugerido.config(text='Preço Sugerido:')                     
+
+######################################################################################    
+    treeview.bind("<ButtonRelease-1>", ao_clicar_treeview)

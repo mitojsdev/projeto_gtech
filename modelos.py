@@ -515,7 +515,7 @@ class Produto:
         
 
 class Venda:
-    def __init__(self, id_venda, data_venda, id_cliente, id_produto, quantidade, preco_venda, lucro):
+    def __init__(self, data_venda, id_cliente, id_produto, quantidade, preco_venda, lucro, id_venda=None):
         self.id_venda = id_venda
         self.data_venda = data_venda
         self.id_cliente = id_cliente
@@ -532,11 +532,12 @@ class Venda:
 
             # Inserindo os dados do cliente no banco
             cursor.execute('''
-                INSERT INTO TB_VENDA(ID, DATA, ID_CLIENTE, ID_PRODUTO, QUANTIDADE, PRECO_VENDA, LUCRO)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (self.id_venda, self.data_venda, self.id_cliente, self.id_produto, self.quantidade, self.preco_venda, self.lucro))
+                INSERT INTO TB_VENDA(DATA, ID_CLIENTE, ID_PRODUTO, QUANTIDADE, PRECO_VENDA, LUCRO)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (self.data_venda, self.id_cliente, self.id_produto, self.quantidade, self.preco_venda, self.lucro))
 
             conexao.commit()
+            messagebox.showinfo('Cadastro', 'A venda foi cadastrada com sucesso.')
 
         except Exception as e:
             print(f'Não foi possível completar a operação.Erro: {e}')
@@ -560,6 +561,7 @@ class Venda:
             ''', (self.id_venda,))
 
             conexao.commit()
+            messagebox.showinfo('Cadastro', 'A venda foi excluída com sucesso')
 
         except Exception as e:
             print(f'Não foi possível completar a operação.Erro: {e}')
@@ -587,7 +589,7 @@ class Venda:
             ''', (self.id_cliente,self.id_produto, self.quantidade, self.preco_venda, self.lucro, self.id_venda))
 
             conexao.commit()
-
+            messagebox.showinfo('Cadastro', 'A venda foi alterada com sucesso.')
         except Exception as e:
             print(f'Não foi possível completar a operação.Erro: {e}')
 
@@ -604,7 +606,7 @@ class Venda:
     #implementar aqui a lógica do lucro dependendo do tipo_produto
     #
 
-        cursor.execute('''select a.preco_custo +100 from TB_PRODUTO_NEW a
+        cursor.execute('''select a.preco_custo +100 from TB_PRODUTO a
                 join TB_FORNECEDOR b on a.ID_FORNECEDOR = b.ID_FORNECEDOR
                 where a.NOME = ? and b.NOME_EMPRESA = ?''', (nome_produto, nome_fornecedor,))
             
@@ -612,9 +614,47 @@ class Venda:
         
         conexao.close()
 
-        if resultado:
-            valor = resultado[0]
-            return valor
+        if resultado:            
+            valor = str(resultado[0])
+            valor_formatado = valor.replace('.', ',')
+            
+            return valor_formatado
 
         else:
             print("erro ao buscar ID_PRODUTO")
+
+    def pesquisar_venda(campo, filtro):
+        conexao = conectar()
+        cursor = conexao.cursor()                             
+        if campo == 'Cliente':
+            condicao = '''B.NOME LIKE ?'''
+        elif campo == 'Fornecedor':
+            condicao = '''D.NOME_EMPRESA LIKE ?'''
+        else:
+            condicao = '''C.NOME LIKE ?'''
+
+        comando = '''SELECT A.ID, A.DATA, B.NOME, C.NOME || '/' || C.MARCA || '/' || D.NOME_EMPRESA as Produto, a.QUANTIDADE, a.PRECO_VENDA, a.LUCRO
+                        from TB_VENDA a
+                        join TB_CLIENTE b on a.ID_CLIENTE = b.ID_CLIENTE
+                        join TB_PRODUTO c on a.ID_PRODUTO = c.ID_PRODUTO
+                        join TB_FORNECEDOR d on c.ID_FORNECEDOR = d.ID_FORNECEDOR
+                        WHERE'''
+        comando_final = comando + " " + condicao                
+        cursor.execute(comando_final, ('%' + filtro + '%',))
+        resultado = cursor.fetchall()
+        
+        conexao.close()
+        return resultado
+    
+    @staticmethod
+    def carregar_vendas_treeview():
+        conexao = conectar()
+        cursor = conexao.cursor()
+        cursor.execute('''select a.id, a.DATA, b.NOME, c.NOME || '/' || c.MARCA || '/'|| d.NOME_EMPRESA as Produto, a.QUANTIDADE, a.PRECO_VENDA, a.LUCRO
+                        from TB_VENDA a
+                        join TB_CLIENTE b on a.ID_CLIENTE = b.ID_CLIENTE
+                        join TB_PRODUTO c on a.ID_PRODUTO = c.ID_PRODUTO
+                        join TB_FORNECEDOR d on c.ID_FORNECEDOR = d.ID_FORNECEDOR;''')
+        resultados = cursor.fetchall()
+        conexao.close()
+        return resultados
