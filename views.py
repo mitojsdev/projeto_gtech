@@ -545,7 +545,7 @@ def cadastrar_venda(root):
     lbl_campo =tk.Label(cadastro_janela, text="Selecione:")
     lbl_campo.grid(row=6, column=2, padx=0, pady=5, sticky="e")                                    
     lbl_preco_sugerido = tk.Label(cadastro_janela, text="Preço sugerido: ")
-    lbl_preco_sugerido.grid(row=5, column=1, padx=90, pady=5, sticky="e")
+    lbl_preco_sugerido.grid(row=5, column=1, padx=80, pady=5, sticky="e")
 
     txt_data_venda = tk.Entry(cadastro_janela)
     txt_data_venda.grid(row=0, column=1, padx=10, pady=5, sticky="w")
@@ -628,7 +628,7 @@ def cadastrar_venda(root):
     
     
 
-    tk.Button(cadastro_janela, text="Incluir", command=lambda:salvar_venda('I')).grid(row=7, columnspan=2, pady=10)
+    tk.Button(cadastro_janela, text="Incluir", command=lambda:salvar_venda('I')).grid(row=7, columnspan=2, padx=130, sticky='w')
     tk.Button(cadastro_janela, text="Alterar", command=lambda:salvar_venda('A')).grid(row=7, columnspan=3, pady=10)
     tk.Button(cadastro_janela, text="Excluir", command=lambda:salvar_venda('E')).grid(row=7, columnspan=4, pady=10)
 
