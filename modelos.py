@@ -634,8 +634,6 @@ class Venda:
     def calcular_preco_sugerido(nome_produto, nome_fornecedor):     
         conexao = conectar()
         cursor = conexao.cursor()
-    #implementar aqui a lógica do lucro dependendo do tipo_produto
-    #   
         
         cursor.execute('''select a.preco_custo, c.margem from TB_PRODUTO a
                 join TB_FORNECEDOR b on a.ID_FORNECEDOR = b.ID_FORNECEDOR
@@ -645,8 +643,7 @@ class Venda:
         resultado = cursor.fetchone()
         
         preco_custo = float(resultado[0])
-        margem = float(resultado[1])
-        print(resultado)
+        margem = float(resultado[1])        
         valor_total = preco_custo + margem
         conexao.close()
 

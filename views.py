@@ -12,7 +12,7 @@ def cadastrar_cliente(root):
     cadastro_janela.grab_set()
     #odal_window.grab_set()
     cadastro_janela.title("Cadastro de Cliente")
-    cadastro_janela.geometry("850x450")
+    cadastro_janela.geometry("650x450")
 
     # Campos de entrada
     tk.Label(cadastro_janela, text="ID").grid(row=0, column=0, padx=10, pady=5, sticky="e")
@@ -99,11 +99,14 @@ def cadastrar_cliente(root):
     # Criando a Treeview para exibir os clientes cadastrados
     columns = ("ID", "Nome", "Telefone", "Data de Cadastro")
     treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
-    treeview.heading("ID", text="ID")
-    treeview.heading("Nome", text="Nome")
-    treeview.heading("Telefone", text="Telefone")
-    treeview.heading("Data de Cadastro", text="Data de Cadastro")
+    treeview.heading("ID", text="ID", anchor='w')
+    treeview.heading("Nome", text="Nome", anchor='w')
+    treeview.heading("Telefone", text="Telefone", anchor='w')
+    treeview.heading("Data de Cadastro", text="Data de Cadastro", anchor='w')
     treeview.grid(row=5, column=0, columnspan=3, padx=10, pady=10)
+
+    treeview.column("ID",width=30)
+    treeview.column("Data de Cadastro",width=100)
 
     def carregar_clientes():
         # Limpa a Treeview antes de carregar os dados
@@ -164,7 +167,7 @@ def cadastrar_fornecedor(root):
     cadastro_janela = tk.Toplevel(root)
     cadastro_janela.grab_set()
     cadastro_janela.title("Cadastro de Fornecedor")
-    cadastro_janela.geometry("850x450")
+    cadastro_janela.geometry("650x450")
 
     
     tk.Label(cadastro_janela, text="ID").grid(row=0, column=0, padx=10, pady=5, sticky="e")
@@ -249,11 +252,14 @@ def cadastrar_fornecedor(root):
     
     columns = ("ID", "Nome Empresa", "Tipo Empresa", "Data de Cadastro")
     treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
-    treeview.heading("ID", text="ID")
-    treeview.heading("Nome Empresa", text="Nome Empresa")
-    treeview.heading("Tipo Empresa", text="Tipo Empresa")
-    treeview.heading("Data de Cadastro", text="Data de Cadastro")
+    treeview.heading("ID", text="ID", anchor='w')
+    treeview.heading("Nome Empresa", text="Nome Empresa", anchor='w')
+    treeview.heading("Tipo Empresa", text="Tipo Empresa", anchor='w')
+    treeview.heading("Data de Cadastro", text="Data de Cadastro", anchor='w')
     treeview.grid(row=5, column=0, columnspan=3, padx=10, pady=10)
+
+    treeview.column("ID",width=30)
+    treeview.column("Data de Cadastro",width=100)
 
     def carregar_fornecedores():
         # Limpa a Treeview antes de carregar os dados
@@ -525,7 +531,7 @@ def cadastrar_venda(root):
     cadastro_janela = tk.Toplevel(root)
     cadastro_janela.grab_set()
     cadastro_janela.title("Cadastro de Venda")
-    cadastro_janela.geometry("900x650")
+    cadastro_janela.geometry("820x650")
 
     tk.Label(cadastro_janela, text="Data Venda").grid(row=0, column=0, padx=10, pady=5, sticky="e")
     tk.Label(cadastro_janela, text="ID").grid(row=1, column=0, padx=10, pady=5, sticky="e")
@@ -552,11 +558,11 @@ def cadastrar_venda(root):
     combo_cliente.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
     lista_produtos = Produto.carregar_produtos_combo()
-    combo_produto = ttk.Combobox(cadastro_janela, values=lista_produtos, width=45)
+    combo_produto = ttk.Combobox(cadastro_janela, values=lista_produtos, width=50)
     combo_produto.grid(row=3, column=1, padx=10, pady=5, sticky="w")
 
     lista_quantidade = ['1','2','3','4','5','6','7','8','9','10']
-    txt_quantidade = ttk.Combobox(cadastro_janela, values=lista_quantidade, width=15)    
+    txt_quantidade = ttk.Combobox(cadastro_janela, values=lista_quantidade, width=5)    
     txt_quantidade.grid(row=4, column=1, padx=10, pady=5, sticky="w")
 
     txt_preco_venda = tk.Entry(cadastro_janela)
@@ -674,21 +680,22 @@ def cadastrar_venda(root):
     txt_pesquisa.bind("<KeyRelease>", ao_digitar_pesquisa)
     
     
-    columns = ("ID", "Data", "Cliente", "Produto", "Quantidade", "Preço Venda", "Lucro")
+    columns = ("ID", "Data", "Cliente", "Produto", "Qtd", "Preço Venda", "Lucro")
     treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
-    treeview.heading("ID", text="ID")
-    treeview.heading("Data", text="Data")
-    treeview.heading("Cliente", text="Cliente")
-    treeview.heading("Produto", text="Produto")   
-    treeview.heading("Quantidade", text="Quantidade")
-    treeview.heading("Preço Venda", text="Preço Venda")
-    treeview.heading("Lucro", text="Lucro")    
+    treeview.heading("ID", text="ID", anchor='w')
+    treeview.heading("Data", text="Data", anchor='w')
+    treeview.heading("Cliente", text="Cliente", anchor='w')
+    treeview.heading("Produto", text="Produto", anchor='w')   
+    treeview.heading("Qtd", text="Qtd", anchor='w')
+    treeview.heading("Preço Venda", text="Preço Venda", anchor='w')
+    treeview.heading("Lucro", text="Lucro", anchor='w')    
     treeview.grid(row=8, column=0,columnspan=4, padx=10, pady=10)
 
-    treeview.column("ID",width=30)
+    treeview.column("ID",width=30)      
+    treeview.column("Data",width=100)
     treeview.column("Preço Venda",width=80)
     treeview.column("Lucro",width=80)
-    treeview.column("Quantidade",width=30)
+    treeview.column("Qtd",width=30)
     #treeview.column("Cor",width=30)
     #treeview.column("Marca",width=50)
     
