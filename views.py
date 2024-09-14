@@ -14,6 +14,12 @@ def cadastrar_cliente(root):
     cadastro_janela.title("Cadastro de Cliente")
     cadastro_janela.geometry("700x450")
 
+    # Configuração do grid para expandir
+    cadastro_janela.grid_rowconfigure(10, weight=1)  # A linha da Treeview
+    for i in range(5):  # Para as linhas de 0 a 8
+        cadastro_janela.grid_rowconfigure(i, weight=0)  # As outras linhas têm peso 0
+    for i in range(3):  # Para as colunas de 0 a 4
+        cadastro_janela.grid_columnconfigure(i, weight=1)  # As colunas têm peso 1
 
 
     # Campos de entrada
@@ -200,8 +206,14 @@ def cadastrar_fornecedor(root):
     cadastro_janela = tk.Toplevel(root)
     cadastro_janela.grab_set()
     cadastro_janela.title("Cadastro de Fornecedor")
-    cadastro_janela.geometry("650x450")
+    cadastro_janela.geometry("780x450")
 
+    # Configuração do grid para expandir
+    cadastro_janela.grid_rowconfigure(10, weight=1)  # A linha da Treeview
+    for i in range(5):  # Para as linhas de 0 a 8
+        cadastro_janela.grid_rowconfigure(i, weight=0)  # As outras linhas têm peso 0
+    for i in range(3):  # Para as colunas de 0 a 4
+        cadastro_janela.grid_columnconfigure(i, weight=1)  # As colunas têm peso 1
     
     tk.Label(cadastro_janela, text="ID").grid(row=0, column=0, padx=10, pady=5, sticky="e")
     tk.Label(cadastro_janela, text="Nome Empresa").grid(row=1, column=0, padx=10, pady=5, sticky="e")    
@@ -304,7 +316,8 @@ def cadastrar_fornecedor(root):
 
     # Definindo a largura das colunas
     treeview.column("ID", width=30)
-    treeview.column("Data de Cadastro", width=100)
+    treeview.column("Data de Cadastro", width=120)
+    #treeview.column("Tipo Empresa", width=70)
 
     def carregar_fornecedores():
         # Limpa a Treeview antes de carregar os dados
@@ -385,6 +398,13 @@ def cadastrar_produto(root):
     cadastro_janela.grab_set()
     cadastro_janela.title("Cadastro de Produto")
     cadastro_janela.geometry("1200x650")
+
+    # Configuração do grid para expandir
+    cadastro_janela.grid_rowconfigure(10, weight=1)  # A linha da Treeview
+    for i in range(11):  # Para as linhas de 0 a 10
+        cadastro_janela.grid_rowconfigure(i, weight=0)  # As outras linhas têm peso 0
+    for i in range(5):  # Para as colunas de 0 a 4
+        cadastro_janela.grid_columnconfigure(i, weight=1)  # As colunas têm peso 1
 
     
     tk.Label(cadastro_janela, text="ID").grid(row=0, column=0, padx=10, pady=5, sticky="e")
@@ -641,7 +661,16 @@ def cadastrar_venda(root):
     cadastro_janela = tk.Toplevel(root)
     cadastro_janela.grab_set()
     cadastro_janela.title("Cadastro de Venda")
-    cadastro_janela.geometry("820x650")
+    cadastro_janela.geometry("880x650")
+
+
+    # Configuração do grid para expandir
+    cadastro_janela.grid_rowconfigure(10, weight=1)  # A linha da Treeview
+    for i in range(8):  # Para as linhas de 0 a 8
+        cadastro_janela.grid_rowconfigure(i, weight=0)  # As outras linhas têm peso 0
+    for i in range(5):  # Para as colunas de 0 a 4
+        cadastro_janela.grid_columnconfigure(i, weight=1)  # As colunas têm peso 1
+
 
     tk.Label(cadastro_janela, text="Data Venda").grid(row=0, column=0, padx=10, pady=5, sticky="e")
     tk.Label(cadastro_janela, text="ID").grid(row=1, column=0, padx=10, pady=5, sticky="e")
