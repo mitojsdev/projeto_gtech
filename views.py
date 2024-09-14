@@ -324,7 +324,8 @@ def cadastrar_produto(root):
     
     tk.Label(cadastro_janela, text="ID").grid(row=0, column=0, padx=10, pady=5, sticky="e")
     tk.Label(cadastro_janela, text="Nome").grid(row=1, column=0, padx=10, pady=5, sticky="e")    
-    tk.Label(cadastro_janela, text="Preço Custo").grid(row=2, column=0, padx=10, pady=5, sticky="e") 
+    tk.Label(cadastro_janela, text="Preço Custo").grid(row=2, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(cadastro_janela, text="Estoque").grid(row=2, column=1, padx=200, pady=5, sticky="w")
     tk.Label(cadastro_janela, text="Tipo Produto").grid(row=3, column=0, padx=10, pady=5, sticky="e")
     tk.Label(cadastro_janela, text="Fabricante").grid(row=4, column=0, padx=10, pady=5, sticky="e")
     tk.Label(cadastro_janela, text="Marca").grid(row=5, column=0, padx=10, pady=5, sticky="e")
@@ -345,6 +346,11 @@ def cadastrar_produto(root):
 
     txt_preco_custo = tk.Entry(cadastro_janela)
     txt_preco_custo.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+    
+    lista_estoque = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+    combo_estoque = ttk.Combobox(cadastro_janela, values=lista_estoque,width=5)
+    combo_estoque.current(0)
+    combo_estoque.grid(row=2, column=1, padx=270, pady=5, sticky="w")    
 
     tipos_produto = TipoProduto.carregar_tipos_produto()    
     combo_tipo_produto = ttk.Combobox(cadastro_janela, values=tipos_produto)
@@ -393,6 +399,8 @@ def cadastrar_produto(root):
             form = False
         elif not valida_campo('data', txt_data_cadastro.get()):
             form = False
+        elif not valida_campo('estoque', combo_estoque.get()):
+            form = False    
         else:
             form = True
 
@@ -406,15 +414,16 @@ def cadastrar_produto(root):
             cor = txt_cor.get()            
             fornecedor = Fornecedor.localiza_id_fornecedor(combo_fornecedor.get())            
             data_cadastro = txt_data_cadastro.get()
+            estoque = int(combo_estoque.get())
         
             if operacao == 'I':
-                produto = Produto(nome, preco_custo, tipo_produto_id, fabricante, marca, cor, fornecedor, data_cadastro)
+                produto = Produto(nome, preco_custo, tipo_produto_id, fabricante, marca, cor, fornecedor, data_cadastro, estoque)
                 produto.salvar_produto()
                 limpar_campos()
             else:
                 if valida_campo('id', txt_id.get()):
                     id_produto = txt_id.get()
-                    produto = Produto(nome, preco_custo, tipo_produto_id, fabricante, marca, cor, fornecedor, data_cadastro, id_produto)
+                    produto = Produto(nome, preco_custo, tipo_produto_id, fabricante, marca, cor, fornecedor, data_cadastro, estoque, id_produto)
                     produto.alterar_produto()
                     limpar_campos()
         carregar_produtos()        
@@ -423,7 +432,7 @@ def cadastrar_produto(root):
     tk.Button(cadastro_janela, text="Alterar", command=lambda:salvar_produto('A')).grid(row=9, columnspan=3, pady=10)
     
     
-    columns = ("ID", "Nome Produto", "Preço Custo", "Tipo", "Fabricante", "Marca", "Cor", "Fornecedor", "Data de Cadastro")
+    columns = ("ID", "Nome Produto", "Preço Custo", "Tipo", "Fabricante", "Marca", "Cor", "Fornecedor", "Data de Cadastro", "Estoque")
     treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
     treeview.heading("ID", text="ID", anchor='w')
     treeview.heading("Nome Produto", text="Nome Produto", anchor='w')
@@ -434,9 +443,11 @@ def cadastrar_produto(root):
     treeview.heading("Cor", text="Cor", anchor='w')
     treeview.heading("Fornecedor", text="Fornecedor", anchor='w')
     treeview.heading("Data de Cadastro", text="Data de Cadastro", anchor='w')
-    treeview.grid(row=10, column=0,columnspan=3, padx=10, pady=10)
+    treeview.heading("Estoque", text="Estoque", anchor='w')
+    treeview.grid(row=10, column=0,columnspan=4, padx=10, pady=10)
 
     treeview.column("ID",width=30)
+    treeview.column("Estoque",width=80)
     treeview.column("Preço Custo",width=80)
     treeview.column("Cor",width=60)
     treeview.column("Marca",width=60)
@@ -487,9 +498,15 @@ def cadastrar_produto(root):
             txt_cor.delete(0,tk.END)
             txt_cor.insert(0,item[6])
 
+            combo_fornecedor.set(item[7])
+
+            data_original = item[8]
+            data_convertida = datetime.strptime(data_original, "%Y-%m-%d")
+            data_formatada = data_convertida.strftime("%d/%m/%Y")
             txt_data_cadastro.delete(0,tk.END)
-            txt_data_cadastro.insert(0,item[8])
+            txt_data_cadastro.insert(0,data_formatada)
             
+            combo_estoque.set(item[9])
             #ao_selecionar_combo_produto(event="<<ComboboxSelected>>")
     def ao_digitar_pesquisa(event):
         campo = combo_pesquisa.get()
@@ -513,6 +530,7 @@ def cadastrar_produto(root):
                 entry.delete(0, tk.END)
         combo_fornecedor.set('')
         combo_tipo_produto.set('')
+        combo_estoque.set('')
 
         txt_nome.focus()
         
@@ -603,7 +621,8 @@ def cadastrar_venda(root):
             quantidade = int(txt_quantidade.get())
             preco_venda= txt_preco_venda.get()        
             data_venda = txt_data_venda.get()
-            lucro = txt_lucro.get()        
+            lucro_original = str(txt_lucro.get()).replace(',','.')                        
+            lucro = float(lucro_original)        
 
             if operacao == 'I':                        
                 venda = Venda(data_venda, cliente_id, produto_id, quantidade, preco_venda, lucro)

@@ -1,5 +1,5 @@
-import sqlite3
-#import psycopg2
+#import sqlite3
+import psycopg2
 
 print("iniciando...")
 
@@ -8,14 +8,14 @@ def conectar():
 
     #conectando ao banco de dados
         #conexao = sqlite3.connect('./Banco/BancoGtech.db')
-        conexao = sqlite3.connect('C:/Users/amilt/Documents/GTECH_NEW/Banco/BancoGtech.db')
-        #conexao = psycopg2.connect(
-         #   host="localhost",
-          #  database="postgres",
-           # user="postgres",
-            #password="root",)
+        #conexao = sqlite3.connect('C:/Users/amilt/Documents/GTECH_NEW/Banco/BancoGtech.db')
+        conexao = psycopg2.connect(
+            host="localhost",
+            database="postgres",
+            user="postgres",
+            password="root",)
 
-        conexao.execute("PRAGMA foreign_keys = on") 
+        #conexao.execute("PRAGMA foreign_keys = on") 
         
 
 

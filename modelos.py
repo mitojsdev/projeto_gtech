@@ -16,38 +16,20 @@ class Cliente:
         # Conectando ao banco de dados SQLite
         conexao = conectar()         
         try:        
-            cursor = conexao.cursor()
-            
-            #etapa 1 verificar se o cliente já existe (analisar os campos nome e telefone)
-            #cursor postgree
-            #cursor.execute('''SELECT * FROM "TB_CLIENTE" WHERE "NOME" = %s AND "TELEFONE" = %s''', 
-             #              (self.nome,self.telefone,))
-            #cursor sqlite
-            cursor.execute('''SELECT * FROM "TB_CLIENTE" WHERE "NOME" = ? AND "TELEFONE" = ?''', 
-                           (self.nome,self.telefone,))
-            resultado = cursor.fetchall()
-            tamanho = len(resultado)            
-            if tamanho != 0:
-                messagebox.showwarning('Atenção!', 'Já existe um cliente cadastrado com os dados informados.')
-            else:
-                #etapa 2, se nao for repetido, inserir dados            
-                # Inserindo os dados do cliente no banco
-                #cursor postgre
-                #cursor.execute('''
-                    #INSERT INTO "TB_CLIENTE" ("NOME", "TELEFONE", "DATA_CADASTRO")
-                   #VALUES (%s, %s, %s)
-                #''', (self.nome, self.telefone, self.data_cadastro))
-                #cursor sqlite
-                cursor.execute('''
-                    INSERT INTO "TB_CLIENTE" ("NOME", "TELEFONE", "DATA_CADASTRO")
-                    VALUES (?, ?, ?)
-                ''', (self.nome, self.telefone, self.data_cadastro))
-                conexao.commit()
+            cursor = conexao.cursor()                                    
+            cursor.execute('''
+                INSERT INTO "TB_CLIENTE" ("NOME", "TELEFONE", "DATA_CADASTRO")
+                VALUES (%s, %s, %s)
+            ''', (self.nome, self.telefone, self.data_cadastro))
+            conexao.commit()
 
-                messagebox.showinfo("Cadastro", "Cliente Cadastrado com sucesso!")        
+            messagebox.showinfo("Cadastro", "Cliente Cadastrado com sucesso!")        
 
         except Exception as e:
-            print(f'Não foi possível completar a operação.Erro: {e}')
+            if "viola a restrição de unicidade" in str(e):
+                messagebox.showwarning('Atenção!', 'O cliente informado já existe!')
+            else:
+                messagebox.showwarning('Atenção!', f'Não foi possível completar a operação.Erro: {e}')            
 
         finally:
             # Salvando (commit) as mudanças e fechando a conexão
@@ -62,10 +44,10 @@ class Cliente:
             cursor = conexao.cursor()
             comando = '''
                 UPDATE "TB_CLIENTE" 
-                SET "NOME" = ?,
-                    "TELEFONE" = ?,
-                    "DATA_CADASTRO" = ?
-                    WHERE "ID_CLIENTE" = ?
+                SET "NOME" = %s,
+                    "TELEFONE" = %s,
+                    "DATA_CADASTRO" = %s
+                    WHERE "ID_CLIENTE" = %s
             '''
             # Altearando os dados do cliente no banco
             cursor.execute(comando, (self.nome,self.telefone,self.data_cadastro,self.id))
@@ -101,7 +83,7 @@ class Cliente:
     def localiza_id_cliente(nome):
         conexao = conectar()
         cursor = conexao.cursor()
-        cursor.execute('''SELECT "ID_CLIENTE" FROM "TB_CLIENTE" WHERE "NOME" = ?''', (nome,))
+        cursor.execute('''SELECT "ID_CLIENTE" FROM "TB_CLIENTE" WHERE "NOME" = %s''', (nome,))
         
         resultado = cursor.fetchone()
         
@@ -130,7 +112,7 @@ class Cliente:
             conexao = conectar()
             cursor = conexao.cursor()                             
             if campo == 'Nome':
-                condicao = '''"NOME" LIKE ?'''
+                condicao = '''"NOME" LIKE %s'''
             
             comando = '''SELECT * FROM "TB_CLIENTE" WHERE '''
 
@@ -160,14 +142,14 @@ class TipoProduto:
             cursor = conexao.cursor()
 
             cursor.execute('''
-                INSERT INTO TB_TIPO_PRODUTO (DESCRICAO, MARGEM)
-                VALUES (?, ?)
+                INSERT INTO "TB_TIPO_PRODUTO" ("DESCRICAO","MARGEM")
+                VALUES (%s, %s)
                 ''', (self.descricao,self.margem))
 
             conexao.commit()
             messagebox.showinfo('Cadastro', 'Tipo de Produto inserido com sucesso.')
         except Exception as e:
-            if 'UNIQUE constraint failed' in str(e):
+            if 'viola a restrição de unicidade' in str(e):
                 messagebox.showwarning('Atenção!', 'Este Tipo de produto já existe.')
             else:
                 messagebox.showwarning('Cadastro', f'Não foi possível completar a operação.Erro: {e}')
@@ -185,10 +167,10 @@ class TipoProduto:
             cursor = conexao.cursor()
             
             cursor.execute('''
-                UPDATE TB_TIPO_PRODUTO
-                SET DESCRICAO = ?,
-                    MARGEM = ?
-                    WHERE COD = ?       
+                UPDATE "TB_TIPO_PRODUTO"
+                SET "DESCRICAO" = %s,
+                    "MARGEM" = %s
+                    WHERE "COD" = %s       
                 ''', (self.descricao,self.margem, self.id_tipo_produto))
 
             conexao.commit()
@@ -207,7 +189,7 @@ class TipoProduto:
         # Conectando ao banco de dados e recuperando os dados
         conexao = conectar()
         cursor = conexao.cursor()
-        cursor.execute('''SELECT DESCRICAO FROM TB_TIPO_PRODUTO ORDER BY DESCRICAO ASC''')
+        cursor.execute('''SELECT "DESCRICAO" FROM "TB_TIPO_PRODUTO" ORDER BY "DESCRICAO" ASC''')
         descricoes = [row[0] for row in cursor.fetchall()]
         print(descricoes)
         conexao.close()
@@ -218,7 +200,7 @@ class TipoProduto:
     def localiza_tipo_produto(descricao):        
         conexao = conectar()
         cursor = conexao.cursor()
-        cursor.execute("SELECT COD FROM TB_TIPO_PRODUTO WHERE DESCRICAO = ?", (descricao,))
+        cursor.execute('''SELECT "COD" FROM "TB_TIPO_PRODUTO" WHERE "DESCRICAO" = %s''', (descricao,))
         
         resultado = cursor.fetchone()
         
@@ -235,7 +217,7 @@ class TipoProduto:
          # Conectando ao banco de dados e recuperando os dados
         conexao = conectar()
         cursor = conexao.cursor()
-        cursor.execute("SELECT * FROM TB_TIPO_PRODUTO")
+        cursor.execute('''SELECT * FROM "TB_TIPO_PRODUTO"''')
         tipos = cursor.fetchall()
 
         conexao.close()
@@ -254,27 +236,21 @@ class Fornecedor:
         conexao = conectar()         
         try:        
             cursor = conexao.cursor()
+            # Inserindo os dados do fornecedor no banco
+            cursor.execute('''
+                INSERT INTO "TB_FORNECEDOR" ("NOME_EMPRESA", "TIPO_EMPRESA", "DATA_CADASTRO")
+                VALUES (%s, %s, %s)
+            ''', (self.nome_empresa, self.tipo_empresa, self.data_cadastro))
 
-            cursor.execute('''SELECT * FROM "TB_FORNECEDOR" WHERE "NOME_EMPRESA" = ? AND "TIPO_EMPRESA" = ?''', 
-                           (self.nome_empresa,self.tipo_empresa,))
-            resultado = cursor.fetchall()
-            tamanho = len(resultado)            
-            if tamanho != 0:
-                messagebox.showwarning('Atenção!', 'Já existe um fornecedor cadastrado com os dados informados.')
-            else:
+            conexao.commit()
 
-            # Inserindo os dados do cliente no banco
-                cursor.execute('''
-                    INSERT INTO TB_FORNECEDOR (nome_empresa, tipo_empresa, data_cadastro)
-                    VALUES (?, ?, ?)
-                ''', (self.nome_empresa, self.tipo_empresa, self.data_cadastro))
-
-                conexao.commit()
-
-                messagebox.showinfo('Cadastro', 'Fornecedor cadastrado com sucesso!')
+            messagebox.showinfo('Cadastro', 'Fornecedor cadastrado com sucesso!')
 
         except Exception as e:
-            print(f'Não foi possível completar a operação.Erro: {e}')
+            if "viola a restrição de unicidade" in str(e):
+                messagebox.showwarning('Atenção!', 'O fornecedor informado já existe!')
+            else:
+                messagebox.showwarning('Atenção!', f'Não foi possível completar a operação.Erro: {e}') 
 
         finally:
             # Salvando (commit) as mudanças e fechando a conexão
@@ -289,11 +265,11 @@ class Fornecedor:
 
             # Altearando os dados do cliente no banco
             cursor.execute('''
-                UPDATE TB_FORNECEDOR 
-                SET NOME_EMPRESA = ?,
-                    TIPO_EMPRESA = ?,
-                           DATA_CADASTRO = ?                   
-                    WHERE ID_FORNECEDOR = ?
+                UPDATE "TB_FORNECEDOR"
+                SET "NOME_EMPRESA" = %s,
+                    "TIPO_EMPRESA" = %s,
+                           "DATA_CADASTRO" = %s                   
+                    WHERE "ID_FORNECEDOR" = %s
             ''', (self.nome_empresa,self.tipo_empresa, self.data_cadastro,self.id_fornecedor))
 
             conexao.commit()
@@ -311,7 +287,7 @@ class Fornecedor:
     def carregar_fornecedores_treeview():
         conexao = conectar()
         cursor = conexao.cursor()
-        cursor.execute("SELECT * FROM TB_FORNECEDOR")
+        cursor.execute('''SELECT * FROM "TB_FORNECEDOR"''')
 
         fornecedores = cursor.fetchall()
 
@@ -323,11 +299,11 @@ class Fornecedor:
         conexao = conectar()
         cursor = conexao.cursor()                             
         if campo == 'Nome':
-            condicao = '''NOME_EMPRESA LIKE ?'''
+            condicao = '''"NOME_EMPRESA" LIKE %s'''
         else:
-            condicao = '''TIPO_EMPRESA LIKE ?'''
+            condicao = '''"TIPO_EMPRESA" LIKE %s'''
         
-        comando = '''SELECT * FROM TB_FORNECEDOR WHERE '''
+        comando = '''SELECT * FROM "TB_FORNECEDOR" WHERE '''
 
         comando_final = comando + " " + condicao
         print(f'comando final: {comando_final}')
@@ -343,7 +319,7 @@ class Fornecedor:
         # Conectando ao banco de dados e recuperando os dados
         conexao = conectar()
         cursor = conexao.cursor()
-        cursor.execute("SELECT NOME_EMPRESA FROM TB_FORNECEDOR ORDER BY NOME_EMPRESA ASC")
+        cursor.execute('''SELECT "NOME_EMPRESA" FROM "TB_FORNECEDOR" ORDER BY "NOME_EMPRESA" ASC''')
         lista_fornec = [row [0] for row in cursor.fetchall()]
         print(lista_fornec)
         conexao.close()
@@ -354,7 +330,7 @@ class Fornecedor:
     def localiza_id_fornecedor(nome):
         conexao = conectar()
         cursor = conexao.cursor()
-        cursor.execute("SELECT ID_FORNECEDOR FROM TB_FORNECEDOR WHERE NOME_EMPRESA = ?", (nome,))
+        cursor.execute('''SELECT "ID_FORNECEDOR" FROM "TB_FORNECEDOR" WHERE "NOME_EMPRESA" = %s''', (nome,))
         
         resultado = cursor.fetchone()
         
@@ -370,7 +346,7 @@ class Fornecedor:
 
 
 class Produto:
-    def __init__(self, nome, preco_custo, tipo_produto, fabricante, marca, cor, id_fornecedor, data_cadastro, id_produto=None):
+    def __init__(self, nome, preco_custo, tipo_produto, fabricante, marca, cor, id_fornecedor, data_cadastro,estoque, id_produto=None):
         self.id_produto = id_produto
         self.nome = nome
         self.preco_custo = preco_custo
@@ -380,6 +356,7 @@ class Produto:
         self.cor = cor
         self.id_fornecedor = id_fornecedor
         self.data_cadastro = data_cadastro
+        self.estoque = estoque
 
     def salvar_produto(self):
       # Conectando ao banco de dados SQLite
@@ -390,9 +367,9 @@ class Produto:
             # Inserindo os dados do cliente no banco
 
             cursor.execute('''
-                INSERT INTO TB_PRODUTO (NOME, PRECO_CUSTO, TIPO_PRODUTO, FABRICANTE, MARCA, COR, ID_FORNECEDOR, DATA_CADASTRO)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (self.nome, self.preco_custo, self.tipo_produto, self.fabricante, self.marca, self.cor, self.id_fornecedor, self.data_cadastro))
+                INSERT INTO "TB_PRODUTO" ("NOME", "PRECO_CUSTO", "TIPO_PRODUTO", "FABRICANTE", "MARCA", "COR", "ID_FORNECEDOR", "DATA_CADASTRO", "ESTOQUE")
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ''', (self.nome, self.preco_custo, self.tipo_produto, self.fabricante, self.marca, self.cor, self.id_fornecedor, self.data_cadastro, self.estoque))
 
             conexao.commit()
             messagebox.showinfo('Cadastro', 'Produto inserido com sucesso!')
@@ -415,8 +392,8 @@ class Produto:
         # Conectando ao banco de dados e recuperando os dados
         conexao = conectar()
         cursor = conexao.cursor()
-        cursor.execute('''SELECT A.NOME || '/' || A.MARCA || '/' || B.NOME_EMPRESA, A.ID_PRODUTO FROM TB_PRODUTO A
-        JOIN TB_FORNECEDOR B ON A.ID_FORNECEDOR = B.ID_FORNECEDOR ORDER BY A.NOME ASC;''')
+        cursor.execute('''SELECT A."NOME" || '/' || A."MARCA" || '/' || B."NOME_EMPRESA", A."ID_PRODUTO" FROM "TB_PRODUTO" A
+        JOIN "TB_FORNECEDOR" B ON A."ID_FORNECEDOR" = B."ID_FORNECEDOR" ORDER BY A."NOME" ASC;''')
         lista_produtos = [row [0] for row in cursor.fetchall()]
         print(lista_produtos)
         conexao.close()
@@ -431,8 +408,8 @@ class Produto:
 
             # Excluindo os dados do cliente no banco
             cursor.execute('''
-                DELETE FROM TB_PRODUTO_NEW 
-                WHERE ID_PRODUTO = ?
+                DELETE FROM "TB_PRODUTO" 
+                WHERE "ID_PRODUTO" = %s
             ''', (self.id_produto,))
 
             conexao.commit()
@@ -453,16 +430,17 @@ class Produto:
 
             # Excluindo os dados do cliente no banco
             cursor.execute('''
-                UPDATE TB_PRODUTO
-                SET NOME = ?,
-                    PRECO_CUSTO = ?,
-                    TIPO_PRODUTO = ?,
-                    FABRICANTE = ?,
-                    MARCA = ?,
-                    COR = ?,
-                    ID_FORNECEDOR = ?
-                    WHERE ID_PRODUTO = ?
-            ''', (self.nome,self.preco_custo, self.tipo_produto, self.fabricante, self.marca, self.cor, self.id_fornecedor, self.id_produto))
+                UPDATE "TB_PRODUTO"
+                SET "NOME" = %s,
+                    "PRECO_CUSTO" = %s,
+                    "TIPO_PRODUTO" = %s,
+                    "FABRICANTE" = %s,
+                    "MARCA" = %s,
+                    "COR" = %s,
+                    "ID_FORNECEDOR" = %s,
+                    "ESTOQUE" = %s
+                    WHERE "ID_PRODUTO" = %s
+            ''', (self.nome,self.preco_custo, self.tipo_produto, self.fabricante, self.marca, self.cor, self.id_fornecedor,self.estoque, self.id_produto))
 
             conexao.commit()
             messagebox.showinfo('Cadastro', 'O produto foi alterado.')
@@ -479,10 +457,10 @@ class Produto:
     def carregar_produtos_treeview():
         conexao = conectar()
         cursor = conexao.cursor()
-        cursor.execute('''SELECT A.ID_PRODUTO, A.NOME, A.PRECO_CUSTO, B.DESCRICAO, A.FABRICANTE,
-                        A.MARCA, A.COR, C.NOME_EMPRESA, A.DATA_CADASTRO FROM TB_PRODUTO A
-                        JOIN TB_TIPO_PRODUTO B ON B.COD = A.TIPO_PRODUTO
-                        JOIN TB_FORNECEDOR C ON C.ID_FORNECEDOR = A.ID_FORNECEDOR;''')
+        cursor.execute('''SELECT A."ID_PRODUTO", A."NOME", A."PRECO_CUSTO", B."DESCRICAO", A."FABRICANTE",
+                        A."MARCA", A."COR", C."NOME_EMPRESA", A."DATA_CADASTRO", A."ESTOQUE" FROM "TB_PRODUTO" A
+                        JOIN "TB_TIPO_PRODUTO" B ON B."COD" = A."TIPO_PRODUTO"
+                        JOIN "TB_FORNECEDOR" C ON C."ID_FORNECEDOR" = A."ID_FORNECEDOR";''')
         
         resultado = cursor.fetchall()
         conexao.close()
@@ -494,9 +472,9 @@ class Produto:
         conexao = conectar()
         cursor = conexao.cursor()
 
-        cursor.execute('''select a.id_produto from TB_PRODUTO a
-                join TB_FORNECEDOR b on a.ID_FORNECEDOR = b.ID_FORNECEDOR
-                where a.NOME = ? and b.NOME_EMPRESA = ?''', (nome_produto, nome_fornecedor,))
+        cursor.execute('''SELECT a."ID_PRODUTO" from "TB_PRODUTO" a
+                join "TB_FORNECEDOR" b on a."ID_FORNECEDOR" = b."ID_FORNECEDOR"
+                where a."NOME" = %s and b."NOME_EMPRESA" = %s''', (nome_produto, nome_fornecedor,))
             
         resultado = cursor.fetchone()
         
@@ -514,22 +492,22 @@ class Produto:
         conexao = conectar()
         cursor = conexao.cursor()                             
         if campo == 'Nome':
-            condicao = '''A.NOME LIKE ?'''
+            condicao = '''A."NOME" LIKE %s'''
         elif campo == 'Marca':
-            condicao = '''A.MARCA LIKE ?'''
+            condicao = '''A."MARCA" LIKE %s'''
         elif campo == 'Tipo Produto':
-            condicao = '''B.DESCRICAO LIKE ?'''
+            condicao = '''B."DESCRICAO" LIKE %s'''
         elif campo == 'Fabricante':
-            condicao = '''A.FABRICANTE LIKE ?'''
+            condicao = '''A."FABRICANTE" LIKE %s'''
         elif campo == 'Cor':
-            condicao = '''A.COR LIKE ?'''
+            condicao = '''A."COR" LIKE %s'''
         else:
-            condicao = '''C.NOME_EMPRESA LIKE ?'''
+            condicao = '''C."NOME_EMPRESA" LIKE %s'''
 
-        comando = '''SELECT A.ID_PRODUTO, A.NOME, A.PRECO_CUSTO, B.DESCRICAO, A.FABRICANTE,
-                        A.MARCA, A.COR, C.NOME_EMPRESA, A.DATA_CADASTRO FROM TB_PRODUTO A
-                        JOIN TB_TIPO_PRODUTO B ON B.COD = A.TIPO_PRODUTO
-                        JOIN TB_FORNECEDOR C ON C.ID_FORNECEDOR = A.ID_FORNECEDOR
+        comando = '''SELECT A."ID_PRODUTO", A."NOME", A."PRECO_CUSTO", B."DESCRICAO", A."FABRICANTE",
+                        A."MARCA", A."COR", C."NOME_EMPRESA", A."DATA_CADASTRO", A."ESTOQUE" FROM "TB_PRODUTO" A
+                        JOIN "TB_TIPO_PRODUTO" B ON B."COD" = A."TIPO_PRODUTO"
+                        JOIN "TB_FORNECEDOR" C ON C."ID_FORNECEDOR" = A."ID_FORNECEDOR"
                         WHERE '''
 
         comando_final = comando + " " + condicao
@@ -540,7 +518,8 @@ class Produto:
 
         resultados = cursor.fetchall()
         conexao.close()
-        return resultados
+        if resultados:            
+            return resultados
 
         
 
@@ -555,22 +534,25 @@ class Venda:
         self.lucro = lucro
 
     def salvar_venda(self):
-      # Conectando ao banco de dados SQLite
+      
         conexao = conectar()         
         try:        
             cursor = conexao.cursor()
 
-            # Inserindo os dados do cliente no banco
+            
             cursor.execute('''
-                INSERT INTO TB_VENDA(DATA, ID_CLIENTE, ID_PRODUTO, QUANTIDADE, PRECO_VENDA, LUCRO)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO "TB_VENDA" ("DATA", "ID_CLIENTE", "ID_PRODUTO", "QUANTIDADE", "PRECO_VENDA", "LUCRO")
+                VALUES (%s, %s, %s, %s, %s, %s)
             ''', (self.data_venda, self.id_cliente, self.id_produto, self.quantidade, self.preco_venda, self.lucro))
 
             conexao.commit()
             messagebox.showinfo('Cadastro', 'A venda foi cadastrada com sucesso.')
 
         except Exception as e:
-            print(f'Não foi possível completar a operação.Erro: {e}')
+            if 'Estoque insuficiente' in str(e):
+                messagebox.showwarning('Atenção', 'Não há estoque suficiente para a venda deste produto.')
+            else:
+                messagebox.showwarning('Atenção', f'Não foi possível completar a operação.Erro: {e}')            
 
         finally:
             # Salvando (commit) as mudanças e fechando a conexão
@@ -586,8 +568,8 @@ class Venda:
 
             # Excluindo os dados do cliente no banco
             cursor.execute('''
-                DELETE FROM TB_VENDA 
-                WHERE ID = ?
+                DELETE FROM "TB_VENDA"
+                WHERE "ID" = %s
             ''', (self.id_venda,))
 
             conexao.commit()
@@ -610,13 +592,13 @@ class Venda:
 
             # Excluindo os dados do cliente no banco
             cursor.execute('''
-                UPDATE TB_VENDA 
-                SET ID_CLIENTE = ?,
-                    ID_PRODUTO = ?,
-                    QUANTIDADE = ?,
-                    PRECO_VENDA = ?,
-                    LUCRO = ?
-                    WHERE ID = ?
+                UPDATE "TB_VENDA"
+                SET "ID_CLIENTE" = %s,
+                    "ID_PRODUTO" = %s,
+                    "QUANTIDADE" = %s,
+                    "PRECO_VENDA" = %s,
+                    "LUCRO" = %s
+                    WHERE "ID" = %s
             ''', (self.id_cliente,self.id_produto, self.quantidade, self.preco_venda, self.lucro, self.id_venda))
 
             conexao.commit()
@@ -635,10 +617,10 @@ class Venda:
         conexao = conectar()
         cursor = conexao.cursor()
         
-        cursor.execute('''select a.preco_custo, c.margem from TB_PRODUTO a
-                join TB_FORNECEDOR b on a.ID_FORNECEDOR = b.ID_FORNECEDOR
-                join TB_TIPO_PRODUTO C on a.TIPO_PRODUTO = c.COD
-                where a.NOME = ? and b.NOME_EMPRESA = ?''', (nome_produto, nome_fornecedor,))
+        cursor.execute('''select a."PRECO_CUSTO", c."MARGEM" from "TB_PRODUTO" a
+                join "TB_FORNECEDOR" b on a."ID_FORNECEDOR" = b."ID_FORNECEDOR"
+                join "TB_TIPO_PRODUTO" C on a."TIPO_PRODUTO" = c."COD"
+                where a."NOME" = %s and b."NOME_EMPRESA" = %s''', (nome_produto, nome_fornecedor,))
             
         resultado = cursor.fetchone()
         
@@ -660,17 +642,17 @@ class Venda:
         conexao = conectar()
         cursor = conexao.cursor()                             
         if campo == 'Cliente':
-            condicao = '''B.NOME LIKE ?'''
+            condicao = '''B."NOME" LIKE %s'''
         elif campo == 'Fornecedor':
-            condicao = '''D.NOME_EMPRESA LIKE ?'''
+            condicao = '''D."NOME_EMPRESA" LIKE %s'''
         else:
-            condicao = '''C.NOME LIKE ?'''
+            condicao = '''C."NOME" LIKE %s'''
 
-        comando = '''SELECT A.ID, A.DATA, B.NOME, C.NOME || '/' || C.MARCA || '/' || D.NOME_EMPRESA as Produto, a.QUANTIDADE, a.PRECO_VENDA, a.LUCRO
-                        from TB_VENDA a
-                        join TB_CLIENTE b on a.ID_CLIENTE = b.ID_CLIENTE
-                        join TB_PRODUTO c on a.ID_PRODUTO = c.ID_PRODUTO
-                        join TB_FORNECEDOR d on c.ID_FORNECEDOR = d.ID_FORNECEDOR
+        comando = '''SELECT A."ID", A."DATA", B."NOME", C."NOME" || '/' || C."MARCA" || '/' || D."NOME_EMPRESA" as Produto, a."QUANTIDADE", a."PRECO_VENDA", a."LUCRO"
+                        from "TB_VENDA" a
+                        join "TB_CLIENTE" b on a."ID_CLIENTE" = b."ID_CLIENTE"
+                        join "TB_PRODUTO" c on a."ID_PRODUTO" = c."ID_PRODUTO"
+                        join "TB_FORNECEDOR" d on c."ID_FORNECEDOR" = d."ID_FORNECEDOR"
                         WHERE'''
         comando_final = comando + " " + condicao                
         cursor.execute(comando_final, ('%' + filtro + '%',))
@@ -683,11 +665,11 @@ class Venda:
     def carregar_vendas_treeview():
         conexao = conectar()
         cursor = conexao.cursor()
-        cursor.execute('''select a.id, a.DATA, b.NOME, c.NOME || '/' || c.MARCA || '/'|| d.NOME_EMPRESA as Produto, a.QUANTIDADE, a.PRECO_VENDA, a.LUCRO
-                        from TB_VENDA a
-                        join TB_CLIENTE b on a.ID_CLIENTE = b.ID_CLIENTE
-                        join TB_PRODUTO c on a.ID_PRODUTO = c.ID_PRODUTO
-                        join TB_FORNECEDOR d on c.ID_FORNECEDOR = d.ID_FORNECEDOR;''')
+        cursor.execute('''select a."ID", a."DATA", b."NOME", c."NOME" || '/' || c."MARCA" || '/'|| d."NOME_EMPRESA" as Produto, a."QUANTIDADE", a."PRECO_VENDA", a."LUCRO"
+                        from "TB_VENDA" a
+                        join "TB_CLIENTE" b on a."ID_CLIENTE" = b."ID_CLIENTE"
+                        join "TB_PRODUTO" c on a."ID_PRODUTO" = c."ID_PRODUTO"
+                        join "TB_FORNECEDOR" d on c."ID_FORNECEDOR" = d."ID_FORNECEDOR";''')
         resultados = cursor.fetchall()
         conexao.close()
         return resultados

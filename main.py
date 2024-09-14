@@ -9,9 +9,6 @@ from views import cadastrar_cliente, cadastrar_produto, cadastrar_tipo_produto
 from views import cadastrar_fornecedor, cadastrar_venda
 import os
 
-
-
-
 # Criação da janela principal
 root = tk.Tk()
 root.title("GTECH IMPORTS")
@@ -45,12 +42,6 @@ menu_barra.add_cascade(label="Venda", menu=menu_venda)
 
 root.config(menu=menu_barra)
 
-######################################################################
-#inserir a logo da empresa na tela inicial
-#logo_empresa = PhotoImage(file="C:/Users/amilt/OneDrive/Documentos/PROJETO GTECH/PROJETO/projeto_gtech/midia/gtech_logo.png")
-#label_logo = tk.Label(root,image=logo_empresa)
-#label_logo.pack(pady=0)
-
 # Obter o caminho absoluto do diretório do programa
 diretorio_programa = os.path.dirname(os.path.abspath(__file__))
 
@@ -64,9 +55,6 @@ logo = PhotoImage(file=caminho_imagem)
 label_logo = tk.Label(root, image=logo)
 label_logo.image = logo  # Manter referência para evitar garbage collection
 label_logo.pack(pady=20)
-
-
-
 
 # Inicia o loop principal da interface
 root.mainloop()
