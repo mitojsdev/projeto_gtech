@@ -73,7 +73,7 @@ def cadastrar_cliente(root):
             form = True
   
         if form:            
-            nome = txt_nome.get()
+            nome = txt_nome.get().upper()
             telefone = txt_telefone.get()
             data_cadastro = txt_data_cadastro.get()
             if operacao == 'I':                        
@@ -141,7 +141,7 @@ def cadastrar_cliente(root):
                         
     def ao_digitar_pesquisa(event):
         campo = combo_pesquisa.get()
-        filtro = txt_pesquisa.get()
+        filtro = txt_pesquisa.get().upper()
         #Nome,
         for item in treeview.get_children():
             treeview.delete(item)
@@ -229,8 +229,8 @@ def cadastrar_fornecedor(root):
             form = True
 
         if form:            
-            nome = txt_nome_empresa.get()
-            tipo_empresa = combo_tipo_empresa.get()
+            nome = txt_nome_empresa.get().upper()
+            tipo_empresa = combo_tipo_empresa.get().upper()
             data_cadastro = txt_data_cadastro.get()
             if operacao == 'I':                        
                 # Instanciando a classe Fornecedor
@@ -296,7 +296,7 @@ def cadastrar_fornecedor(root):
                         
     def ao_digitar_pesquisa(event):
         campo = combo_pesquisa.get()
-        filtro = txt_pesquisa.get()
+        filtro = txt_pesquisa.get().upper()
         
         for item in treeview.get_children():
             treeview.delete(item)
@@ -405,13 +405,13 @@ def cadastrar_produto(root):
             form = True
 
         if form:        
-            nome = txt_nome.get()                        
+            nome = txt_nome.get().upper()                        
             preco_custo = float(txt_preco_custo.get().replace(',','.'))            
             tipo_produto = combo_tipo_produto.get()                
             tipo_produto_id = TipoProduto.localiza_tipo_produto(tipo_produto)            
-            fabricante = txt_fabricante.get()            
-            marca = txt_marca.get()            
-            cor = txt_cor.get()            
+            fabricante = txt_fabricante.get().upper()
+            marca = txt_marca.get().upper()            
+            cor = txt_cor.get().upper()            
             fornecedor = Fornecedor.localiza_id_fornecedor(combo_fornecedor.get())            
             data_cadastro = txt_data_cadastro.get()
             estoque = int(combo_estoque.get())
@@ -510,11 +510,12 @@ def cadastrar_produto(root):
             #ao_selecionar_combo_produto(event="<<ComboboxSelected>>")
     def ao_digitar_pesquisa(event):
         campo = combo_pesquisa.get()
-        filtro = txt_pesquisa.get()
+        filtro = txt_pesquisa.get().upper()
         
         for item in treeview.get_children():
             treeview.delete(item)
-            resultados = Produto.pesquisar_produtos(campo,filtro)
+
+        resultados = Produto.pesquisar_produtos(campo,filtro)
         
         for resultado in resultados:
             treeview.insert("", "end", values=resultado)
@@ -681,7 +682,7 @@ def cadastrar_venda(root):
 
     def ao_digitar_pesquisa(event):
         campo = combo_pesquisa.get()
-        filtro = txt_pesquisa.get()
+        filtro = txt_pesquisa.get().upper()
 
         for item in treeview.get_children():
             treeview.delete(item)
@@ -821,7 +822,7 @@ def cadastrar_tipo_produto(root):
             form = True
 
         if form:
-            tipo_produto = txt_descricao.get()
+            tipo_produto = txt_descricao.get().upper()
             margem = float(txt_margem.get())
 
             if operacao == 'I':

@@ -489,37 +489,40 @@ class Produto:
 
     
     def pesquisar_produtos(campo, filtro):
-        conexao = conectar()
-        cursor = conexao.cursor()                             
-        if campo == 'Nome':
-            condicao = '''A."NOME" LIKE %s'''
-        elif campo == 'Marca':
-            condicao = '''A."MARCA" LIKE %s'''
-        elif campo == 'Tipo Produto':
-            condicao = '''B."DESCRICAO" LIKE %s'''
-        elif campo == 'Fabricante':
-            condicao = '''A."FABRICANTE" LIKE %s'''
-        elif campo == 'Cor':
-            condicao = '''A."COR" LIKE %s'''
-        else:
-            condicao = '''C."NOME_EMPRESA" LIKE %s'''
+        try:
+            conexao = conectar()
+            cursor = conexao.cursor()                             
+            if campo == 'Nome':
+                condicao = '''A."NOME" LIKE %s'''
+            elif campo == 'Marca':
+                condicao = '''A."MARCA" LIKE %s'''
+            elif campo == 'Tipo Produto':
+                condicao = '''B."DESCRICAO" LIKE %s'''
+            elif campo == 'Fabricante':
+                condicao = '''A."FABRICANTE" LIKE %s'''
+            elif campo == 'Cor':
+                condicao = '''A."COR" LIKE %s'''
+            else:
+                condicao = '''C."NOME_EMPRESA" LIKE %s'''
 
-        comando = '''SELECT A."ID_PRODUTO", A."NOME", A."PRECO_CUSTO", B."DESCRICAO", A."FABRICANTE",
-                        A."MARCA", A."COR", C."NOME_EMPRESA", A."DATA_CADASTRO", A."ESTOQUE" FROM "TB_PRODUTO" A
-                        JOIN "TB_TIPO_PRODUTO" B ON B."COD" = A."TIPO_PRODUTO"
-                        JOIN "TB_FORNECEDOR" C ON C."ID_FORNECEDOR" = A."ID_FORNECEDOR"
-                        WHERE '''
+            comando = '''SELECT A."ID_PRODUTO", A."NOME", A."PRECO_CUSTO", B."DESCRICAO", A."FABRICANTE",
+                            A."MARCA", A."COR", C."NOME_EMPRESA", A."DATA_CADASTRO", A."ESTOQUE" FROM "TB_PRODUTO" A
+                            JOIN "TB_TIPO_PRODUTO" B ON B."COD" = A."TIPO_PRODUTO"
+                            JOIN "TB_FORNECEDOR" C ON C."ID_FORNECEDOR" = A."ID_FORNECEDOR"
+                            WHERE '''
 
-        comando_final = comando + " " + condicao
-        print(f'comando final: {comando_final}')
-        print(f'filtro: {filtro}')
-        
-        cursor.execute(comando_final, ('%' + filtro + '%',))
+            comando_final = comando + " " + condicao
+            print(f'comando final: {comando_final}')
+            print(f'filtro: {filtro}')
+            
+            cursor.execute(comando_final, ('%' + filtro + '%',))
 
-        resultados = cursor.fetchall()
-        conexao.close()
-        if resultados:            
+            resultados = cursor.fetchall()
+            conexao.close()
             return resultados
+        except Exception as e:
+            messagebox.showwarning('Cadastro', 'Não foi possível pesquisar')
+        
 
         
 
