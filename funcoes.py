@@ -25,11 +25,17 @@ def valida_campo(tipo_campo, valor):
         valor_moeda = re.match(padrao,valor)
         if valor_moeda != None:                       
             resultado = True
+    
         else:
             messagebox.showwarning('Atenção!', 'O valor do Preço de custo é inválido.')
             resultado = False
                         
-    #elif tipo_campo == 'nome' or tipo_campo == 'telefone' or tipo_campo == 'tipo_empresa' or tipo_campo == 'tipo_produto' or tipo_campo == 'fabricante' or tipo_campo == 'cor' or tipo_campo == 'marca' or tipo_campo == 'fornecedor':
+    elif tipo_campo == 'Nome_Produto':
+            if '/' in valor:
+                messagebox.showwarning('Atenção!', 'O nome do produto não deve conter "/" ou outros caracteres especiais.')
+                return False
+            else:
+                return True
     else:
         if valor == '':
             messagebox.showwarning('Campos obrigatórios', f'O seguinte campo não pode ser vazio: {tipo_campo}.')

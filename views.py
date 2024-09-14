@@ -400,7 +400,9 @@ def cadastrar_produto(root):
         elif not valida_campo('data', txt_data_cadastro.get()):
             form = False
         elif not valida_campo('estoque', combo_estoque.get()):
-            form = False    
+            form = False
+        elif not valida_campo('Nome_Produto', txt_nome.get()):
+            form = False
         else:
             form = True
 
