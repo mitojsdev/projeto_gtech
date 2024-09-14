@@ -12,7 +12,7 @@ def cadastrar_cliente(root):
     cadastro_janela.grab_set()
     #odal_window.grab_set()
     cadastro_janela.title("Cadastro de Cliente")
-    cadastro_janela.geometry("650x450")
+    cadastro_janela.geometry("700x450")
 
     # Campos de entrada
     tk.Label(cadastro_janela, text="ID").grid(row=0, column=0, padx=10, pady=5, sticky="e")
@@ -114,10 +114,20 @@ def cadastrar_cliente(root):
             treeview.delete(item)
        
         clientes = Cliente.carregar_clientes_treeview()
-
+        
         # Adicionando os dados na Treeview
         for cliente in clientes:
-            treeview.insert("", "end", values=cliente)               
+            data_original = cliente[3]
+    
+            # Convertendo o datetime.date para a string formatada dd/mm/yyyy
+            data_formatada = data_original.strftime('%d/%m/%Y')
+            
+            # Converter a tupla cliente em lista para modificar o campo de data
+            cliente_lista = list(cliente)
+            cliente_lista[3] = data_formatada  # Atualizando o campo de data formatada
+            
+            # Inserindo os dados na Treeview
+            treeview.insert("", "end", values=tuple(cliente_lista))
 
     def ao_clicar_treeview(event):
         item_selecionado = treeview.selection()
@@ -135,12 +145,9 @@ def cadastrar_cliente(root):
 
             txt_telefone.delete(0,tk.END)
             txt_telefone.insert(0,item[2])
-
-            data_original = item[3]
-            data_convertida = datetime.strptime(data_original, "%Y-%m-%d")
-            data_formatada = data_convertida.strftime("%d/%m/%Y")
+            
             txt_data_cadastro.delete(0,tk.END)
-            txt_data_cadastro.insert(0,data_formatada)
+            txt_data_cadastro.insert(0,item[3])
 
                         
     def ao_digitar_pesquisa(event):
@@ -153,7 +160,17 @@ def cadastrar_cliente(root):
         resultados = Cliente.pesquisa_clientes(campo, filtro)
         
         for resultado in resultados:
-            treeview.insert("", "end", values=resultado)
+            data_original = resultado[3]
+    
+            # Convertendo o datetime.date para a string formatada dd/mm/yyyy
+            data_formatada = data_original.strftime('%d/%m/%Y')
+            
+            # Converter a tupla cliente em lista para modificar o campo de data
+            resultado_lista = list(resultado)
+            resultado_lista[3] = data_formatada  # Atualizando o campo de data formatada
+            
+            # Inserindo os dados na Treeview
+            treeview.insert("", "end", values=tuple(resultado_lista))            
 
     # Carregar clientes ao abrir a janela
     carregar_clientes()
@@ -274,9 +291,19 @@ def cadastrar_fornecedor(root):
 
         # Adicionando os dados na Treeview
         for fornecedor in fornecedores:
-            treeview.insert("", "end", values=fornecedor)
-                
+            data_original = fornecedor[3]
     
+            # Convertendo o datetime.date para a string formatada dd/mm/yyyy
+            data_formatada = data_original.strftime('%d/%m/%Y')
+            
+            # Converter a tupla cliente em lista para modificar o campo de data
+            fornecedor_lista = list(fornecedor)
+            fornecedor_lista[3] = data_formatada  # Atualizando o campo de data formatada
+            
+            # Inserindo os dados na Treeview
+            treeview.insert("", "end", values=tuple(fornecedor_lista))
+
+            
     carregar_fornecedores()
     
     def ao_clicar_treeview(event):
@@ -294,12 +321,9 @@ def cadastrar_fornecedor(root):
             txt_nome_empresa.insert(0,item[1])
 
             combo_tipo_empresa.set(item[2])
-
-            data_original = item[3]
-            data_convertida = datetime.strptime(data_original, "%Y-%m-%d")
-            data_formatada = data_convertida.strftime("%d/%m/%Y")
+            
             txt_data_cadastro.delete(0,tk.END)
-            txt_data_cadastro.insert(0,data_formatada)
+            txt_data_cadastro.insert(0,item[3])
 
     def ao_digitar_pesquisa(event):
         campo = combo_pesquisa.get()
@@ -311,7 +335,17 @@ def cadastrar_fornecedor(root):
         resultados = Fornecedor.pesquisa_fornecedor(campo, filtro)
         
         for resultado in resultados:
-            treeview.insert("", "end", values=resultado)
+            data_original = resultado[3]
+    
+            # Convertendo o datetime.date para a string formatada dd/mm/yyyy
+            data_formatada = data_original.strftime('%d/%m/%Y')
+            
+            # Converter a tupla cliente em lista para modificar o campo de data
+            resultado_lista = list(resultado)
+            resultado_lista[3] = data_formatada  # Atualizando o campo de data formatada
+            
+            # Inserindo os dados na Treeview
+            treeview.insert("", "end", values=tuple(resultado_lista))
         
 ######################################################################################    
     treeview.bind("<ButtonRelease-1>", ao_clicar_treeview)
@@ -472,7 +506,17 @@ def cadastrar_produto(root):
         
         # Adicionando os dados na Treeview
         for produto in produtos:
-            treeview.insert("", "end", values=produto)
+            data_original = produto[8]
+    
+            # Convertendo o datetime.date para a string formatada dd/mm/yyyy
+            data_formatada = data_original.strftime('%d/%m/%Y')
+            
+            # Converter a tupla cliente em lista para modificar o campo de data
+            produto_lista = list(produto)
+            produto_lista[8] = data_formatada  # Atualizando o campo de data formatada
+            
+            # Inserindo os dados na Treeview
+            treeview.insert("", "end", values=tuple(produto_lista))
         
         
     
@@ -509,11 +553,8 @@ def cadastrar_produto(root):
 
             combo_fornecedor.set(item[7])
 
-            data_original = item[8]
-            data_convertida = datetime.strptime(data_original, "%Y-%m-%d")
-            data_formatada = data_convertida.strftime("%d/%m/%Y")
             txt_data_cadastro.delete(0,tk.END)
-            txt_data_cadastro.insert(0,data_formatada)
+            txt_data_cadastro.insert(0,item[8])
             
             combo_estoque.set(item[9])
             #ao_selecionar_combo_produto(event="<<ComboboxSelected>>")
@@ -527,7 +568,17 @@ def cadastrar_produto(root):
         resultados = Produto.pesquisar_produtos(campo,filtro)
         
         for resultado in resultados:
-            treeview.insert("", "end", values=resultado)
+            data_original = resultado[8]
+    
+            # Convertendo o datetime.date para a string formatada dd/mm/yyyy
+            data_formatada = data_original.strftime('%d/%m/%Y')
+            
+            # Converter a tupla cliente em lista para modificar o campo de data
+            resultado_lista = list(resultado)
+            resultado_lista[8] = data_formatada  # Atualizando o campo de data formatada
+            
+            # Inserindo os dados na Treeview
+            treeview.insert("", "end", values=tuple(resultado_lista))
     
     lista_entradas = [txt_id, txt_nome, txt_marca, txt_fabricante, txt_cor, txt_preco_custo]
     def limpar_campos():
@@ -704,7 +755,17 @@ def cadastrar_venda(root):
         resultados = Venda.pesquisar_venda(campo,filtro)
         
         for resultado in resultados:
-            treeview.insert("", "end", values=resultado)
+            data_original = resultado[1]
+    
+            # Convertendo o datetime.date para a string formatada dd/mm/yyyy
+            data_formatada = data_original.strftime('%d/%m/%Y')
+            
+            # Converter a tupla cliente em lista para modificar o campo de data
+            resultado_lista = list(resultado)
+            resultado_lista[1] = data_formatada  # Atualizando o campo de data formatada
+            
+            # Inserindo os dados na Treeview
+            treeview.insert("", "end", values=tuple(resultado_lista))
 
         
 
@@ -745,7 +806,17 @@ def cadastrar_venda(root):
 
         # Adicionando os dados na Treeview
         for venda in vendas:
-            treeview.insert("", "end", values=venda)                
+            data_original = venda[1]
+    
+            # Convertendo o datetime.date para a string formatada dd/mm/yyyy
+            data_formatada = data_original.strftime('%d/%m/%Y')
+            
+            # Converter a tupla cliente em lista para modificar o campo de data
+            venda_lista = list(venda)
+            venda_lista[1] = data_formatada  # Atualizando o campo de data formatada
+            
+            # Inserindo os dados na Treeview
+            treeview.insert("", "end", values=tuple(venda_lista))               
     
     # Carregar clientes ao abrir a janela
     carregar_vendas()
@@ -765,11 +836,8 @@ def cadastrar_venda(root):
             txt_id.insert(0,item[0])
             txt_id.config(state='disabled')
 
-            data_original = item[1]
-            data_convertida = datetime.strptime(data_original, "%Y-%m-%d")
-            data_formatada = data_convertida.strftime("%d/%m/%Y")
             txt_data_venda.delete(0,tk.END)
-            txt_data_venda.insert(0,data_formatada)
+            txt_data_venda.insert(0,item[1])
 
 
             combo_cliente.set(item[2])
