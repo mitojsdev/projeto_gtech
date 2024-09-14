@@ -123,7 +123,7 @@ def cadastrar_cliente(root):
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
     treeview.column("ID", width=30)
-    treeview.column("Data de Cadastro", width=100)
+    treeview.column("Data de Cadastro", width=120)
     
 
     def carregar_clientes():
@@ -439,7 +439,7 @@ def cadastrar_produto(root):
 
     tipos_produto = TipoProduto.carregar_tipos_produto()    
     combo_tipo_produto = ttk.Combobox(cadastro_janela, values=tipos_produto, state='readonly')
-    combo_tipo_produto.current(0)
+    #combo_tipo_produto.current(0)
     combo_tipo_produto.grid(row=3, column=1, padx=10, pady=5, sticky="w")
 
     txt_fabricante = tk.Entry(cadastro_janela)
@@ -453,7 +453,7 @@ def cadastrar_produto(root):
 
     lista_fornecedores = Fornecedor.carregar_fornecedores_combo()
     combo_fornecedor = ttk.Combobox(cadastro_janela, values=lista_fornecedores, width=50, state='readonly')
-    combo_fornecedor.current(0)
+    #combo_fornecedor.current(0)
     combo_fornecedor.grid(row=7, column=1, padx=10, pady=5, sticky="w")
 
     txt_data_cadastro = tk.Entry(cadastro_janela)

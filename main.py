@@ -12,7 +12,7 @@ import os
 # Criação da janela principal
 root = tk.Tk()
 root.title("GTECH IMPORTS")
-root.geometry("600x400")
+root.geometry("1200x600")
 
 # Criação da label principal
 label = tk.Label(root, text="GTECH IMPORTS", font=("Arial", 16))
