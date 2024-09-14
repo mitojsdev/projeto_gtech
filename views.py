@@ -135,9 +135,13 @@ def cadastrar_cliente(root):
 
             txt_telefone.delete(0,tk.END)
             txt_telefone.insert(0,item[2])
-            
+
+            data_original = item[3]
+            data_convertida = datetime.strptime(data_original, "%Y-%m-%d")
+            data_formatada = data_convertida.strftime("%d/%m/%Y")
             txt_data_cadastro.delete(0,tk.END)
-            txt_data_cadastro.insert(0,item[3])
+            txt_data_cadastro.insert(0,data_formatada)
+
                         
     def ao_digitar_pesquisa(event):
         campo = combo_pesquisa.get()
@@ -291,9 +295,12 @@ def cadastrar_fornecedor(root):
 
             combo_tipo_empresa.set(item[2])
 
+            data_original = item[3]
+            data_convertida = datetime.strptime(data_original, "%Y-%m-%d")
+            data_formatada = data_convertida.strftime("%d/%m/%Y")
             txt_data_cadastro.delete(0,tk.END)
-            txt_data_cadastro.insert(0,item[3])
-                        
+            txt_data_cadastro.insert(0,data_formatada)
+
     def ao_digitar_pesquisa(event):
         campo = combo_pesquisa.get()
         filtro = txt_pesquisa.get().upper()
@@ -758,8 +765,12 @@ def cadastrar_venda(root):
             txt_id.insert(0,item[0])
             txt_id.config(state='disabled')
 
+            data_original = item[1]
+            data_convertida = datetime.strptime(data_original, "%Y-%m-%d")
+            data_formatada = data_convertida.strftime("%d/%m/%Y")
             txt_data_venda.delete(0,tk.END)
-            txt_data_venda.insert(0,item[1])
+            txt_data_venda.insert(0,data_formatada)
+
 
             combo_cliente.set(item[2])
 
