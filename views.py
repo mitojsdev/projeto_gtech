@@ -45,7 +45,7 @@ def cadastrar_cliente(root):
     txt_pesquisa.grid(row=4, column=2, padx=10, pady=5, sticky="w")
 
     lista_campos = ['Nome',]
-    combo_pesquisa = ttk.Combobox(cadastro_janela,values=lista_campos)
+    combo_pesquisa = ttk.Combobox(cadastro_janela,values=lista_campos,state="readonly")
     combo_pesquisa.grid(row=3, column=2, padx=10, pady=5, sticky="w")
 
     lista_entradas = [txt_id,txt_nome,txt_telefone]
@@ -207,7 +207,7 @@ def cadastrar_fornecedor(root):
     txt_nome_empresa.grid(row=1, column=1, padx=10, pady=5, sticky="w")
 
     tipos_empresa = ['Física', 'Virtual', 'Outro']    
-    combo_tipo_empresa = ttk.Combobox(cadastro_janela, values=tipos_empresa)
+    combo_tipo_empresa = ttk.Combobox(cadastro_janela, values=tipos_empresa, state='readonly')
     combo_tipo_empresa.current(0)
     combo_tipo_empresa.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
@@ -219,7 +219,7 @@ def cadastrar_fornecedor(root):
     txt_pesquisa.grid(row=4, column=2, padx=10, pady=5, sticky="w")
 
     lista_campos = ['Nome', 'Tipo Empresa']
-    combo_pesquisa = ttk.Combobox(cadastro_janela,values=lista_campos)
+    combo_pesquisa = ttk.Combobox(cadastro_janela,values=lista_campos, state='readonly')
     combo_pesquisa.grid(row=3, column=2, padx=10, pady=5, sticky="w")
     
     lista_entradas = [txt_id,txt_nome_empresa]    
@@ -389,12 +389,12 @@ def cadastrar_produto(root):
     txt_preco_custo.grid(row=2, column=1, padx=10, pady=5, sticky="w")
     
     lista_estoque = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
-    combo_estoque = ttk.Combobox(cadastro_janela, values=lista_estoque,width=5)
+    combo_estoque = ttk.Combobox(cadastro_janela, values=lista_estoque,width=5, state='readonly')
     combo_estoque.current(0)
     combo_estoque.grid(row=2, column=1, padx=270, pady=5, sticky="w")    
 
     tipos_produto = TipoProduto.carregar_tipos_produto()    
-    combo_tipo_produto = ttk.Combobox(cadastro_janela, values=tipos_produto)
+    combo_tipo_produto = ttk.Combobox(cadastro_janela, values=tipos_produto, state='readonly')
     combo_tipo_produto.current(0)
     combo_tipo_produto.grid(row=3, column=1, padx=10, pady=5, sticky="w")
 
@@ -408,7 +408,7 @@ def cadastrar_produto(root):
     txt_cor.grid(row=6, column=1, padx=10, pady=5, sticky="w")
 
     lista_fornecedores = Fornecedor.carregar_fornecedores_combo()
-    combo_fornecedor = ttk.Combobox(cadastro_janela, values=lista_fornecedores, width=50)
+    combo_fornecedor = ttk.Combobox(cadastro_janela, values=lista_fornecedores, width=50, state='readonly')
     combo_fornecedor.current(0)
     combo_fornecedor.grid(row=7, column=1, padx=10, pady=5, sticky="w")
 
@@ -420,7 +420,7 @@ def cadastrar_produto(root):
     txt_pesquisa.grid(row=9, column=2, padx=10, pady=5, sticky="w")
 
     lista_campos = ['Nome', 'Marca', 'Tipo Produto', 'Fabricante','Cor','Fornecedor']
-    combo_pesquisa = ttk.Combobox(cadastro_janela,values=lista_campos)
+    combo_pesquisa = ttk.Combobox(cadastro_janela,values=lista_campos, state='readonly')
     combo_pesquisa.grid(row=8, column=2, padx=10, pady=5, sticky="w")
     
     def salvar_produto(operacao):        
@@ -633,15 +633,15 @@ def cadastrar_venda(root):
     txt_id.grid(row=1, column=1, padx=9, pady=0, sticky="w")
 
     lista_clientes = Cliente.carregar_clientes_combo()
-    combo_cliente = ttk.Combobox(cadastro_janela, values=lista_clientes, width=50)
+    combo_cliente = ttk.Combobox(cadastro_janela, values=lista_clientes, width=50, state='readonly')
     combo_cliente.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
     lista_produtos = Produto.carregar_produtos_combo()
-    combo_produto = ttk.Combobox(cadastro_janela, values=lista_produtos, width=50)
+    combo_produto = ttk.Combobox(cadastro_janela, values=lista_produtos, width=50, state='readonly')
     combo_produto.grid(row=3, column=1, padx=10, pady=5, sticky="w")
 
     lista_quantidade = ['1','2','3','4','5','6','7','8','9','10']
-    txt_quantidade = ttk.Combobox(cadastro_janela, values=lista_quantidade, width=5)    
+    txt_quantidade = ttk.Combobox(cadastro_janela, values=lista_quantidade, width=5, state='readonly')    
     txt_quantidade.grid(row=4, column=1, padx=10, pady=5, sticky="w")
 
     txt_preco_venda = tk.Entry(cadastro_janela)
@@ -654,7 +654,7 @@ def cadastrar_venda(root):
     txt_pesquisa.grid(row=7, column=3, padx=10, pady=5, sticky="w")
 
     lista_campos = ['Cliente', 'Produto', 'Fornecedor']
-    combo_pesquisa = ttk.Combobox(cadastro_janela,values=lista_campos)
+    combo_pesquisa = ttk.Combobox(cadastro_janela,values=lista_campos, state='readonly')
     combo_pesquisa.grid(row=6, column=3, padx=10, pady=5, sticky="w")
     
     
