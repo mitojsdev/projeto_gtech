@@ -611,6 +611,8 @@ def cadastrar_venda(root):
             form = False
         elif not valida_campo('data', txt_data_venda.get()):
             form = False
+        elif not valida_campo('lucro', txt_lucro.get()):
+            form = False
         else:
             form = True
 
@@ -663,23 +665,25 @@ def cadastrar_venda(root):
         lbl_preco_sugerido.config(text=f'Preço sugerido: {valor_sugerido}')
 
     def ao_sair_preco_venda(event):
-        preco_venda = txt_preco_venda.get().replace(',','.')
-        preco_venda_formatado = float(preco_venda)        
-        quantidade = txt_quantidade.get()
-        str_preco_sugerido = lbl_preco_sugerido.cget('text')
-        partes = str_preco_sugerido.split(':')
-        valor_sugerido = partes[-1]
-        valor_sugerido_formatado = float(valor_sugerido.replace(',','.'))
-        print(valor_sugerido_formatado)        
-        if preco_venda_formatado > 0 and valor_sugerido_formatado > 0:
-            lucro = (preco_venda_formatado - (valor_sugerido_formatado - 100)) * float(quantidade)
-            lucro_formatado = str(round(lucro,2)).replace('.',',')            
-            txt_lucro.config(state='normal')
-            txt_lucro.delete(0, tk.END)
-            txt_lucro.insert(0,lucro_formatado)
-            txt_lucro.config(state='disabled')
-        else:
-            txt_lucro.insert(0,'falhou')
+        if combo_produto.get() != '' and txt_quantidade.get() != '' and txt_preco_venda.get() != '':            
+            preco_venda = txt_preco_venda.get().replace(',','.')
+            preco_venda_formatado = float(preco_venda)        
+            quantidade = txt_quantidade.get()
+            str_preco_sugerido = lbl_preco_sugerido.cget('text')
+            partes = str_preco_sugerido.split(':')
+            valor_sugerido = partes[-1]
+            valor_sugerido_formatado = float(valor_sugerido.replace(',','.'))
+            print(valor_sugerido_formatado)        
+            if preco_venda_formatado > 0 and valor_sugerido_formatado > 0:
+                lucro = (preco_venda_formatado - (valor_sugerido_formatado - 100)) * float(quantidade)
+                lucro_formatado = str(round(lucro,2)).replace('.',',')            
+                txt_lucro.config(state='normal')
+                txt_lucro.delete(0, tk.END)
+                txt_lucro.insert(0,lucro_formatado)
+                txt_lucro.config(state='disabled')
+            else:
+                txt_lucro.insert(0,'falhou')        
+            
 
 
     def ao_digitar_pesquisa(event):
@@ -699,6 +703,8 @@ def cadastrar_venda(root):
 
     combo_produto.bind("<<ComboboxSelected>>", ao_selecionar_combo_produto)
     txt_preco_venda.bind("<FocusOut>", ao_sair_preco_venda)
+    combo_produto.bind("<FocusOut>", ao_sair_preco_venda)
+    txt_quantidade.bind("<FocusOut>", ao_sair_preco_venda)
     txt_pesquisa.bind("<KeyRelease>", ao_digitar_pesquisa)
     
     
