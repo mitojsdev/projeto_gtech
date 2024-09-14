@@ -14,6 +14,8 @@ def cadastrar_cliente(root):
     cadastro_janela.title("Cadastro de Cliente")
     cadastro_janela.geometry("700x450")
 
+
+
     # Campos de entrada
     tk.Label(cadastro_janela, text="ID").grid(row=0, column=0, padx=10, pady=5, sticky="e")
     tk.Label(cadastro_janela, text="Nome").grid(row=1, column=0, padx=10, pady=5, sticky="e")
@@ -95,18 +97,28 @@ def cadastrar_cliente(root):
     tk.Button(cadastro_janela, text="Alterar", command=lambda:salvar_cliente('A')).grid(row=4, columnspan=3, pady=10)
 
 
-
     # Criando a Treeview para exibir os clientes cadastrados
     columns = ("ID", "Nome", "Telefone", "Data de Cadastro")
-    treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
+    frame_treeview = ttk.Frame(cadastro_janela)
+    frame_treeview.grid(row=5, column=0, columnspan=3, padx=10, pady=10)
+
+    treeview = ttk.Treeview(frame_treeview, columns=columns, show="headings")
     treeview.heading("ID", text="ID", anchor='w')
     treeview.heading("Nome", text="Nome", anchor='w')
     treeview.heading("Telefone", text="Telefone", anchor='w')
     treeview.heading("Data de Cadastro", text="Data de Cadastro", anchor='w')
-    treeview.grid(row=5, column=0, columnspan=3, padx=10, pady=10)
 
-    treeview.column("ID",width=30)
-    treeview.column("Data de Cadastro",width=100)
+    # Configurando a barra de rolagem
+    scrollbar = ttk.Scrollbar(frame_treeview, orient="vertical", command=treeview.yview)
+    treeview.configure(yscrollcommand=scrollbar.set)
+
+    # Posicionando a Treeview e a Scrollbar
+    treeview.pack(side=tk.LEFT)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    treeview.column("ID", width=30)
+    treeview.column("Data de Cadastro", width=100)
+    
 
     def carregar_clientes():
         # Limpa a Treeview antes de carregar os dados
@@ -271,16 +283,28 @@ def cadastrar_fornecedor(root):
     tk.Button(cadastro_janela, text="Incluir", command=lambda:salvar_fornecedor('I')).grid(row=4, columnspan=2, pady=10)
     tk.Button(cadastro_janela, text="Alterar", command=lambda:salvar_fornecedor('A')).grid(row=4, columnspan=3, pady=10)
     
+    # Criando a Treeview para exibir fornecedores cadastrados
     columns = ("ID", "Nome Empresa", "Tipo Empresa", "Data de Cadastro")
-    treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
+    frame_treeview = ttk.Frame(cadastro_janela)
+    frame_treeview.grid(row=5, column=0, columnspan=3, padx=10, pady=10)
+
+    treeview = ttk.Treeview(frame_treeview, columns=columns, show="headings")
     treeview.heading("ID", text="ID", anchor='w')
     treeview.heading("Nome Empresa", text="Nome Empresa", anchor='w')
     treeview.heading("Tipo Empresa", text="Tipo Empresa", anchor='w')
     treeview.heading("Data de Cadastro", text="Data de Cadastro", anchor='w')
-    treeview.grid(row=5, column=0, columnspan=3, padx=10, pady=10)
 
-    treeview.column("ID",width=30)
-    treeview.column("Data de Cadastro",width=100)
+    # Configurando a barra de rolagem
+    scrollbar = ttk.Scrollbar(frame_treeview, orient="vertical", command=treeview.yview)
+    treeview.configure(yscrollcommand=scrollbar.set)
+
+    # Posicionando a Treeview e a Scrollbar
+    treeview.pack(side=tk.LEFT)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    # Definindo a largura das colunas
+    treeview.column("ID", width=30)
+    treeview.column("Data de Cadastro", width=100)
 
     def carregar_fornecedores():
         # Limpa a Treeview antes de carregar os dados
@@ -477,6 +501,7 @@ def cadastrar_produto(root):
     
     columns = ("ID", "Nome Produto", "Preço Custo", "Tipo", "Fabricante", "Marca", "Cor", "Fornecedor", "Data de Cadastro", "Estoque")
     treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
+    #treeview.grid(row=10, column=0,columnspan=4, padx=10, pady=10)
     treeview.heading("ID", text="ID", anchor='w')
     treeview.heading("Nome Produto", text="Nome Produto", anchor='w')
     treeview.heading("Preço Custo", text="Preço Custo", anchor='w')
@@ -487,7 +512,13 @@ def cadastrar_produto(root):
     treeview.heading("Fornecedor", text="Fornecedor", anchor='w')
     treeview.heading("Data de Cadastro", text="Data de Cadastro", anchor='w')
     treeview.heading("Estoque", text="Estoque", anchor='w')
-    treeview.grid(row=10, column=0,columnspan=4, padx=10, pady=10)
+
+    scrollbar = ttk.Scrollbar(cadastro_janela, orient="vertical", command=treeview.yview)
+    treeview.configure(yscroll=scrollbar.set)
+
+    treeview.grid(row=10, column=0, columnspan=4, padx=10, pady=10, sticky='nsew')
+    scrollbar.grid(row=10, column=4, sticky='ns')
+    
 
     treeview.column("ID",width=30)
     treeview.column("Estoque",width=80)
@@ -786,6 +817,12 @@ def cadastrar_venda(root):
     treeview.heading("Preço Venda", text="Preço Venda", anchor='w')
     treeview.heading("Lucro", text="Lucro", anchor='w')    
     treeview.grid(row=8, column=0,columnspan=4, padx=10, pady=10)
+
+    scrollbar = ttk.Scrollbar(cadastro_janela, orient="vertical", command=treeview.yview)
+    treeview.configure(yscroll=scrollbar.set)
+
+    treeview.grid(row=8, column=0, columnspan=4, padx=10, pady=10, sticky='nsew')
+    scrollbar.grid(row=8, column=4, sticky='ns')
 
     treeview.column("ID",width=30)      
     treeview.column("Data",width=100)
