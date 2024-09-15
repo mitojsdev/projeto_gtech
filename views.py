@@ -742,7 +742,8 @@ def cadastrar_venda(root):
             nome_fornecedor = partes[-1]
             produto_id = Produto.localiza_produto_id(nome_produto,nome_fornecedor)        
             quantidade = int(txt_quantidade.get())
-            preco_venda= txt_preco_venda.get()        
+            preco_venda_original= str(txt_preco_venda.get()).replace(',','.')
+            preco_venda = float(preco_venda_original)
             data_venda = txt_data_venda.get()
             lucro_original = str(txt_lucro.get()).replace(',','.')                        
             lucro = float(lucro_original)        
@@ -783,7 +784,7 @@ def cadastrar_venda(root):
         lbl_preco_sugerido.config(text=f'Preço sugerido: {valor_sugerido}')
 
     def ao_sair_preco_venda(event):
-        if combo_produto.get() != '' and txt_quantidade.get() != '' and txt_preco_venda.get() != '':            
+        if combo_produto.get() != '' and txt_quantidade.get() != '' and txt_preco_venda.get() != '':                        
             preco_venda = txt_preco_venda.get().replace(',','.')
             preco_venda_formatado = float(preco_venda)        
             quantidade = txt_quantidade.get()
@@ -791,9 +792,13 @@ def cadastrar_venda(root):
             partes = str_preco_sugerido.split(':')
             valor_sugerido = partes[-1]
             valor_sugerido_formatado = float(valor_sugerido.replace(',','.'))
-            print(valor_sugerido_formatado)        
+            produto_selecionado = combo_produto.get()
+            partes = produto_selecionado.split('/')
+            nome_produto = partes[0]
+            margem = Venda.calcular_margem(nome_produto)            
+
             if preco_venda_formatado > 0 and valor_sugerido_formatado > 0:
-                lucro = (preco_venda_formatado - (valor_sugerido_formatado - 100)) * float(quantidade)
+                lucro = (preco_venda_formatado - (valor_sugerido_formatado - margem)) * float(quantidade)
                 lucro_formatado = str(round(lucro,2)).replace('.',',')            
                 txt_lucro.config(state='normal')
                 txt_lucro.delete(0, tk.END)

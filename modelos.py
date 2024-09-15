@@ -616,6 +616,19 @@ class Venda:
                 conexao.close()
 
     @staticmethod
+    def calcular_margem(nome_produto):
+        conexao = conectar()
+        cursor = conexao.cursor()
+        cursor.execute('''SELECT A."MARGEM" FROM "TB_TIPO_PRODUTO" A 
+                       JOIN "TB_PRODUTO" B ON A."COD" = B."TIPO_PRODUTO"
+                       WHERE B."NOME"= %s''', (nome_produto,))
+        
+        margem = float(cursor.fetchone()[0])
+                
+        if margem:
+            return margem        
+            
+    @staticmethod
     def calcular_preco_sugerido(nome_produto, nome_fornecedor):     
         conexao = conectar()
         cursor = conexao.cursor()
@@ -629,7 +642,7 @@ class Venda:
         
         preco_custo = float(resultado[0])
         margem = float(resultado[1])        
-        valor_total = preco_custo + margem
+        valor_total = preco_custo + margem       
         conexao.close()
 
         if resultado:            
