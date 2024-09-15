@@ -11,7 +11,7 @@ import os
 
 # Criação da janela principal
 root = tk.Tk()
-root.title("GTECH IMPORTS")
+root.title("GTECH Control 1.0")
 root.geometry("1200x600")
 
 # Criação da label principal
@@ -56,6 +56,11 @@ logo = PhotoImage(file=caminho_imagem)
 label_logo = tk.Label(root, image=logo)
 label_logo.image = logo  # Manter referência para evitar garbage collection
 label_logo.pack(pady=20)
+
+versao = '1.0.1'
+# Criar um label no rodapé da tela
+label_rodape = tk.Label(root, text=f"versão {versao}", font=("Montserrat", 10))
+label_rodape.pack(side="bottom", pady=10)  # Posiciona o label no rodapé da tela
 
 # Inicia o loop principal da interface
 root.mainloop()
