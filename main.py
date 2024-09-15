@@ -47,6 +47,7 @@ diretorio_programa = os.path.dirname(os.path.abspath(__file__))
 
 # Construir o caminho completo para a imagem dentro da pasta "midia"
 caminho_imagem = os.path.join(diretorio_programa, "midia", "gtech_logo.png")
+#caminho_imagem = 'gtech_logo.png'
 
 # Carregar a imagem da logo
 logo = PhotoImage(file=caminho_imagem)
