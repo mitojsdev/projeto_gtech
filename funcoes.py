@@ -44,3 +44,4 @@ def valida_campo(tipo_campo, valor):
             resultado = True
        
     return resultado
+

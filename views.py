@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 from datetime import datetime
-from modelos import Cliente, Fornecedor, TipoProduto, Produto, Venda
+from modelos import Cliente, Fornecedor, TipoProduto, Produto, Venda, Combobox_filtravel
 from funcoes import valida_campo
 
 
@@ -661,7 +661,7 @@ def cadastrar_venda(root):
     cadastro_janela = tk.Toplevel(root)
     cadastro_janela.grab_set()
     cadastro_janela.title("Cadastro de Venda")
-    cadastro_janela.geometry("880x650")
+    cadastro_janela.geometry("950x650")
 
 
     # Configuração do grid para expandir
@@ -693,11 +693,15 @@ def cadastrar_venda(root):
     txt_id.grid(row=1, column=1, padx=9, pady=0, sticky="w")
 
     lista_clientes = Cliente.carregar_clientes_combo()
-    combo_cliente = ttk.Combobox(cadastro_janela, values=lista_clientes, width=50, state='readonly')
+    #combo_cliente = ttk.Combobox(cadastro_janela, values=lista_clientes, width=50)
+    combo_cliente = Combobox_filtravel(cadastro_janela, width=50)
+    combo_cliente.set_completion_list(lista_clientes)
     combo_cliente.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
     lista_produtos = Produto.carregar_produtos_combo()
-    combo_produto = ttk.Combobox(cadastro_janela, values=lista_produtos, width=50, state='readonly')
+    #combo_produto = ttk.Combobox(cadastro_janela, values=lista_produtos, width=50, state='readonly')
+    combo_produto = Combobox_filtravel(cadastro_janela,width=60)
+    combo_produto.set_completion_list(lista_produtos)
     combo_produto.grid(row=3, column=1, padx=10, pady=5, sticky="w")
 
     lista_quantidade = ['1','2','3','4','5','6','7','8','9','10']
@@ -783,6 +787,9 @@ def cadastrar_venda(root):
         valor_sugerido = Venda.calcular_preco_sugerido(nome_produto,nome_fornecedor)        
         lbl_preco_sugerido.config(text=f'Preço sugerido: {valor_sugerido}')
 
+    def ao_selecionar_cliente(event):
+        pass
+
     def ao_sair_preco_venda(event):
         if combo_produto.get() != '' and txt_quantidade.get() != '' and txt_preco_venda.get() != '':                        
             preco_venda = txt_preco_venda.get().replace(',','.')
@@ -808,6 +815,7 @@ def cadastrar_venda(root):
                 txt_lucro.insert(0,'falhou')        
             
 
+    
 
     def ao_digitar_pesquisa(event):
         campo = combo_pesquisa.get()
@@ -835,6 +843,8 @@ def cadastrar_venda(root):
         
 
     combo_produto.bind("<<ComboboxSelected>>", ao_selecionar_combo_produto)
+    #combo_cliente.bind('<KeyRelease>', ao_digitar_cliente)
+    #combo_cliente.bind("<FocusOut>", ao_sair_combo_cliente)
     txt_preco_venda.bind("<FocusOut>", ao_sair_preco_venda)
     combo_produto.bind("<FocusOut>", ao_sair_preco_venda)
     txt_quantidade.bind("<FocusOut>", ao_sair_preco_venda)

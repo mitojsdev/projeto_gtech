@@ -1,6 +1,8 @@
 import sqlite3
 from conexao import conectar
 from tkinter import messagebox
+from tkinter import ttk
+import tkinter as tk
 
 
 class Cliente:
@@ -93,7 +95,8 @@ class Cliente:
             return id
 
         else:
-            print("erro ao buscar ID_CLIENTE")
+            messagebox.showwarning('Cadastro', 'Cliente informado não está cadastrado.')
+            #print("erro ao buscar ID_CLIENTE")
 
     @staticmethod
     def carregar_clientes_treeview():
@@ -547,7 +550,7 @@ class Venda:
                 INSERT INTO "TB_VENDA" ("DATA", "ID_CLIENTE", "ID_PRODUTO", "QUANTIDADE", "PRECO_VENDA", "LUCRO")
                 VALUES (%s, %s, %s, %s, %s, %s)
             ''', (self.data_venda, self.id_cliente, self.id_produto, self.quantidade, self.preco_venda, self.lucro))
-
+            print(self.id_cliente)
             conexao.commit()
             messagebox.showinfo('Cadastro', 'A venda foi cadastrada com sucesso.')
 
@@ -689,3 +692,65 @@ class Venda:
         resultados = cursor.fetchall()
         conexao.close()
         return resultados
+    
+class Combobox_filtravel(ttk.Combobox):
+    def set_completion_list(self, completion_list, min_chars=3):
+        self._completion_list = sorted(completion_list)  # Lista completa de itens
+        #self.filtered_list = self._completion_list  # Inicializa a lista filtrada
+        self.min_chars = min_chars  # Quantidade mínima de caracteres
+        self.configure(values=self._completion_list)
+        self.bind('<KeyRelease>', self._on_keyrelease)
+        #self.bind('<FocusOut>', self._reset)  # Reseta a lista completa ao perder o foco
+        #self.bind("<<ComboboxSelected>>", self._update_value)  # Atualiza valor corretamente
+    
+    def _on_keyrelease(self, event):
+        """ Manipula o evento de digitação para filtrar a lista sem exibir a lista suspensa. """
+        #if event.keysym in ("BackSpace", "Left", "Right", "Up", "Down"):
+            #return
+        
+        # Captura o valor digitado e sua posição
+        value = self.get().lower()
+
+        if value == '':
+            self.configure(values=self._completion_list)
+        else:
+            data = []
+            for item in self._completion_list:
+                if value.lower() in item.lower():
+                    data.append(item)
+                
+            self.configure(values=data)
+    #         data = []
+    #         for item in lista_clientes:
+    #             if valor.upper() in item.upper():
+    #                 data.append(item)
+            
+    #         combo_cliente["value"] = data
+        #cursor_position = self.index(tk.INSERT)
+
+        # Só filtra se o valor tiver o mínimo de caracteres especificado
+        if len(value) < self.min_chars:
+            self.filtered_list = self._completion_list  # Exibe lista completa
+            self.configure(values=self._completion_list)  # Não abre a lista suspensa
+        else:
+            # Filtra os itens da lista
+            self.filtered_list = [item for item in self._completion_list if value in item.lower()]
+
+            # Atualiza a lista de valores do combobox, mas não exibe a lista suspensa
+            self.configure(values=self.filtered_list)
+
+        # Reposiciona o cursor corretamente
+        #self.icursor(cursor_position)
+
+    #def _reset(self, event):
+        """ Reseta os valores da combobox ao perder o foco """
+       # self.configure(values=self._completion_list)
+
+    #def _update_value(self, event):
+        """ Atualiza o valor da Combobox baseado na lista filtrada. """
+       # value = self.get().upper()  # Captura o valor atual selecionado
+       # if value in self.filtered_list:
+         #   self.set(value) # Atualiza a combobox com o valor correto
+       # else:
+           # self.set('')  # Se o valor não estiver na lista filtrada, limpa o campo
+        
