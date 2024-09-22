@@ -1,66 +1,80 @@
-#import funcoes as fct
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox
-from modelos import TipoProduto
-from conexao import conectar
 from tkinter import PhotoImage
 from views import cadastrar_cliente, cadastrar_produto, cadastrar_tipo_produto
 from views import cadastrar_fornecedor, cadastrar_venda
 import os
+from graficos import criar_grafico
+
+def fechar_janela():
+    global root
+    root.quit()
+    root.destroy()
 
 # Criação da janela principal
-root = tk.Tk()
-root.title("GTECH Control 1.0")
-root.geometry("1200x600")
+def criar_interface():
+    global root
+    root = tk.Tk() 
+    root.title("GTECH Control 1.0")
+    root.geometry("1200x600")
 
-# Criação da label principal
-label = tk.Label(root, text="GTECH IMPORTS", font=("Arial", 16))
-label.pack(pady=10)
+     # Configurar o evento de fechar a janela
+    root.protocol("WM_DELETE_WINDOW", fechar_janela)
 
-# Criação do menu inicial
-menu_barra = tk.Menu(root)
+    # Criação da label principal
+    label = tk.Label(root, text="GTECH IMPORTS", font=("Arial", 16))
+    label.pack(pady=10)
 
-menu_cliente = tk.Menu(menu_barra,tearoff=0)
-menu_cliente.add_command(label="Cadastro",command=lambda:cadastrar_cliente(root))
-menu_barra.add_cascade(label="Cliente",menu=menu_cliente)
+    # Criação do menu inicial
+    menu_barra = tk.Menu(root)
 
-menu_fornecedor = tk.Menu(menu_barra,tearoff=0)
-menu_fornecedor.add_command(label="Cadastro",command=lambda:cadastrar_fornecedor(root))
-menu_barra.add_cascade(label="Fornecedor",menu=menu_fornecedor)
+    menu_cliente = tk.Menu(menu_barra,tearoff=0)
+    menu_cliente.add_command(label="Cadastro",command=lambda:cadastrar_cliente(root))
+    menu_barra.add_cascade(label="Cliente",menu=menu_cliente)
+
+    menu_fornecedor = tk.Menu(menu_barra,tearoff=0)
+    menu_fornecedor.add_command(label="Cadastro",command=lambda:cadastrar_fornecedor(root))
+    menu_barra.add_cascade(label="Fornecedor",menu=menu_fornecedor)
 
 
-menu_produto = tk.Menu(menu_barra,tearoff=0)
-menu_produto.add_command(label="Cadastro", command=lambda:cadastrar_produto(root))
-menu_produto.add_command(label="Tipo de Produto", command=lambda:cadastrar_tipo_produto(root))
-menu_produto.add_separator()
-menu_barra.add_cascade(label="Produto",menu=menu_produto)
+    menu_produto = tk.Menu(menu_barra,tearoff=0)
+    menu_produto.add_command(label="Cadastro", command=lambda:cadastrar_produto(root))
+    menu_produto.add_command(label="Tipo de Produto", command=lambda:cadastrar_tipo_produto(root))
+    menu_produto.add_separator()
+    menu_barra.add_cascade(label="Produto",menu=menu_produto)
 
-menu_venda = tk.Menu(menu_barra,tearoff=0)
-menu_venda.add_command(label="Cadastro", command=lambda:cadastrar_venda(root))
-menu_barra.add_cascade(label="Venda", menu=menu_venda)
+    menu_venda = tk.Menu(menu_barra,tearoff=0)
+    menu_venda.add_command(label="Cadastro", command=lambda:cadastrar_venda(root))
+    menu_barra.add_cascade(label="Venda", menu=menu_venda)
 
-root.config(menu=menu_barra)
+    root.config(menu=menu_barra)
 
-# Obter o caminho absoluto do diretório do programa
-diretorio_programa = os.path.dirname(os.path.abspath(__file__))
+    # Obter o caminho absoluto do diretório do programa
+    diretorio_programa = os.path.dirname(os.path.abspath(__file__))
 
-# Construir o caminho completo para a imagem dentro da pasta "midia"
-caminho_imagem = os.path.join(diretorio_programa, "midia", "gtech_logo.png")
-#caminho_imagem = 'gtech_logo.png'
+    # Construir o caminho completo para a imagem dentro da pasta "midia"
+    caminho_imagem = os.path.join(diretorio_programa, "midia", "gtech_logo.png")
+    #caminho_imagem = 'gtech_logo.png'
 
-# Carregar a imagem da logo
-logo = PhotoImage(file=caminho_imagem)
+    # Carregar a imagem da logo
+    logo = PhotoImage(file=caminho_imagem)
 
-# Inserir a imagem no centro da tela
-label_logo = tk.Label(root, image=logo)
-label_logo.image = logo  # Manter referência para evitar garbage collection
-label_logo.pack(pady=20)
+    # Inserir a imagem no centro da tela
+    label_logo = tk.Label(root, image=logo)
+    label_logo.image = logo  # Manter referência para evitar garbage collection
+    label_logo.pack(pady=20)
 
-versao = '1.0.1'
-# Criar um label no rodapé da tela
-label_rodape = tk.Label(root, text=f"versão {versao}", font=("Montserrat", 10))
-label_rodape.pack(side="bottom", pady=10)  # Posiciona o label no rodapé da tela
+    versao = '1.0.2'
+    # Criar um label no rodapé da tela
+    label_rodape = tk.Label(root, text=f"versão {versao}", font=("Montserrat", 10))
+    label_rodape.pack(side="bottom", pady=10)  # Posiciona o label no rodapé da tela
 
-# Inicia o loop principal da interface
-root.mainloop()
+
+    criar_grafico(root)
+
+    print('isso funcionou')
+
+    # Inicia o loop principal da interface
+    root.mainloop()
+
+criar_interface()
