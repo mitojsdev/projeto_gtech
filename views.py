@@ -4,6 +4,7 @@ from tkinter import messagebox
 from datetime import datetime
 from modelos import Cliente, Fornecedor, TipoProduto, Produto, Venda, Combobox_filtravel
 from funcoes import valida_campo
+from tkcalendar import DateEntry
 
 
 def cadastrar_cliente(root):
@@ -1062,3 +1063,55 @@ def cadastrar_tipo_produto(root):
     carregar_tipo_produto()
     treeview.bind("<ButtonRelease-1>", ao_clicar_treeview)
 ######################################################################################
+
+
+######################################################################################
+#função para pesquisa vendas
+def pesquisar_vendas(root):
+
+    cadastro_janela = tk.Toplevel(root)
+    cadastro_janela.grab_set()
+    cadastro_janela.title("Pesquisar Vendas")
+    cadastro_janela.geometry("950x650")
+
+    # Configuração do grid para expandir
+    cadastro_janela.grid_rowconfigure(10, weight=1)  # A linha da Treeview
+    for i in range(8):  # Para as linhas de 0 a 8
+        cadastro_janela.grid_rowconfigure(i, weight=0)  # As outras linhas têm peso 0
+    for i in range(5):  # Para as colunas de 0 a 4
+        cadastro_janela.grid_columnconfigure(i, weight=1)  # As colunas têm peso 1
+
+    # Label e DateEntry para Data Início
+    lbl_data_ini = tk.Label(cadastro_janela, text='Data início:')
+    lbl_data_ini.grid(row=0, column=0, padx=10, pady=10, sticky='e')  # Sticky 'e' alinha à direita
+    txt_data_ini = DateEntry(cadastro_janela, width=16, background='darkblue', foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
+    txt_data_ini.grid(row=0, column=1, padx=10, pady=10, sticky='w')  # Sticky 'w' alinha à esquerda
+
+    # Label e DateEntry para Data Fim
+    lbl_data_fim = tk.Label(cadastro_janela, text='Data fim:')
+    lbl_data_fim.grid(row=1, column=0, padx=10, pady=10, sticky='e')
+    txt_data_fim = DateEntry(cadastro_janela, width=16, background='darkblue', foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
+    txt_data_fim.grid(row=1, column=1, padx=10, pady=10, sticky='w')
+
+    columns = ("ID", "Data", "Cliente", "Produto", "Qtd", "Preço Venda", "Lucro")
+    treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
+    treeview.heading("ID", text="ID", anchor='w')
+    treeview.heading("Data", text="Data", anchor='w')
+    treeview.heading("Cliente", text="Cliente", anchor='w')
+    treeview.heading("Produto", text="Produto", anchor='w')   
+    treeview.heading("Qtd", text="Qtd", anchor='w')
+    treeview.heading("Preço Venda", text="Preço Venda", anchor='w')
+    treeview.heading("Lucro", text="Lucro", anchor='w')    
+    treeview.grid(row=8, column=0,columnspan=4, padx=10, pady=10)
+
+    scrollbar = ttk.Scrollbar(cadastro_janela, orient="vertical", command=treeview.yview)
+    treeview.configure(yscroll=scrollbar.set)
+
+    treeview.grid(row=8, column=0, columnspan=4, padx=10, pady=10, sticky='nsew')
+    scrollbar.grid(row=8, column=4, sticky='ns')
+
+    treeview.column("ID",width=30)      
+    treeview.column("Data",width=100)
+    treeview.column("Preço Venda",width=80)
+    treeview.column("Lucro",width=80)
+    treeview.column("Qtd",width=30)
