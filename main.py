@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import PhotoImage
 from views import cadastrar_cliente, cadastrar_produto, cadastrar_tipo_produto
-from views import cadastrar_fornecedor, cadastrar_venda, pesquisar_vendas
+from views import cadastrar_fornecedor, cadastrar_venda
 import os
 from graficos import criar_grafico
 
@@ -45,8 +45,8 @@ def criar_interface():
 
     menu_venda = tk.Menu(menu_barra,tearoff=0)
     menu_venda.add_command(label="Cadastro", command=lambda:cadastrar_venda(root))
-    menu_venda.add_separator()
-    menu_venda.add_command(label="Pesquisa", command=lambda:pesquisar_vendas(root))
+    #menu_venda.add_separator()
+    #menu_venda.add_command(label="Pesquisa", command=lambda:pesquisar_vendas_data(root))
     menu_barra.add_cascade(label="Venda", menu=menu_venda)
 
     root.config(menu=menu_barra)

@@ -657,7 +657,7 @@ class Venda:
         else:
             print("erro ao buscar ID_PRODUTO")
 
-    def pesquisar_venda(campo, filtro):
+    def pesquisar_venda(campo, filtro, datas):
         conexao = conectar()
         cursor = conexao.cursor()                             
         if campo == 'Cliente':
@@ -667,14 +667,20 @@ class Venda:
         else:
             condicao = '''C."NOME" LIKE %s'''
 
+        condicao = condicao + ''' AND "DATA" BETWEEN %s AND %s'''
+
         comando = '''SELECT A."ID", A."DATA", B."NOME", C."NOME" || '/' || C."MARCA" || '/' || D."NOME_EMPRESA" as Produto, a."QUANTIDADE", a."PRECO_VENDA", a."LUCRO"
                         from "TB_VENDA" a
                         join "TB_CLIENTE" b on a."ID_CLIENTE" = b."ID_CLIENTE"
                         join "TB_PRODUTO" c on a."ID_PRODUTO" = c."ID_PRODUTO"
                         join "TB_FORNECEDOR" d on c."ID_FORNECEDOR" = d."ID_FORNECEDOR"
                         WHERE'''
-        comando_final = comando + " " + condicao                
-        cursor.execute(comando_final, ('%' + filtro + '%',))
+        comando_final = comando + " " + condicao
+        print(comando_final)
+        print(filtro)
+        print(datas[0])
+        print(datas[1])                      
+        cursor.execute(comando_final, ('%' + filtro + '%', datas[0], datas[1],))
         resultado = cursor.fetchall()
         
         conexao.close()

@@ -683,7 +683,12 @@ def cadastrar_venda(root):
     lbl_filtrar =tk.Label(cadastro_janela, text="Filtrar")
     lbl_filtrar.grid(row=7, column=2, padx=0, pady=5, sticky="e")
     lbl_campo =tk.Label(cadastro_janela, text="Selecione:")
-    lbl_campo.grid(row=6, column=2, padx=0, pady=5, sticky="e")                                    
+    lbl_campo.grid(row=4, column=2, padx=0, pady=5, sticky="e")
+    lbl_data_ini = tk.Label(cadastro_janela, text='Data início:')
+    lbl_data_ini.grid(row=5, column=2, padx=10, pady=10, sticky='e')  # Sticky 'e' alinha à direita
+    lbl_data_fim = tk.Label(cadastro_janela, text='Data início:')
+    lbl_data_fim.grid(row=6, column=2, padx=10, pady=10, sticky='e')
+
     lbl_preco_sugerido = tk.Label(cadastro_janela, text="Preço sugerido: ")
     lbl_preco_sugerido.grid(row=5, column=1, padx=80, pady=5, sticky="e")
 
@@ -720,8 +725,13 @@ def cadastrar_venda(root):
 
     lista_campos = ['Cliente', 'Produto', 'Fornecedor']
     combo_pesquisa = ttk.Combobox(cadastro_janela,values=lista_campos, state='readonly')
-    combo_pesquisa.grid(row=6, column=3, padx=10, pady=5, sticky="w")
+    combo_pesquisa.grid(row=4, column=3, padx=10, pady=5, sticky="w")
     
+    txt_data_ini = DateEntry(cadastro_janela, width=16, background='darkblue', foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
+    txt_data_ini.grid(row=5, column=3, padx=10, pady=10, sticky='w')  # Sticky 'w' alinha à esquerda                                   
+
+    txt_data_fim = DateEntry(cadastro_janela, width=16, background='darkblue', foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
+    txt_data_fim.grid(row=6, column=3, padx=10, pady=10, sticky='w')  # Sticky 'w' alinha à esquerda                                   
     
     def salvar_venda(operacao):
         if not valida_campo('Produto', combo_produto.get()):
@@ -820,13 +830,16 @@ def cadastrar_venda(root):
 
     def ao_digitar_pesquisa(event):
         campo = combo_pesquisa.get()
+        data_ini = txt_data_ini.get_date()
+        data_fim = txt_data_fim.get_date()
         filtro = txt_pesquisa.get().upper()
+        datas = [data_ini, data_fim]
 
         for item in treeview.get_children():
             treeview.delete(item)
         
         
-        resultados = Venda.pesquisar_venda(campo,filtro)
+        resultados = Venda.pesquisar_venda(campo,filtro, datas)
         
         for resultado in resultados:
             data_original = resultado[1]
@@ -1065,53 +1078,3 @@ def cadastrar_tipo_produto(root):
 ######################################################################################
 
 
-######################################################################################
-#função para pesquisa vendas
-def pesquisar_vendas(root):
-
-    cadastro_janela = tk.Toplevel(root)
-    cadastro_janela.grab_set()
-    cadastro_janela.title("Pesquisar Vendas")
-    cadastro_janela.geometry("950x650")
-
-    # Configuração do grid para expandir
-    cadastro_janela.grid_rowconfigure(10, weight=1)  # A linha da Treeview
-    for i in range(8):  # Para as linhas de 0 a 8
-        cadastro_janela.grid_rowconfigure(i, weight=0)  # As outras linhas têm peso 0
-    for i in range(5):  # Para as colunas de 0 a 4
-        cadastro_janela.grid_columnconfigure(i, weight=1)  # As colunas têm peso 1
-
-    # Label e DateEntry para Data Início
-    lbl_data_ini = tk.Label(cadastro_janela, text='Data início:')
-    lbl_data_ini.grid(row=0, column=0, padx=10, pady=10, sticky='e')  # Sticky 'e' alinha à direita
-    txt_data_ini = DateEntry(cadastro_janela, width=16, background='darkblue', foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
-    txt_data_ini.grid(row=0, column=1, padx=10, pady=10, sticky='w')  # Sticky 'w' alinha à esquerda
-
-    # Label e DateEntry para Data Fim
-    lbl_data_fim = tk.Label(cadastro_janela, text='Data fim:')
-    lbl_data_fim.grid(row=1, column=0, padx=10, pady=10, sticky='e')
-    txt_data_fim = DateEntry(cadastro_janela, width=16, background='darkblue', foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
-    txt_data_fim.grid(row=1, column=1, padx=10, pady=10, sticky='w')
-
-    columns = ("ID", "Data", "Cliente", "Produto", "Qtd", "Preço Venda", "Lucro")
-    treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
-    treeview.heading("ID", text="ID", anchor='w')
-    treeview.heading("Data", text="Data", anchor='w')
-    treeview.heading("Cliente", text="Cliente", anchor='w')
-    treeview.heading("Produto", text="Produto", anchor='w')   
-    treeview.heading("Qtd", text="Qtd", anchor='w')
-    treeview.heading("Preço Venda", text="Preço Venda", anchor='w')
-    treeview.heading("Lucro", text="Lucro", anchor='w')    
-    treeview.grid(row=8, column=0,columnspan=4, padx=10, pady=10)
-
-    scrollbar = ttk.Scrollbar(cadastro_janela, orient="vertical", command=treeview.yview)
-    treeview.configure(yscroll=scrollbar.set)
-
-    treeview.grid(row=8, column=0, columnspan=4, padx=10, pady=10, sticky='nsew')
-    scrollbar.grid(row=8, column=4, sticky='ns')
-
-    treeview.column("ID",width=30)      
-    treeview.column("Data",width=100)
-    treeview.column("Preço Venda",width=80)
-    treeview.column("Lucro",width=80)
-    treeview.column("Qtd",width=30)
