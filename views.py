@@ -1,12 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox
+from tkinter import messagebox, filedialog
 from datetime import datetime
 from modelos import Cliente, Fornecedor, TipoProduto, Produto, Venda, Combobox_filtravel
 from funcoes import valida_campo, exportar_excel
 from tkcalendar import DateEntry
+from PIL import Image, ImageTk
 
-
+caminho_imagem = None
 
 def cadastrar_cliente(root):
     # Nova janela para cadastro de cliente
@@ -424,7 +425,11 @@ def cadastrar_produto(root):
     lbl_filtrar.grid(row=9, column=1, padx=0, pady=5, sticky="e")
     lbl_campo =tk.Label(cadastro_janela, text="Selecione:")
     lbl_campo.grid(row=8, column=1, padx=0, pady=5, sticky="e")
-
+    
+    ##### teste imagem
+    lbl_imagem_produto = tk.Label(cadastro_janela,highlightthickness=1, highlightbackground="black")
+    lbl_imagem_produto.grid(row=1, column=1,rowspan=3,padx=10, pady=5, sticky="e")
+    
 
     txt_id = tk.Entry(cadastro_janela,state='disabled', disabledbackground='lightgrey',disabledforeground='darkgrey')
     txt_id.grid(row=0, column=1, padx=9, pady=0, sticky="w")
@@ -469,6 +474,18 @@ def cadastrar_produto(root):
     lista_campos = ['Nome', 'Marca', 'Tipo Produto', 'Fabricante','Cor','Fornecedor']
     combo_pesquisa = ttk.Combobox(cadastro_janela,values=lista_campos, state='readonly')
     combo_pesquisa.grid(row=8, column=2, padx=10, pady=5, sticky="w")
+
+
+    def selecionar_imagem():
+        global caminho_imagem
+        caminho_imagem = filedialog.askopenfilename(title="Selecionar Imagem", filetypes=[("Arquivos de imagem", "*.jpg *.png")])
+        if caminho_imagem:
+            imagem = Image.open(caminho_imagem)
+            imagem = imagem.resize((150, 150), Image.Resampling.LANCZOS)  # Redimensiona a imagem para caber no rótulo
+            imagem_tk = ImageTk.PhotoImage(imagem)
+            lbl_imagem_produto.config(image=imagem_tk)
+            lbl_imagem_produto.image = imagem_tk  # Mantém uma referência para evitar o garbage collection
+            print(caminho_imagem)
     
     def salvar_produto(operacao):        
         if not valida_campo('nome', txt_nome.get()):
@@ -507,13 +524,13 @@ def cadastrar_produto(root):
             estoque = int(combo_estoque.get())
         
             if operacao == 'I':
-                produto = Produto(nome, preco_custo, tipo_produto_id, fabricante, marca, cor, fornecedor, data_cadastro, estoque)
+                produto = Produto(nome, preco_custo, tipo_produto_id, fabricante, marca, cor, fornecedor, data_cadastro, estoque, caminho_imagem)
                 produto.salvar_produto()
                 limpar_campos()
             else:
                 if valida_campo('id', txt_id.get()):
                     id_produto = txt_id.get()
-                    produto = Produto(nome, preco_custo, tipo_produto_id, fabricante, marca, cor, fornecedor, data_cadastro, estoque, id_produto)
+                    produto = Produto(nome, preco_custo, tipo_produto_id, fabricante, marca, cor, fornecedor, data_cadastro, estoque, caminho_imagem, id_produto)
                     produto.alterar_produto()
                     limpar_campos()
         carregar_produtos()        
@@ -521,8 +538,10 @@ def cadastrar_produto(root):
     tk.Button(cadastro_janela, text="Incluir", command=lambda:salvar_produto('I')).grid(row=9, columnspan=2, pady=10)
     tk.Button(cadastro_janela, text="Alterar", command=lambda:salvar_produto('A')).grid(row=9, columnspan=3, pady=10)
     tk.Button(cadastro_janela, text="Exportar", command=lambda:exportar_excel(treeview,'Produtos')).grid(row=11, columnspan=3, pady=10)
-    
-    columns = ("ID", "Nome Produto", "Preço Custo", "Tipo", "Fabricante", "Marca", "Cor", "Fornecedor", "Data de Cadastro", "Estoque")
+    btn_selecionar_imagem = tk.Button(cadastro_janela, text="+ imagem", command=selecionar_imagem)
+    btn_selecionar_imagem.grid(row=1, column=2, padx=10, pady=5, sticky="w")
+
+    columns = ("ID", "Nome Produto", "Preço Custo", "Tipo", "Fabricante", "Marca", "Cor", "Fornecedor", "Data de Cadastro", "Estoque", "img")
     treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
     #treeview.grid(row=10, column=0,columnspan=4, padx=10, pady=10)
     treeview.heading("ID", text="ID", anchor='w')
@@ -535,6 +554,7 @@ def cadastrar_produto(root):
     treeview.heading("Fornecedor", text="Fornecedor", anchor='w')
     treeview.heading("Data de Cadastro", text="Data de Cadastro", anchor='w')
     treeview.heading("Estoque", text="Estoque", anchor='w')
+    treeview.heading("img", text="img", anchor='w')
 
     scrollbar = ttk.Scrollbar(cadastro_janela, orient="vertical", command=treeview.yview)
     treeview.configure(yscroll=scrollbar.set)
@@ -549,6 +569,7 @@ def cadastrar_produto(root):
     treeview.column("Cor",width=60)
     treeview.column("Marca",width=60)
     treeview.column('Tipo', width=80)
+    treeview.column('img', width=0)
 
     def carregar_produtos():
         # Limpa a Treeview antes de carregar os dados
@@ -579,6 +600,7 @@ def cadastrar_produto(root):
 
     #continuar aqui em 06/09/2024
     def ao_clicar_treeview_produto(event):
+        global caminho_imagem
         item_selecionado = treeview.selection()
 
         if item_selecionado:
@@ -612,6 +634,28 @@ def cadastrar_produto(root):
             
             combo_estoque.set(item[9])
             #ao_selecionar_combo_produto(event="<<ComboboxSelected>>")
+        
+            
+             #abrindo imagem do produto
+            print(f'item 10 é {item[10]}')
+            caminho_imagem = item[10] 
+            if caminho_imagem is not None and caminho_imagem != "":
+                try:                                
+                    imagem = Image.open(caminho_imagem)
+                    imagem = imagem.resize((150, 150), Image.Resampling.LANCZOS)  # Redimensiona a imagem para caber no rótulo
+                    imagem_tk = ImageTk.PhotoImage(imagem)
+                    lbl_imagem_produto.config(image=imagem_tk)
+                    lbl_imagem_produto.image = imagem_tk  # Mantém uma referência para evitar o garbage collection
+                except FileNotFoundError:
+                    print('imagem não encontrada')
+                    caminho_imagem = "C:/Users/amilt/Pictures/Screenshots/imagem_none.png"
+                    imagem = Image.open(caminho_imagem)
+                    imagem = imagem.resize((150, 150), Image.Resampling.LANCZOS)  # Redimensiona a imagem para caber no rótulo
+                    imagem_tk = ImageTk.PhotoImage(imagem)
+                    lbl_imagem_produto.config(image=imagem_tk)
+                    lbl_imagem_produto.image = imagem_tk
+
+
     def ao_digitar_pesquisa(event):
         campo = combo_pesquisa.get()
         filtro = txt_pesquisa.get().upper()

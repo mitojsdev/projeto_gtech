@@ -349,7 +349,7 @@ class Fornecedor:
 
 
 class Produto:
-    def __init__(self, nome, preco_custo, tipo_produto, fabricante, marca, cor, id_fornecedor, data_cadastro,estoque, id_produto=None):
+    def __init__(self, nome, preco_custo, tipo_produto, fabricante, marca, cor, id_fornecedor, data_cadastro,estoque,imagem_produto, id_produto=None):
         self.id_produto = id_produto
         self.nome = nome
         self.preco_custo = preco_custo
@@ -360,6 +360,7 @@ class Produto:
         self.id_fornecedor = id_fornecedor
         self.data_cadastro = data_cadastro
         self.estoque = estoque
+        self.imagem_produto = imagem_produto
 
     def salvar_produto(self):
       # Conectando ao banco de dados SQLite
@@ -370,9 +371,9 @@ class Produto:
             # Inserindo os dados do cliente no banco
 
             cursor.execute('''
-                INSERT INTO "TB_PRODUTO" ("NOME", "PRECO_CUSTO", "TIPO_PRODUTO", "FABRICANTE", "MARCA", "COR", "ID_FORNECEDOR", "DATA_CADASTRO", "ESTOQUE")
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            ''', (self.nome, self.preco_custo, self.tipo_produto, self.fabricante, self.marca, self.cor, self.id_fornecedor, self.data_cadastro, self.estoque))
+                INSERT INTO "TB_PRODUTO" ("NOME", "PRECO_CUSTO", "TIPO_PRODUTO", "FABRICANTE", "MARCA", "COR", "ID_FORNECEDOR", "DATA_CADASTRO", "ESTOQUE", "IMAGEM")
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ''', (self.nome, self.preco_custo, self.tipo_produto, self.fabricante, self.marca, self.cor, self.id_fornecedor, self.data_cadastro, self.estoque, self.imagem_produto))
 
             conexao.commit()
             messagebox.showinfo('Cadastro', 'Produto inserido com sucesso!')
@@ -441,9 +442,10 @@ class Produto:
                     "MARCA" = %s,
                     "COR" = %s,
                     "ID_FORNECEDOR" = %s,
-                    "ESTOQUE" = %s
+                    "ESTOQUE" = %s,
+                    "IMAGEM" = %s
                     WHERE "ID_PRODUTO" = %s
-            ''', (self.nome,self.preco_custo, self.tipo_produto, self.fabricante, self.marca, self.cor, self.id_fornecedor,self.estoque, self.id_produto))
+            ''', (self.nome,self.preco_custo, self.tipo_produto, self.fabricante, self.marca, self.cor, self.id_fornecedor,self.estoque, self.imagem_produto, self.id_produto))
 
             conexao.commit()
             messagebox.showinfo('Cadastro', 'O produto foi alterado.')
@@ -461,7 +463,7 @@ class Produto:
         conexao = conectar()
         cursor = conexao.cursor()
         cursor.execute('''SELECT A."ID_PRODUTO", A."NOME", A."PRECO_CUSTO", B."DESCRICAO", A."FABRICANTE",
-                        A."MARCA", A."COR", C."NOME_EMPRESA", A."DATA_CADASTRO", A."ESTOQUE" FROM "TB_PRODUTO" A
+                        A."MARCA", A."COR", C."NOME_EMPRESA", A."DATA_CADASTRO", A."ESTOQUE", A."IMAGEM" FROM "TB_PRODUTO" A
                         JOIN "TB_TIPO_PRODUTO" B ON B."COD" = A."TIPO_PRODUTO"
                         JOIN "TB_FORNECEDOR" C ON C."ID_FORNECEDOR" = A."ID_FORNECEDOR";''')
         
