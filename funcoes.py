@@ -65,10 +65,13 @@ def exportar_excel(tabela, titulo):
         # Converter valores numéricos com ponto para vírgula
         valores_convertidos = []
         for valor in valores:
-            if isinstance(valor, str) and valor.replace('.', '', 1).isdigit():
-                # Substituir '.' por ',' se for número com ponto
-                valor = valor.replace('.', ',')
-            valores_convertidos.append(valor)
+            try:
+                # Tentar converter para float
+                valor_convertido = float(valor)
+            except (ValueError, TypeError):
+                # Se não for possível converter, manter o valor original
+                valor_convertido = valor
+            valores_convertidos.append(valor_convertido)
         
         ws.append(valores_convertidos)
         #ws.append(valores)
