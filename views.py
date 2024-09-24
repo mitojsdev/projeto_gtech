@@ -14,7 +14,7 @@ def cadastrar_cliente(root):
     cadastro_janela.grab_set()
     #odal_window.grab_set()
     cadastro_janela.title("Cadastro de Cliente")
-    cadastro_janela.geometry("700x450")
+    cadastro_janela.geometry("700x480")
 
     # Configuração do grid para expandir
     cadastro_janela.grid_rowconfigure(10, weight=1)  # A linha da Treeview
@@ -103,7 +103,7 @@ def cadastrar_cliente(root):
     # Botão para salvar o cliente
     tk.Button(cadastro_janela, text="Incluir", command=lambda:salvar_cliente('I')).grid(row=4, columnspan=2, pady=10)
     tk.Button(cadastro_janela, text="Alterar", command=lambda:salvar_cliente('A')).grid(row=4, columnspan=3, pady=10)
-
+    tk.Button(cadastro_janela, text="Exportar", command=lambda:exportar_excel(treeview,'Clientes')).grid(row=7, columnspan=3, pady=10)
 
     # Criando a Treeview para exibir os clientes cadastrados
     columns = ("ID", "Nome", "Telefone", "Data de Cadastro")
@@ -208,7 +208,7 @@ def cadastrar_fornecedor(root):
     cadastro_janela = tk.Toplevel(root)
     cadastro_janela.grab_set()
     cadastro_janela.title("Cadastro de Fornecedor")
-    cadastro_janela.geometry("780x450")
+    cadastro_janela.geometry("780x480")
 
     # Configuração do grid para expandir
     cadastro_janela.grid_rowconfigure(10, weight=1)  # A linha da Treeview
@@ -296,7 +296,8 @@ def cadastrar_fornecedor(root):
     #tk.Button(cadastro_janela, text="Salvar", command=salvar_fornecedor).grid(row=4, columnspan=2, pady=10)
     tk.Button(cadastro_janela, text="Incluir", command=lambda:salvar_fornecedor('I')).grid(row=4, columnspan=2, pady=10)
     tk.Button(cadastro_janela, text="Alterar", command=lambda:salvar_fornecedor('A')).grid(row=4, columnspan=3, pady=10)
-    
+    tk.Button(cadastro_janela, text="Exportar", command=lambda:exportar_excel(treeview,'Fornecedores')).grid(row=6, columnspan=3, pady=10)
+
     # Criando a Treeview para exibir fornecedores cadastrados
     columns = ("ID", "Nome Empresa", "Tipo Empresa", "Data de Cadastro")
     frame_treeview = ttk.Frame(cadastro_janela)
@@ -519,7 +520,7 @@ def cadastrar_produto(root):
                
     tk.Button(cadastro_janela, text="Incluir", command=lambda:salvar_produto('I')).grid(row=9, columnspan=2, pady=10)
     tk.Button(cadastro_janela, text="Alterar", command=lambda:salvar_produto('A')).grid(row=9, columnspan=3, pady=10)
-    
+    tk.Button(cadastro_janela, text="Exportar", command=lambda:exportar_excel(treeview,'Produtos')).grid(row=11, columnspan=3, pady=10)
     
     columns = ("ID", "Nome Produto", "Preço Custo", "Tipo", "Fabricante", "Marca", "Cor", "Fornecedor", "Data de Cadastro", "Estoque")
     treeview = ttk.Treeview(cadastro_janela, columns=columns, show="headings")
@@ -790,7 +791,7 @@ def cadastrar_venda(root):
     tk.Button(cadastro_janela, text="Incluir", command=lambda:salvar_venda('I')).grid(row=7, columnspan=2, padx=130, sticky='w')
     tk.Button(cadastro_janela, text="Alterar", command=lambda:salvar_venda('A')).grid(row=7, columnspan=3, pady=10)
     tk.Button(cadastro_janela, text="Excluir", command=lambda:salvar_venda('E')).grid(row=7, columnspan=4, pady=10)
-    tk.Button(cadastro_janela, text="Exportar", command=lambda:exportar_excel(treeview,'Relatório de Vendas')).grid(row=9, columnspan=3, pady=10)
+    tk.Button(cadastro_janela, text="Exportar", command=lambda:exportar_excel(treeview,'Relatório de Vendas')).grid(row=9, columnspan=4, pady=10)
 
     def ao_selecionar_combo_produto(event):
         produto_selecionado = combo_produto.get()
@@ -800,8 +801,6 @@ def cadastrar_venda(root):
         valor_sugerido = Venda.calcular_preco_sugerido(nome_produto,nome_fornecedor)        
         lbl_preco_sugerido.config(text=f'Preço sugerido: {valor_sugerido}')
 
-    def ao_selecionar_cliente(event):
-        pass
 
     def ao_sair_preco_venda(event):
         if combo_produto.get() != '' and txt_quantidade.get() != '' and txt_preco_venda.get() != '':                        
@@ -858,9 +857,7 @@ def cadastrar_venda(root):
 
         
 
-    combo_produto.bind("<<ComboboxSelected>>", ao_selecionar_combo_produto)
-    #combo_cliente.bind('<KeyRelease>', ao_digitar_cliente)
-    #combo_cliente.bind("<FocusOut>", ao_sair_combo_cliente)
+    combo_produto.bind("<<ComboboxSelected>>", ao_selecionar_combo_produto)   
     txt_preco_venda.bind("<FocusOut>", ao_sair_preco_venda)
     combo_produto.bind("<FocusOut>", ao_sair_preco_venda)
     txt_quantidade.bind("<FocusOut>", ao_sair_preco_venda)

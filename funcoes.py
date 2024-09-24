@@ -59,13 +59,23 @@ def exportar_excel(tabela, titulo):
     ws.append(colunas)
 
     # Adicionar as linhas da Treeview
-    for item in tabela.get_children():
+    for item in tabela.get_children():        
         valores = tabela.item(item)["values"]
-        ws.append(valores)
+
+        # Converter valores numéricos com ponto para vírgula
+        valores_convertidos = []
+        for valor in valores:
+            if isinstance(valor, str) and valor.replace('.', '', 1).isdigit():
+                # Substituir '.' por ',' se for número com ponto
+                valor = valor.replace('.', ',')
+            valores_convertidos.append(valor)
+        
+        ws.append(valores_convertidos)
+        #ws.append(valores)
 
     # Abrir uma janela de diálogo para salvar o arquivo
     caminho_arquivo = filedialog.asksaveasfilename(defaultextension=".xlsx", filetypes=[("Excel files", "*.xlsx")])
     
     if caminho_arquivo:
         wb.save(caminho_arquivo)        
-        messagebox.showinfo(f'Dados exportados com sucesso para {caminho_arquivo}')
+        messagebox.showinfo('Cadastro', f'O arquivo foi salvo em {caminho_arquivo}')

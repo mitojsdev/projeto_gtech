@@ -1,5 +1,4 @@
 from conexao import conectar
-from datetime import datetime
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 
