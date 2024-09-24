@@ -1,6 +1,10 @@
 from tkinter import messagebox
 from datetime import datetime
 import re
+import openpyxl
+from openpyxl import Workbook
+from tkinter import filedialog
+
 
 
 def valida_campo(tipo_campo, valor):
@@ -45,3 +49,23 @@ def valida_campo(tipo_campo, valor):
        
     return resultado
 
+
+def exportar_excel(tabela, titulo):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = titulo
+
+    colunas = [tabela.heading(col)['text'] for col in tabela["columns"]]
+    ws.append(colunas)
+
+    # Adicionar as linhas da Treeview
+    for item in tabela.get_children():
+        valores = tabela.item(item)["values"]
+        ws.append(valores)
+
+    # Abrir uma janela de diálogo para salvar o arquivo
+    caminho_arquivo = filedialog.asksaveasfilename(defaultextension=".xlsx", filetypes=[("Excel files", "*.xlsx")])
+    
+    if caminho_arquivo:
+        wb.save(caminho_arquivo)        
+        messagebox.showinfo(f'Dados exportados com sucesso para {caminho_arquivo}')

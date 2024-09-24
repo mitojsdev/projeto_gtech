@@ -3,8 +3,9 @@ from tkinter import ttk
 from tkinter import messagebox
 from datetime import datetime
 from modelos import Cliente, Fornecedor, TipoProduto, Produto, Venda, Combobox_filtravel
-from funcoes import valida_campo
+from funcoes import valida_campo, exportar_excel
 from tkcalendar import DateEntry
+
 
 
 def cadastrar_cliente(root):
@@ -789,6 +790,7 @@ def cadastrar_venda(root):
     tk.Button(cadastro_janela, text="Incluir", command=lambda:salvar_venda('I')).grid(row=7, columnspan=2, padx=130, sticky='w')
     tk.Button(cadastro_janela, text="Alterar", command=lambda:salvar_venda('A')).grid(row=7, columnspan=3, pady=10)
     tk.Button(cadastro_janela, text="Excluir", command=lambda:salvar_venda('E')).grid(row=7, columnspan=4, pady=10)
+    tk.Button(cadastro_janela, text="Exportar", command=lambda:exportar_excel(treeview,'Relatório de Vendas')).grid(row=9, columnspan=3, pady=10)
 
     def ao_selecionar_combo_produto(event):
         produto_selecionado = combo_produto.get()
@@ -889,6 +891,7 @@ def cadastrar_venda(root):
     treeview.column("Qtd",width=30)
     #treeview.column("Cor",width=30)
     #treeview.column("Marca",width=50)
+    
     
 
     def carregar_vendas():
