@@ -16,7 +16,7 @@ def criar_interface():
     global root
     root = tk.Tk() 
     root.title("GTECH Control 1.0")
-    root.geometry("1200x600")
+    root.geometry("1200x700")
 
      # Configurar o evento de fechar a janela
     root.protocol("WM_DELETE_WINDOW", fechar_janela)
