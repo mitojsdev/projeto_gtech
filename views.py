@@ -708,7 +708,7 @@ def cadastrar_venda(root):
     cadastro_janela = tk.Toplevel(root)
     cadastro_janela.grab_set()
     cadastro_janela.title("Cadastro de Venda")
-    cadastro_janela.geometry("950x650")
+    cadastro_janela.geometry("980x650")
 
 
     # Configuração do grid para expandir
