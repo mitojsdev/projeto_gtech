@@ -774,9 +774,11 @@ def cadastrar_venda(root):
     combo_pesquisa.grid(row=4, column=3, padx=10, pady=5, sticky="w")
     
     txt_data_ini = DateEntry(cadastro_janela, width=16, background='darkblue', foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
+    #txt_data_ini = tk.Entry(cadastro_janela, width=30)
     txt_data_ini.grid(row=5, column=3, padx=10, pady=10, sticky='w')  # Sticky 'w' alinha à esquerda                                   
 
     txt_data_fim = DateEntry(cadastro_janela, width=16, background='darkblue', foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
+    #txt_data_fim = tk.Entry(cadastro_janela, width=30)
     txt_data_fim.grid(row=6, column=3, padx=10, pady=10, sticky='w')  # Sticky 'w' alinha à esquerda                                   
     
     def salvar_venda(operacao):
