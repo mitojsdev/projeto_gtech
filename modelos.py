@@ -605,9 +605,10 @@ class Venda:
                     "ID_PRODUTO" = %s,
                     "QUANTIDADE" = %s,
                     "PRECO_VENDA" = %s,
-                    "LUCRO" = %s
+                    "LUCRO" = %s,
+                    "DATA" = %s
                     WHERE "ID" = %s
-            ''', (self.id_cliente,self.id_produto, self.quantidade, self.preco_venda, self.lucro, self.id_venda))
+            ''', (self.id_cliente,self.id_produto, self.quantidade, self.preco_venda, self.lucro, self.data_venda, self.id_venda))
 
             conexao.commit()
             messagebox.showinfo('Cadastro', 'A venda foi alterada com sucesso.')

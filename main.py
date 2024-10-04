@@ -66,7 +66,7 @@ def criar_interface():
     label_logo.image = logo  # Manter referência para evitar garbage collection
     label_logo.pack(pady=20)
 
-    versao = '1.0.2'
+    versao = '1.0.3'
     # Criar um label no rodapé da tela
     label_rodape = tk.Label(root, text=f"versão {versao}", font=("Montserrat", 10))
     label_rodape.pack(side="bottom", pady=10)  # Posiciona o label no rodapé da tela

@@ -648,12 +648,12 @@ def cadastrar_produto(root):
                     lbl_imagem_produto.image = imagem_tk  # Mantém uma referência para evitar o garbage collection
                 except FileNotFoundError:
                     print('imagem não encontrada')
-                    caminho_imagem = "C:/Users/amilt/Pictures/Screenshots/imagem_none.png"
-                    imagem = Image.open(caminho_imagem)
-                    imagem = imagem.resize((150, 150), Image.Resampling.LANCZOS)  # Redimensiona a imagem para caber no rótulo
-                    imagem_tk = ImageTk.PhotoImage(imagem)
-                    lbl_imagem_produto.config(image=imagem_tk)
-                    lbl_imagem_produto.image = imagem_tk
+                    #caminho_imagem = "C:/Users/amilt/Pictures/Screenshots/imagem_none.png"
+                    #imagem = Image.open(caminho_imagem)
+                    #imagem = imagem.resize((150, 150), Image.Resampling.LANCZOS)  # Redimensiona a imagem para caber no rótulo
+                    #imagem_tk = ImageTk.PhotoImage(imagem)                    
+                    #lbl_imagem_produto.config(image=None)
+                    lbl_imagem_produto.image = None
 
 
     def ao_digitar_pesquisa(event):
@@ -690,7 +690,7 @@ def cadastrar_produto(root):
         combo_fornecedor.set('')
         combo_tipo_produto.set('')
         combo_estoque.set('')
-
+        lbl_imagem_produto.image = None
         txt_nome.focus()
         
 ######################################################################################    
